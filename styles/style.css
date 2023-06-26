@@ -14,7 +14,7 @@ header {
     background-color: #fef6e4;
 }
 
-ul {
+header ul {
     list-style-type: none;
     margin: 0;
     padding: 0;
@@ -22,12 +22,12 @@ ul {
     background-color: #fef6e4;
 }
 
-li {
+header li {
     float: left;
     border-right: 1px solid #bbb;
 }
 
-li a {
+header li a {
     display: block;
     color: #001858;
     text-align: center;
@@ -36,7 +36,7 @@ li a {
 }
 
 /*change the link color to #f582ae on hover */
-li a:hover {
+header li a:hover {
     background-color: #c3f0ca
 }
 
