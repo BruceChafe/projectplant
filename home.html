@@ -20,11 +20,49 @@
         </header>
 
         <section>
-            <p>Hello there!</p>
+            <h2>Project Plant</h2>
         </section>
 
         <section>
-            <p>Obi-Wan Kenobi</p>
+            <h3>Planter Finder</h3>
+            <form>
+            <label for="watering">Watering</label>
+            <select name="watering" id="watering">
+                <option value="frequent">Frequent</option>
+                <option value="average">Average</option>
+                <option value="minimum">Minimum</option>
+                <option value="none">None</option>
+            </select>
+        </br>
+            <label for="sunglight">Sunlight</label>
+            <select name="sunglight" id="sunglight">
+                <option value="full_shade">Full Shade</option>
+                <option value="part_shade">Part Shade</option>
+                <option value="sun-part_shade">Part Sun</option>
+                <option value="full_sun">Full Sun</option>
+            </select>
+            <div class="tooltip">More Info
+                <span class="tooltiptext">Full Shade - More than 6 hours of direct sun per day 
+            </br>
+            </br>
+                Part Sun - 4-6 hours of direct sun per day, including some afternoon sun
+            </br>
+            </br>
+                Part Shade - 4 to 6 hours of direct sun per day, mostly before midday
+            </br>
+            </br>
+                Full Shade - less than 4 hours of direct sun per day
+                </span>
+            </div>
+        </br>
+        <label for="poisonous">Poisonous to Pets</label>
+        <select name="watering" id="Watering">
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+        </select>
+        </br>
+        <input type="submit" value="Plantify Me"
+            </form>
         </section>
 
         <footer>

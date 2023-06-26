@@ -1,13 +1,8 @@
-/* Color Theme Swatches in Hex */
-.color-theme_quiet-wave-spring-summer-color-trend-2021-3-1-hex { color: #212621; }
-.color-theme_quiet-wave-spring-summer-color-trend-2021-3-2-hex { color: #758C72; }
-.color-theme_quiet-wave-spring-summer-color-trend-2021-3-3-hex { color: #737166; }
-.color-theme_quiet-wave-spring-summer-color-trend-2021-3-4-hex { color: #D9D4CC; }
-.color-theme_quiet-wave-spring-summer-color-trend-2021-3-5-hex { color: #40230A; }
+@import url('https://fonts.googleapis.com/css2?family=Figtree&display=swap');
 
-:root {
-    --main-bg-color: #212621;
-  }
+* {
+    font-family: 'Figtree', sans-serif;
+}
 
 body {
     margin: 0;
@@ -16,7 +11,7 @@ body {
 header {
     display: flex;
     margin: 0;
-    background-color: #758C72;
+    background-color: #fef6e4;
 }
 
 ul {
@@ -24,7 +19,7 @@ ul {
     margin: 0;
     padding: 0;
     overflow: hidden;
-    background-color: #758C72;
+    background-color: #fef6e4;
 }
 
 li {
@@ -34,24 +29,50 @@ li {
 
 li a {
     display: block;
-    color: #D9D4CC;
+    color: #001858;
     text-align: center;
     padding: 14px 16px;
     text-decoration: none;
 }
 
-/*change the link color to #697e66 on hover */
+/*change the link color to #f582ae on hover */
 li a:hover {
-    background-color: #697e66
+    background-color: #c3f0ca
+}
+
+section {
+        background-color: #f3d2c1;
 }
 
 footer {
     display: flex;
     margin: 0;
-    background-color: #758C72;
+    background-color: #fef6e4;
   }
 
-section {
-    
-    background-color: #737166;
-}
+  h2 {
+    text-align: center;
+  }
+
+  /* Tooltip container */
+.tooltip {
+    position: relative;
+    display: inline-block;
+  }
+
+  /* Tooltip text */
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+    position: absolute;
+    z-index: 1;
+  }
+
+  .tooltip:hover .tooltiptext {
+    visibility: visible;
+  }
