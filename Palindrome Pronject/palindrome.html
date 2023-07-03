@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+
+    <title>Is it a planidrome?</title>
+
+    <style>
+      html {
+        font-family: sans-serif;
+      }
+
+      body {
+        width: 50%;
+        max-width: 800px;
+        min-width: 480px;
+        margin: 0 auto;
+      }
+      
+      .form input[type="text"] {
+        width: 200px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Is it a planidrome?</h1>
+
+    <p>Welcome to "Is it a Palindrome?"—a JavaScript program that determines if something is a palindrome.</p>
+    <p>Input your word, phrase, or sentence, and our algorithm will quickly analyze it. Discover the hidden symmetries of language and find out if you've created a palindrome.</p>
+    <p>Let the palindrome-parsing begin!</p>
+
+    <div class="form">
+      <label for="palindromeField">Enter a potential palindrom: </label>
+      <input type="text" min="1" max="100" required id="palindromeField" class="palindromeField">
+      <input type="submit" value="Is it" class="guessSubmit">
+    </div>
+
+    <div class="resultParas">
+      <p class="guesses"></p>
+      <p class="gameUpdate"></p>
+    </div>
+
+    <script>
+        const gameUpdate = document.querySelector(".gameUpdate");
+
+        const guessSubmit = document.querySelector(".guessSubmit");
+        const palindromeField = document.querySelector(".palindromeField");
+
+        
+        function checkGuess() {
+            const wordCheck = palindromeField.value.split('').reverse().join('');
+            if (palindromeField.value === wordCheck) {
+            gameUpdate.textContent = "Congratulations! You got it right!";
+            }   else {
+                gameUpdate.textContent = "You are not a palindrome!"
+            }
+        }
+        
+        guessSubmit.addEventListener("click", checkGuess);
+
+    </script>
+  </body>
+</html>
