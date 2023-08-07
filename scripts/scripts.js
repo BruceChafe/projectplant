@@ -4,6 +4,13 @@ const apiUrl = 'https://perenual.com/api/species-list?page=1&key=sk-ojin6499fba9
 // Initialize currentPage for pagination
 let currentPage = 1;
 
+// Function to get the total number of pages based on the validData
+function getTotalPages() {
+  const resultsPerPage = 5; // Set this according to your desired results per page
+  const totalResults = validData.length;
+  return Math.ceil(totalResults / resultsPerPage);
+}
+
 // Define validData as a global variable to store API response
 let validData = [];
 
@@ -85,8 +92,8 @@ function hideLoadingOverlay() {
 function showNextPage() {
   const wateringOption = document.getElementById('watering-dropdown').value;
   const sunlightOption = document.getElementById('sunlight-dropdown').value;
-
   const totalPages = getTotalPages();
+
   if (currentPage < totalPages) {
     currentPage += 1;
   }
@@ -94,13 +101,21 @@ function showNextPage() {
   // Disable the next button if we are on the last page
   const nextPageButton = document.getElementById('next-page-button');
   if (nextPageButton) {
-    nextPageButton.disabled = currentPage >= totalPages;
+    if (currentPage >= totalPages) {
+      nextPageButton.classList.add('disabled');
+    } else {
+      nextPageButton.classList.remove('disabled');
+    }
   }
 
   // Re-enable the previous button since we are moving to the next page
   const prevPageButton = document.getElementById('prev-page-button');
   if (prevPageButton) {
-    prevPageButton.disabled = false;
+    if (currentPage === 1) {
+      prevPageButton.classList.add('disabled');
+    } else {
+      prevPageButton.classList.remove('disabled');
+    }
   }
 
   createTableResult(wateringOption, sunlightOption);
@@ -110,6 +125,7 @@ function showNextPage() {
 function showPreviousPage() {
   const wateringOption = document.getElementById('watering-dropdown').value;
   const sunlightOption = document.getElementById('sunlight-dropdown').value;
+  const totalPages = getTotalPages();
 
   if (currentPage > 1) {
     currentPage -= 1;
@@ -118,23 +134,24 @@ function showPreviousPage() {
   // Disable the previous button if we are on the first page
   const prevPageButton = document.getElementById('prev-page-button');
   if (prevPageButton) {
-    prevPageButton.disabled = currentPage <= 1;
+    if (currentPage === 1) {
+      prevPageButton.classList.add('disabled');
+    } else {
+      prevPageButton.classList.remove('disabled');
+    }
   }
 
   // Re-enable the next button since we are moving to the previous page
   const nextPageButton = document.getElementById('next-page-button');
   if (nextPageButton) {
-    nextPageButton.disabled = false;
+    if (currentPage < totalPages) {
+      nextPageButton.classList.add('disabled');
+    } else {
+      nextPageButton.classList.remove('disabled');
+    }
   }
 
   createTableResult(wateringOption, sunlightOption);
-}
-
-// Function to get the total number of pages based on the validData
-function getTotalPages() {
-  const resultsPerPage = 5; // Set this according to your desired results per page
-  const totalResults = validData.length;
-  return Math.ceil(totalResults / resultsPerPage);
 }
 
 // Function to create the pagination buttons dynamically and append them to the DOM
@@ -328,6 +345,7 @@ function createSuggestResultsHTML(data, selectedWatering, selectedSunlight) {
 
 // Function to create HTML for Table Result
 function createTableResultsHTML(data, currentPage) {
+  console.log("Data recieved:", data);
   // Calculate the starting and ending indices for the current page
   const resultsPerPage = 5; // Set this according to your desired results per page
   const startIndex = (currentPage - 1) * resultsPerPage;
