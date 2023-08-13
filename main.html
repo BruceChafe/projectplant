@@ -86,39 +86,6 @@
       </div>
     </footer>
 
-    <script>
-      const suggestButton = document.getElementById('suggest-button');
-      suggestButton.addEventListener('click', () => {
-        const wateringOption = document.getElementById('watering-dropdown').value;
-        const sunlightOption = document.getElementById('sunlight-dropdown').value;
-        createSuggestResult(wateringOption, sunlightOption);
-      });
-
-      const tableButton = document.getElementById('table-button');
-      tableButton.addEventListener('click', () => {
-        const wateringOption = document.getElementById('watering-dropdown').value;
-        const sunlightOption = document.getElementById('sunlight-dropdown').value;
-        createTableResult(wateringOption, sunlightOption);
-      });
-
-
-      // Additional code to verify button state and event listeners
-      const verifyButtons = () => {
-        console.log('Suggest Button Disabled:', suggestButton.disabled);
-        console.log('Table Button Disabled:', tableButton.disabled);
-      };
-
-      // Add this code to see if the event listeners are working
-      suggestButton.addEventListener('click', () => {
-        console.log('Suggest Button Clicked');
-        verifyButtons();
-      });
-
-      tableButton.addEventListener('click', () => {
-        console.log('Table Button Clicked');
-        verifyButtons();
-      });
-    </script>
 </body>
 
 </html>

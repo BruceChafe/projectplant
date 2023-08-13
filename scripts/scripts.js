@@ -1,5 +1,7 @@
 // API Base URL with parameters
-const apiUrl = 'https://perenual.com/api/species-list?page=1&key=sk-ojin6499fba9bbfc11234&indoor=1';
+const apiKey = 'sk-ojin6499fba9bbfc11234'
+const apiKey2 = 'sk-8uOL64d9325a586701870'
+const apiUrl = 'https://perenual.com/api/species-list?page=1&key=' + apiKey2 + '&indoor=1';
 
 // Initialize currentPage for pagination
 let currentPage = 1;
@@ -39,6 +41,7 @@ function simulateAPIcall(apiUrl) {
           return response.json();
         })
         .then((responseData) => {
+          console.log("API Response Data:", responseData);
           resolve(responseData.data);
         })
         .catch((error) => {
@@ -88,6 +91,219 @@ function hideLoadingOverlay() {
   tableButton.classList.remove('disabled');
 }
 
+// Function to display the correct value for select dropdown options
+function getDisplayValue(selectedOption, apiValue) {
+  const upgradeRequest = "Upgrade Plans To";
+  if (typeof apiValue === "string" && apiValue.includes(upgradeRequest)) {
+    if (apiValue === "Upgrade Plans To Premium/Supreme - https://perenual.com/subscription-api-pricing. I'm sorry") {
+      return selectedOption;
+    }
+    const paywallInfo = apiValue.split("-");
+    if (paywallInfo.length === 2 && paywallInfo[0].trim() === "Upgrade Plans To Premium/Supreme") {
+      const selectedValue = paywallInfo[1].trim();
+      return selectedValue === "null" ? selectedOption : selectedValue;
+    }
+  }
+}
+
+// Add event handler for DOMContentLoaded
+document.addEventListener('DOMContentLoaded', function () {
+  // Add event handler for Suggest Result buttonn
+  const suggestButton = document.getElementById('suggest-button');
+  if (suggestButton) {
+    suggestButton.addEventListener('click', function () {
+      createSuggestResult();
+      listSuggestData(detailsURL);
+    });
+  }
+
+  // Add event handler for Table Result button
+  const tableButton = document.getElementById('table-button');
+  if (tableButton) {
+    tableButton.addEventListener('click', function () {
+      const wateringOption = document.getElementById('watering-dropdown').value;
+      const sunlightOption = document.getElementById('sunlight-dropdown').value;
+      currentPage = 1; // Reset to the first page when switching to table results
+      createTableResult(wateringOption, sunlightOption);
+      createPageButtons(); // Create the buttons only for Table Result
+
+      // Set initial button states for the first page
+      const nextPageButton = document.getElementById('next-page-button');
+      const prevPageButton = document.getElementById('prev-page-button');
+      if (nextPageButton) {
+        nextPageButton.disabled = currentPage >= getTotalPages();
+      }
+      if (prevPageButton) {
+        prevPageButton.disabled = currentPage <= 1;
+      }
+    });
+  }
+
+  // Add event handlers for page buttons
+  const nextPageButton = document.getElementById('next-page-button');
+  const prevPageButton = document.getElementById('prev-page-button');
+
+  if (nextPageButton) {
+    nextPageButton.addEventListener('click', showNextPage);
+  }
+
+  if (prevPageButton) {
+    prevPageButton.addEventListener('click', showPreviousPage);
+  }
+})
+
+// Function to fetch suggested Plant ID URL
+let detailsURL = '';
+
+function createSuggestResult(event, data, selectedWatering, selectedSunlight) {
+  const resultsContainer = document.getElementById('results-container');
+
+  const wateringOption = document.getElementById('watering-dropdown').value;
+  const sunlightOption = document.getElementById('sunlight-dropdown').value;
+
+  const apiUrlWithWatering = apiUrl + '&watering=' + wateringOption;
+  const apiUrlWithWateringSunlight = apiUrlWithWatering + '&sunlight=' + sunlightOption;
+
+  // Simulate API call with a delay
+  simulateAPIcall(apiUrlWithWateringSunlight)
+    .then((data) => {
+      console.log("Data Received:", data);
+
+      if (data.length > 0) {
+        const randomIndex = Math.floor(Math.random() * data.length);
+        const randomItem = data[randomIndex];
+        console.log("Plant ID:", randomItem.id);
+
+        // Fetch Suggest Result Data based on Random Plant ID
+        detailsURL = 'https://perenual.com/api/species/details/' + randomItem.id + '?key=' + apiKey2;
+
+        console.log("Details URL:", detailsURL);
+
+        // Call listSuggestData after getting detailsURL
+        listSuggestData(detailsURL, randomItem, resultsContainer);
+      }
+    });
+}
+
+function listSuggestData(detailsURL, randomItem, resultsContainer) {
+  showLoadingOverlay();
+
+  fetch(detailsURL)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then((detailsData) => {
+      hideLoadingOverlay();
+
+      console.log("Details Data:", detailsData);
+
+      // detailsData = data.map(item => ({
+      //   common_name: getDisplayValue(common_nameOption, item.common_name),
+      //   scientific_name: getDisplayValue(scientific_nameOption, item.scientific_name),
+      //   other_name: getDisplayValue(other_nameOption, item.other_name),
+      //   family: getDisplayValue(familyOption, item.family),
+      //   type: getDisplayValue(typeOption, item.type),
+      //   dimension: getDisplayValue(dimensionOption, item.dimension),
+      //   cycle: getDisplayValue(cycleOption, item.cycle),
+      //   propagation: getDisplayValue(propagationOption, item.propagation),
+      //   watering: getDisplayValue(wateringOption, item.watering),
+      //   sunlight: getDisplayValue(sunlightOption, item.sunlight),
+      //   maintenance: getDisplayValue(maintenanceOption, item.maintenance),
+      //   care_guides: getDisplayValue(care_guidesOption, item.care_guides),
+      //   soil: getDisplayValue(soilOption, item.soil),
+      //   growth_rate: getDisplayValue(growth_rateOption, item.growth_rate),
+      //   drought_tolerant: getDisplayValue(drought_tolerantOption, item.drought_tolerant),
+      //   salt_tolerant: getDisplayValue(salt_tolerantOption, item.salt_tolerant),
+      //   thorny: getDisplayValue(thornyOption, item.thorny),
+      //   invasive: getDisplayValue(invasiveOption, item.invasive),
+      //   tropical: getDisplayValue(tropicalOption, item.tropical),
+      //   indoor: getDisplayValue(indoorOption, item.indoor),
+      //   pest_susceptibility: getDisplayValue(pest_susceptibilityOption, item.pest_susceptibility),
+      //   poisonous_to_humans: getDisplayValue(poisonous_to_humansOption, item.poisonous_to_humans),
+      //   poisonous_to_pets: getDisplayValue(poisonous_to_petsOption, item.poisonous_to_pets),
+      //   description: getDisplayValue(descriptionOption, item.description),
+      //   default_image: getDisplayValue(default_imageOption, item.default_image),
+      //   license_name: getDisplayValue(license_nameOption, item.license_name),
+      //   license_url: getDisplayValue(license_urlOption, item.license_url),
+      //   original_url: getDisplayValue(original_urlOption, item.original_url),
+      //   regular_url: getDisplayValue(regular_urlOption, item.regular_url),
+      //   medium_url: getDisplayValue(medium_urlOption, item.medium_url),
+      //   small_url: getDisplayValue(small_urlOption, item.small_url),
+      //   thumbnail: getDisplayValue(thumbnailOption, item.thumbnail),
+      //   other_images: getDisplayValue(other_imagesOption, item.other_images),
+      // }));
+
+      // console.log("Mapped Details Data", detailsData);
+
+      // Generate HTML for resultsContainer
+      let 
+      html = '<br>'
+      html += '<h3>Results:</h3>';
+      html += '<div>';
+      html += '<p>common_name: ' + capitalFirstLetter(detailsData.common_name) + '</p>';
+      html += '<p>scientific_name: ' + capitalFirstLetter(detailsData.scientific_name) + '</p>';
+      html += '<p>other_name: ' + capitalFirstLetter(detailsData.other_name) + '</p>';
+      html += '<p>family: ' + capitalFirstLetter(detailsData.family) + '</p>';
+      html += '<p>type: ' + capitalFirstLetter(detailsData.type) + '</p>';
+      html += '<p>dimension: ' + capitalFirstLetter(detailsData.dimension) + '</p>';
+      html += '<p>cycle: ' + capitalFirstLetter(detailsData.cycle) + '</p>';
+      html += '<p>propagation: ' + capitalFirstLetter(detailsData.propagation) + '</p>';
+      html += '<p>watering: ' + capitalFirstLetter(detailsData.watering) + '</p>';
+      html += '<p>sunlight: ' + capitalFirstLetter(detailsData.sunlight) + '</p>';
+      html += '<p>maintenance: ' + capitalFirstLetter(detailsData.maintenance) + '</p>';
+      html += '<p>care_guides: ' + capitalFirstLetter(detailsData.care_guides) + '</p>';
+      html += '<p>soil: ' + capitalFirstLetter(detailsData.soil) + '</p>';
+      html += '<p>growth_rate: ' + capitalFirstLetter(detailsData.growth_rate) + '</p>';
+      html += '<p>drought_tolerant: ' + capitalFirstLetter(detailsData.drought_tolerant) + '</p>';
+      html += '<p>salt_tolerant: ' + capitalFirstLetter(detailsData.salt_tolerant) + '</p>';
+      html += '<p>thorny: ' + capitalFirstLetter(detailsData.thorny) + '</p>';
+      html += '<p>invasive: ' + capitalFirstLetter(detailsData.invasive) + '</p>';
+      html += '<p>tropical: ' + capitalFirstLetter(detailsData.tropical) + '</p>';
+      html += '<p>indoor: ' + capitalFirstLetter(detailsData.indoor) + '</p>';
+      html += '<p>pest_susceptibility: ' + capitalFirstLetter(detailsData.pest_susceptibility) + '</p>';
+      html += '<p>poisonous_to_humans: ' + capitalFirstLetter(detailsData.poisonous_to_humans) + '</p>';
+      html += '<p>poisonous_to_pets: ' + capitalFirstLetter(detailsData.poisonous_to_pets) + '</p>';
+      html += '<p>description: ' + capitalFirstLetter(detailsData.description) + '</p>';
+      html += '<p>default_image: ' + capitalFirstLetter(detailsData.default_image) + '</p>';
+      html += '<p>license_name: ' + capitalFirstLetter(detailsData.license_name) + '</p>';
+      html += '<p>license_url: ' + capitalFirstLetter(detailsData.license_url) + '</p>';
+      html += '<p>original_url: ' + capitalFirstLetter(detailsData.original_url) + '</p>';
+      html += '<p>regular_url: ' + capitalFirstLetter(detailsData.regular_url) + '</p>';
+      html += '<p>medium_url: ' + capitalFirstLetter(detailsData.medium_url) + '</p>';
+      html += '<p>small_url: ' + capitalFirstLetter(detailsData.small_url) + '</p>';
+      html += '<p>thumbnail: ' + capitalFirstLetter(detailsData.thumbnail) + '</p>';
+      html += '<p>other_images: ' + capitalFirstLetter(detailsData.other_images) + '</p>';
+      html += '</div>';
+
+      resultsContainer.innerHTML = html;
+    })
+    .catch((error) => {
+      hideLoadingOverlay();
+      console.error("Error fetching details:", error);
+
+      // // Handle error and update UI accordingly
+      // resultsContainer.innerHTML = html;
+    });
+}
+
+function showPreviousPage() {
+  const wateringOption = document.getElementById('watering-dropdown').value;
+  const sunlightOption = document.getElementById('sunlight-dropdown').value;
+  const totalPages = getTotalPages();
+
+  if (currentPage > 1) {
+    currentPage -= 1;
+  }
+
+  // Update button states after changing the currentPage
+  updateButtonStates();
+
+  createTableResult(wateringOption, sunlightOption);
+}
+
 // Function to show the next page of results in the table
 function showNextPage() {
   const wateringOption = document.getElementById('watering-dropdown').value;
@@ -98,58 +314,8 @@ function showNextPage() {
     currentPage += 1;
   }
 
-  // Disable the next button if we are on the last page
-  const nextPageButton = document.getElementById('next-page-button');
-  if (nextPageButton) {
-    if (currentPage >= totalPages) {
-      nextPageButton.classList.add('disabled');
-    } else {
-      nextPageButton.classList.remove('disabled');
-    }
-  }
-
-  // Re-enable the previous button since we are moving to the next page
-  const prevPageButton = document.getElementById('prev-page-button');
-  if (prevPageButton) {
-    if (currentPage === 1) {
-      prevPageButton.classList.add('disabled');
-    } else {
-      prevPageButton.classList.remove('disabled');
-    }
-  }
-
-  createTableResult(wateringOption, sunlightOption);
-}
-
-// Function to show the previous page of results in the table
-function showPreviousPage() {
-  const wateringOption = document.getElementById('watering-dropdown').value;
-  const sunlightOption = document.getElementById('sunlight-dropdown').value;
-  const totalPages = getTotalPages();
-
-  if (currentPage > 1) {
-    currentPage -= 1;
-  }
-
-  // Disable the previous button if we are on the first page
-  const prevPageButton = document.getElementById('prev-page-button');
-  if (prevPageButton) {
-    if (currentPage === 1) {
-      prevPageButton.classList.add('disabled');
-    } else {
-      prevPageButton.classList.remove('disabled');
-    }
-  }
-
-  // Re-enable the next button since we are moving to the previous page
-  const nextPageButton = document.getElementById('next-page-button');
-  if (nextPageButton) {
-    if (currentPage < totalPages) {
-      nextPageButton.classList.add('disabled');
-    } else {
-      nextPageButton.classList.remove('disabled');
-    }
-  }
+  // Update button states after changing the currentPage
+  updateButtonStates();
 
   createTableResult(wateringOption, sunlightOption);
 }
@@ -191,60 +357,6 @@ function createPageButtons() {
   resultsContainer.appendChild(pageButtonsContainer);
 }
 
-// Function to update the prevPageButton and nextPageButton status based on currentPage and total pages
-function updateButtonStates() {
-  const prevPageButton = document.getElementById('prev-page-button');
-  const nextPageButton = document.getElementById('next-page-button');
-  const totalPages = getTotalPages();
-
-  if (prevPageButton) {
-    // Disable the previous button if we are on the first page
-    prevPageButton.disabled = currentPage <= 1;
-  }
-
-  if (nextPageButton) {
-    // Disable the next button if we are on the last page
-    nextPageButton.disabled = currentPage >= totalPages;
-  }
-}
-
-// Add event handler for DOMContentLoaded
-document.addEventListener('DOMContentLoaded', function () {
-  // Call the function to update the button states based on the current page
-  updateButtonStates();
-
-  // Add event handler for Suggest Result button
-  const suggestButton = document.getElementById('suggest-button');
-  if (suggestButton) {
-    suggestButton.addEventListener('click', createSuggestResult);
-  }
-
-  // Add event handler for Table Result button
-  const tableButton = document.getElementById('table-button');
-  if (tableButton) {
-    tableButton.addEventListener('click', function () {
-      const wateringOption = document.getElementById('watering-dropdown').value;
-      const sunlightOption = document.getElementById('sunlight-dropdown').value;
-      currentPage = 1; // Reset to the first page when switching to table results
-      createTableResult(wateringOption, sunlightOption);
-      createPageButtons(); // Create the buttons only for Table Result
-      updateButtonStates(); // Update button states for Table Result
-    });
-  }
-
-  // Add event handlers for page buttons
-  const nextPageButton = document.getElementById('next-page-button');
-  const prevPageButton = document.getElementById('prev-page-button');
-
-  if (nextPageButton) {
-    nextPageButton.addEventListener('click', showNextPage);
-  }
-
-  if (prevPageButton) {
-    prevPageButton.addEventListener('click', showPreviousPage);
-  }
-});
-
 // Function to fetch and display Table Result
 function createTableResult(wateringOption, sunlightOption) {
   const resultsContainer = document.getElementById('results-container');
@@ -271,76 +383,16 @@ function createTableResult(wateringOption, sunlightOption) {
     // Call the function to create the pagination buttons
     createPageButtons();
 
-    // Set initial button states
-    updateButtonStates();
-  });
-}
-
-// Function to fetch and display Suggest Result
-function createSuggestResult(event) {
-  const resultsContainer = document.getElementById('results-container');
-  resultsContainer.innerHTML = ''; // Clear existing results
-
-  showLoadingOverlay();
-
-  const wateringOption = document.getElementById('watering-dropdown').value;
-  const sunlightOption = document.getElementById('sunlight-dropdown').value;
-
-  const apiUrlWithWatering = apiUrl + '&watering=' + wateringOption;
-  const apiUrlWithWateringSunlight = apiUrlWithWatering + '&sunlight=' + sunlightOption;
-
-  // Simulate API call with a delay and handle the result
-  simulateAPIcall(apiUrlWithWateringSunlight).then((data) => {
-    hideLoadingOverlay();
-    const resultsHTML = createSuggestResultsHTML(data, wateringOption, sunlightOption);
-    resultsContainer.innerHTML = resultsHTML;
-
-    // Update button states (No need for buttons in the Suggest Result)
-    updateButtonStates();
-  });
-}
-
-// Function to display the correct value for select dropdown options
-function getDisplayValue(selectedOption, apiValue) {
-  const upgradeRequest = "Upgrade Plans To";
-  if (typeof apiValue === "string" && apiValue.includes(upgradeRequest)) {
-    if (apiValue === "Upgrade Plans To Premium/Supreme - https://perenual.com/subscription-api-pricing. I'm sorry") {
-      return selectedOption;
+    // Set initial button states for the first page
+    const nextPageButton = document.getElementById('next-page-button');
+    const prevPageButton = document.getElementById('prev-page-button');
+    if (nextPageButton) {
+      nextPageButton.disabled = currentPage >= getTotalPages();
     }
-    const paywallInfo = apiValue.split("-");
-    if (paywallInfo.length === 2 && paywallInfo[0].trim() === "Upgrade Plans To Premium/Supreme") {
-      const selectedValue = paywallInfo[1].trim();
-      return selectedValue === "null" ? selectedOption : selectedValue;
+    if (prevPageButton) {
+      prevPageButton.disabled = currentPage <= 1;
     }
-  }
-
-  return apiValue;
-}
-
-// Function to create HTML for Suggest Result
-function createSuggestResultsHTML(data, selectedWatering, selectedSunlight) {
-  console.log("Data received:", data);
-  let html = '<h3>Results:</h3>';
-
-  validData = data.map(item => ({
-    ...item,
-    sunlight: getDisplayValue(selectedSunlight, item.sunlight),
-    watering: getDisplayValue(selectedWatering, item.watering),
-  }));
-
-  if (validData.length > 0) {
-    const randomIndex = Math.floor(Math.random() * validData.length);
-    const randomItem = validData[randomIndex];
-
-    html += '<div>';
-    html += '<h4>Common Name: ' + capitalFirstLetter(randomItem.common_name) + '</h4>';
-    html += '<p>Sunlight: ' + capitalFirstLetter(randomItem.sunlight) + '</p>';
-    html += '<p>Watering: ' + capitalFirstLetter(randomItem.watering) + '</p>';
-    html += '<p>Perennial Plant ID: ' + randomItem.id + '</p>';
-    html += '</div>';
-  }
-
-  return html;
+  });
 }
 
 // Function to create HTML for Table Result
