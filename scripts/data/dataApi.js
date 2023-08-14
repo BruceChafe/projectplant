@@ -59,7 +59,7 @@ class DataAPI {
         cycle = null,       // "Annual", "Herbaceous Perennial", or "Perennial"
         watering = null,    // "Frequent", "Average", or "Minimum"
         sunlight = null,    // "full sun", 'part shade', 'filtered shade', or 'part sun/part shade',
-        keyword = 'fir',     // Any keyword, will search common name, other names, and scientific names
+        keyword = null,     // Any keyword, will search common name, other names, and scientific names
         page = 1,
         pageSize = 30
     } = {}) {
