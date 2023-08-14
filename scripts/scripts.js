@@ -168,22 +168,42 @@ function createSuggestResult(event, data, selectedWatering, selectedSunlight) {
   simulateAPIcall(apiUrlWithWateringSunlight)
     .then((data) => {
       console.log("Data Received:", data);
-
       if (data.length > 0) {
+        selectRandomID(data);
+      }
+    });
+
+      // Create the randomItem.id
+      function selectRandomID(data) {
         const randomIndex = Math.floor(Math.random() * data.length);
         const randomItem = data[randomIndex];
         console.log("Plant ID:", randomItem.id);
 
-        // Fetch Suggest Result Data based on Random Plant ID
-        detailsURL = 'https://perenual.com/api/species/details/' + randomItem.id + '?key=' + apiKey2;
+        // Look to see if randomItem.id falls in line with free API & create URL
+        if (randomItem.id > 0 && randomItem.id <= 3000) {
+          detailsURL = 'https://perenual.com/api/species/details/' + randomItem.id + '?key=' + apiKey2;
+          console.log("Details URL:", detailsURL);
 
-        console.log("Details URL:", detailsURL);
+          // Call listSuggestData after getting detailsURL
+          listSuggestData(detailsURL, randomItem, resultsContainer);
 
-        // Call listSuggestData after getting detailsURL
-        listSuggestData(detailsURL, randomItem, resultsContainer);
+          // Handle the case if randomItem.id is above 3000
+        } else if (randomItem.id > 3000) {
+          console.log("Plant ID is above 3000, API return failed. Looping");
+
+          // Remove the failed randomItem.id from the data array
+          data = data.filter(item => item.id !== randomItem.id);
+          console.log("Updated Data Count:", data);
+
+          // Rerun search
+          if (data.length > 0) {
+            selectRandomID(data);
+          } else {
+            console.log("No more valid items in the data array");
+          }
+        }
       }
-    });
-}
+    }
 
 function listSuggestData(detailsURL, randomItem, resultsContainer) {
   showLoadingOverlay();
@@ -200,82 +220,27 @@ function listSuggestData(detailsURL, randomItem, resultsContainer) {
 
       console.log("Details Data:", detailsData);
 
-      // detailsData = data.map(item => ({
-      //   common_name: getDisplayValue(common_nameOption, item.common_name),
-      //   scientific_name: getDisplayValue(scientific_nameOption, item.scientific_name),
-      //   other_name: getDisplayValue(other_nameOption, item.other_name),
-      //   family: getDisplayValue(familyOption, item.family),
-      //   type: getDisplayValue(typeOption, item.type),
-      //   dimension: getDisplayValue(dimensionOption, item.dimension),
-      //   cycle: getDisplayValue(cycleOption, item.cycle),
-      //   propagation: getDisplayValue(propagationOption, item.propagation),
-      //   watering: getDisplayValue(wateringOption, item.watering),
-      //   sunlight: getDisplayValue(sunlightOption, item.sunlight),
-      //   maintenance: getDisplayValue(maintenanceOption, item.maintenance),
-      //   care_guides: getDisplayValue(care_guidesOption, item.care_guides),
-      //   soil: getDisplayValue(soilOption, item.soil),
-      //   growth_rate: getDisplayValue(growth_rateOption, item.growth_rate),
-      //   drought_tolerant: getDisplayValue(drought_tolerantOption, item.drought_tolerant),
-      //   salt_tolerant: getDisplayValue(salt_tolerantOption, item.salt_tolerant),
-      //   thorny: getDisplayValue(thornyOption, item.thorny),
-      //   invasive: getDisplayValue(invasiveOption, item.invasive),
-      //   tropical: getDisplayValue(tropicalOption, item.tropical),
-      //   indoor: getDisplayValue(indoorOption, item.indoor),
-      //   pest_susceptibility: getDisplayValue(pest_susceptibilityOption, item.pest_susceptibility),
-      //   poisonous_to_humans: getDisplayValue(poisonous_to_humansOption, item.poisonous_to_humans),
-      //   poisonous_to_pets: getDisplayValue(poisonous_to_petsOption, item.poisonous_to_pets),
-      //   description: getDisplayValue(descriptionOption, item.description),
-      //   default_image: getDisplayValue(default_imageOption, item.default_image),
-      //   license_name: getDisplayValue(license_nameOption, item.license_name),
-      //   license_url: getDisplayValue(license_urlOption, item.license_url),
-      //   original_url: getDisplayValue(original_urlOption, item.original_url),
-      //   regular_url: getDisplayValue(regular_urlOption, item.regular_url),
-      //   medium_url: getDisplayValue(medium_urlOption, item.medium_url),
-      //   small_url: getDisplayValue(small_urlOption, item.small_url),
-      //   thumbnail: getDisplayValue(thumbnailOption, item.thumbnail),
-      //   other_images: getDisplayValue(other_imagesOption, item.other_images),
-      // }));
-
-      // console.log("Mapped Details Data", detailsData);
-
       // Generate HTML for resultsContainer
       let 
       html = '<br>'
       html += '<h3>Results:</h3>';
       html += '<div>';
-      html += '<p>common_name: ' + capitalFirstLetter(detailsData.common_name) + '</p>';
-      html += '<p>scientific_name: ' + capitalFirstLetter(detailsData.scientific_name) + '</p>';
-      html += '<p>other_name: ' + capitalFirstLetter(detailsData.other_name) + '</p>';
-      html += '<p>family: ' + capitalFirstLetter(detailsData.family) + '</p>';
-      html += '<p>type: ' + capitalFirstLetter(detailsData.type) + '</p>';
-      html += '<p>dimension: ' + capitalFirstLetter(detailsData.dimension) + '</p>';
-      html += '<p>cycle: ' + capitalFirstLetter(detailsData.cycle) + '</p>';
-      html += '<p>propagation: ' + capitalFirstLetter(detailsData.propagation) + '</p>';
-      html += '<p>watering: ' + capitalFirstLetter(detailsData.watering) + '</p>';
-      html += '<p>sunlight: ' + capitalFirstLetter(detailsData.sunlight) + '</p>';
-      html += '<p>maintenance: ' + capitalFirstLetter(detailsData.maintenance) + '</p>';
-      html += '<p>care_guides: ' + capitalFirstLetter(detailsData.care_guides) + '</p>';
-      html += '<p>soil: ' + capitalFirstLetter(detailsData.soil) + '</p>';
-      html += '<p>growth_rate: ' + capitalFirstLetter(detailsData.growth_rate) + '</p>';
-      html += '<p>drought_tolerant: ' + capitalFirstLetter(detailsData.drought_tolerant) + '</p>';
-      html += '<p>salt_tolerant: ' + capitalFirstLetter(detailsData.salt_tolerant) + '</p>';
-      html += '<p>thorny: ' + capitalFirstLetter(detailsData.thorny) + '</p>';
-      html += '<p>invasive: ' + capitalFirstLetter(detailsData.invasive) + '</p>';
-      html += '<p>tropical: ' + capitalFirstLetter(detailsData.tropical) + '</p>';
-      html += '<p>indoor: ' + capitalFirstLetter(detailsData.indoor) + '</p>';
-      html += '<p>pest_susceptibility: ' + capitalFirstLetter(detailsData.pest_susceptibility) + '</p>';
-      html += '<p>poisonous_to_humans: ' + capitalFirstLetter(detailsData.poisonous_to_humans) + '</p>';
-      html += '<p>poisonous_to_pets: ' + capitalFirstLetter(detailsData.poisonous_to_pets) + '</p>';
-      html += '<p>description: ' + capitalFirstLetter(detailsData.description) + '</p>';
-      html += '<p>default_image: ' + capitalFirstLetter(detailsData.default_image) + '</p>';
-      html += '<p>license_name: ' + capitalFirstLetter(detailsData.license_name) + '</p>';
-      html += '<p>license_url: ' + capitalFirstLetter(detailsData.license_url) + '</p>';
-      html += '<p>original_url: ' + capitalFirstLetter(detailsData.original_url) + '</p>';
-      html += '<p>regular_url: ' + capitalFirstLetter(detailsData.regular_url) + '</p>';
-      html += '<p>medium_url: ' + capitalFirstLetter(detailsData.medium_url) + '</p>';
-      html += '<p>small_url: ' + capitalFirstLetter(detailsData.small_url) + '</p>';
-      html += '<p>thumbnail: ' + capitalFirstLetter(detailsData.thumbnail) + '</p>';
-      html += '<p>other_images: ' + capitalFirstLetter(detailsData.other_images) + '</p>';
+      html += '<p>Common Name: ' + capitalFirstLetter(detailsData.common_name) + '</p>';
+      html += '<p>Scientific Name: ' + capitalFirstLetter(detailsData.scientific_name) + '</p>';
+      html += '<p>Family: ' + capitalFirstLetter(detailsData.family) + '</p>';
+      html += '<p>Propagation: ' + capitalFirstLetter(detailsData.propagation) + '</p>';
+      html += '<p>Watering: ' + capitalFirstLetter(detailsData.watering) + '</p>';
+      html += '<p>Sunlight: ' + capitalFirstLetter(detailsData.sunlight) + '</p>';
+      html += '<p>Maintenance: ' + capitalFirstLetter(detailsData.maintenance) + '</p>';
+      html += '<p>Growth Rate: ' + capitalFirstLetter(detailsData.growth_rate) + '</p>';
+      html += '<p>Drought Tolerant: ' + capitalFirstLetter(detailsData.drought_tolerant) + '</p>';
+      html += '<p>Indoor: ' + capitalFirstLetter(detailsData.indoor) + '</p>';
+      html += '<p>Poisonous To Humans: ' + capitalFirstLetter(detailsData.poisonous_to_humans) + '</p>';
+      html += '<p>Poisonous To Pets: ' + capitalFirstLetter(detailsData.poisonous_to_pets) + '</p>';
+      html += '<p>Description: ' + capitalFirstLetter(detailsData.description) + '</p>';
+      html += '<p>Default Image: ' + capitalFirstLetter(detailsData.default_image) + '</p>';
+      html += '<p>License Url: ' + capitalFirstLetter(detailsData.license_url) + '</p>';
+      html += '<p>Original Url: ' + capitalFirstLetter(detailsData.original_url) + '</p>';
       html += '</div>';
 
       resultsContainer.innerHTML = html;
