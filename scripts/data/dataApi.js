@@ -96,7 +96,8 @@ class DataAPI {
             from: skip + 1,
             to: skip + dataArray.length,
             last_page: page + Math.floor((total - skip - 1) / pageSize),
-            total
+            total,
+            data: dataArray
         }
     }
 }

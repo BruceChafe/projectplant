@@ -2,6 +2,15 @@
 const apiKey = 'sk-ojin6499fba9bbfc11234'
 const apiKey2 = 'sk-8uOL64d9325a586701870'
 const apiUrl = 'https://perenual.com/api/species-list?page=1&key=' + apiKey2 + '&indoor=1';
+const api = new DataAPI();
+const response = await api.getData({
+  cycle: "",
+  watering: "",
+  sunlight: "",
+  keyword: "",
+  page: "",
+  pagesize: "",
+});
 
 // Initialize currentPage for pagination
 let currentPage = 1;
@@ -29,11 +38,11 @@ function capitalFirstLetter(string) {
 }
 
 // Function to simulate API call with a delay using Promises
-function simulateAPIcall(apiUrl) {
+function simulateAPIcall(api) {
   return new Promise((resolve, reject) => {
     // Simulate API call with a delay of 1 second
     setTimeout(() => {
-      fetch(apiUrl)
+      fetch(api)
         .then((response) => {
           if (!response.ok) {
             throw new Error('Network response was not ok');
@@ -237,10 +246,10 @@ function listSuggestData(detailsURL, randomItem, resultsContainer) {
       html += '<p>Indoor: ' + capitalFirstLetter(detailsData.indoor) + '</p>';
       html += '<p>Poisonous To Humans: ' + capitalFirstLetter(detailsData.poisonous_to_humans) + '</p>';
       html += '<p>Poisonous To Pets: ' + capitalFirstLetter(detailsData.poisonous_to_pets) + '</p>';
-      html += '<p>Description: ' + capitalFirstLetter(detailsData.description) + '</p>';
+      html += '<p>Description: ' + detailsData.description + '</p>';
       html += '<p>Default Image: ' + capitalFirstLetter(detailsData.default_image) + '</p>';
       html += '<p>License Url: ' + capitalFirstLetter(detailsData.license_url) + '</p>';
-      html += '<p>Original Url: ' + capitalFirstLetter(detailsData.original_url) + '</p>';
+      html += '<p>Original Url: ' + detailsData.default_image?.original_url + '</p>';
       html += '</div>';
 
       resultsContainer.innerHTML = html;
