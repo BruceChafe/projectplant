@@ -101,6 +101,3 @@ class DataAPI {
         }
     }
 }
-
-// Export the DataAPI class
-export { DataAPI };
