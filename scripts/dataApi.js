@@ -6,7 +6,7 @@ class DataAPI {
     async _initialize() {
         if (this.dataArray == null) {
             this.dataArray = new Promise((resolve, reject) => {
-                fetch('/scripts/data/data.gz').then((response) => {
+                fetch('/scripts/data.gz').then((response) => {
                     if (!response.ok) {
                         return reject(new Error('Could not load data.gz'));
                     }
@@ -101,3 +101,6 @@ class DataAPI {
         }
     }
 }
+
+// Export the DataAPI class
+export { DataAPI };

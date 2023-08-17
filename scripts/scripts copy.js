@@ -2,26 +2,10 @@
 const apiKey = 'sk-ojin6499fba9bbfc11234'
 const apiKey2 = 'sk-8uOL64d9325a586701870'
 const apiUrl = 'https://perenual.com/api/species-list?page=1&key=' + apiKey2 + '&indoor=1';
-import { DataAPI } from './dataApi.js'
-const dataApi = new DataAPI();
+const DataAPI = 'scripts/dataApi.js';
 
 // Initialize currentPage for pagination
 let currentPage = 1;
-
-// Define a function to fetch and log data
-async function fetchDataAndLog() {
-  try {
-      // Fetch data using the getData method of the DataAPI class
-      const data = await dataApi.getData({
-          // Define your filter options here
-      });
-
-      // Log the fetched data to the console
-      console.log('Fetched data:', data);
-  } catch (error) {
-      console.error('Error fetching data:', error);
-  }
-}
 
 // Function to get the total number of pages based on the validData
 function getTotalPages() {
@@ -46,16 +30,16 @@ function capitalFirstLetter(string) {
 }
 
 // Function to simulate API call with a delay using Promises
-function simulateAPIcall(api) {
+function simulateAPIcall(DataAPI) {
   return new Promise((resolve, reject) => {
     // Simulate API call with a delay of 1 second
     setTimeout(() => {
-      fetch(api)
+      fetch(DataAPI)
         .then((response) => {
           if (!response.ok) {
             throw new Error('Network response was not ok');
           }
-          return response.json();
+          return response.text();
         })
         .then((responseData) => {
           console.log("API Response Data:", responseData);
@@ -108,16 +92,16 @@ function hideLoadingOverlay() {
   tableButton.classList.remove('disabled');
 }
 
-
 // Add event handler for DOMContentLoaded
 document.addEventListener('DOMContentLoaded', function () {
-
   // Add event handler for Suggest Result buttonn
   const suggestButton = document.getElementById('suggest-button');
   if (suggestButton) {
     suggestButton.addEventListener('click', function () {
-      createSuggestResult();
-      listSuggestData(detailsURL);
+      console.log("Suggest Button Clicked");
+      simulateAPIcall(DataAPI);
+      // createSuggestResult();
+      // listSuggestData(detailsURL);
     });
   }
 
@@ -169,7 +153,7 @@ function createSuggestResult(event, data, selectedWatering, selectedSunlight) {
   const apiUrlWithWateringSunlight = apiUrlWithWatering + '&sunlight=' + sunlightOption;
 
   // Simulate API call with a delay
-  simulateAPIcall(apiUrlWithWateringSunlight)
+  simulateAPIcall(api)
     .then((data) => {
       console.log("Data Received:", data);
       if (data.length > 0) {
