@@ -1,19 +1,3 @@
-// Load Internal API when site loads
-document.addEventListener('DOMContentLoaded', async () => {
-  const dataAPI = new DataAPI();
-
-  try {
-      const data = await dataAPI.getData({
-          // Provide any desired parameters here
-      });
-
-      // Display the fetched data in the console
-      console.log('Fetched data:', data);
-  } catch (error) {
-      console.error('Error fetching data:', error);
-  }
-});
-
 // Constants that I might still need
 const apiKey = 'sk-ojin6499fba9bbfc11234'
 const apiKey2 = 'sk-8uOL64d9325a586701870'
@@ -34,9 +18,9 @@ function capitalFirstLetter(string) {
   }
 
   return string
-  .split(' ')
-  .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-  .join(' ');
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
 }
 
 // Function to calculate total number of pages
@@ -85,235 +69,156 @@ function hideLoadingOverlay() {
 
 // Add event handler for DOMContentLoaded
 document.addEventListener('DOMContentLoaded', function () {
-
-  // Add event handler for Suggest Result buttonn
+  const resultsContainer = document.getElementById('results-container'); 
+  // Add event handler for Suggest Result button
   const suggestButton = document.getElementById('suggest-button');
   if (suggestButton) {
-    suggestButton.addEventListener('click', function () {
-      createSuggestResult();
-      listSuggestData(detailsURL);
+    suggestButton.addEventListener('click',{
     });
   }
 
   // Add event handler for Table Result button
   const tableButton = document.getElementById('table-button');
-if (tableButton) {
-  tableButton.addEventListener('click', async function () {
-    const wateringOption = document.getElementById('watering-dropdown').value;
-    const sunlightOption = document.getElementById('sunlight-dropdown').value;
 
-    // Log the selected options
-    console.log('Watering Option:', wateringOption);
-    console.log('Sunlight Option:', sunlightOption);
+  let data;
+  let filteredData;
 
-    try {
-      // Fetch data using the dataAPI
-      const dataAPI = new DataAPI();
-      const response = await dataAPI.getData({
-        // Provide any desired parameters here
-      });
+  if (tableButton) {
+    tableButton.addEventListener('click', async function () {
+      const wateringOption = document.getElementById('watering-dropdown').value;
+      const sunlightOption = document.getElementById('sunlight-dropdown').value;
 
-      const fetchedData = response.data;
+      // Log the selected options
+      console.log('Watering Option:', wateringOption);
+      console.log('Sunlight Option:', sunlightOption);
 
-      // Filter data based on selected options
-      const filteredData = fetchedData.filter(item => {
-        return item.sunlight.includes(sunlightOption) && item.watering.includes(wateringOption);
-      });
+      try {
+        // Fetch data using the dataAPI
+        const dataAPI = new DataAPI();
+        const responseData = await dataAPI.getData();
+        console.log('Starting Data:', responseData);
 
-      // Log the filtered data
-      console.log('Filtered data:', filteredData);
+        data = responseData.data;
 
-      currentPage = 1; // Reset to the first page when switching to table results
-      createTableResult(wateringOption, sunlightOption);
-      createPageButtons(); // Create the buttons only for Table Result
+        filteredData = data.filter(item => {
+          return item.sunlight.includes(sunlightOption) && item.watering === wateringOption;
+        });
 
-      // Set initial button states for the first page
-      const nextPageButton = document.getElementById('next-page-button');
-      const prevPageButton = document.getElementById('prev-page-button');
-      if (nextPageButton && prevPageButton) {
-        nextPageButton.disabled = currentPage >= getTotalPages(validData.length, resultsPerPage);
-        prevPageButton.disabled = currentPage <= 1;
-      }
-    } catch (error) {
-      console.error('Error fetching or filtering data:', error);
-    }
-  });
-}
+        console.log('Filtered Data:', filteredData)
 
-    // Add event handlers for page buttons
-    const nextPageButton = document.getElementById('next-page-button');
-    const prevPageButton = document.getElementById('prev-page-button');
-  
-    if (nextPageButton) {
-      nextPageButton.addEventListener('click', showNextPage);
-    }
-  
-    if (prevPageButton) {
-      prevPageButton.addEventListener('click', showPreviousPage);
-    }
-  })
+        currentPage = 1; // Reset to the first page when switching to table results
+        createPageButtons(); // Create the buttons only for Table Result
 
-  function showPreviousPage() {
-    const wateringOption = document.getElementById('watering-dropdown').value;
-    const sunlightOption = document.getElementById('sunlight-dropdown').value;
-    const totalPages = getTotalPages();
-  
-    if (currentPage > 1) {
-      currentPage -= 1;
-    }
-  
-    // Update button states after changing the currentPage
-    updateButtonStates();
-  
-    createTableResult(wateringOption, sunlightOption);
-  }
-  
-  // Function to show the next page of results in the table
-  function showNextPage() {
-    const wateringOption = document.getElementById('watering-dropdown').value;
-    const sunlightOption = document.getElementById('sunlight-dropdown').value;
-    const totalPages = getTotalPages();
-  
-    if (currentPage < totalPages) {
-      currentPage += 1;
-    }
-  
-    // Update button states after changing the currentPage
-    updateButtonStates();
-  
-    createTableResult(wateringOption, sunlightOption);
-  }
-  
-  // Function to create the pagination buttons dynamically and append them to the DOM
-  function createPageButtons() {
-    const pageButtonsContainer = document.createElement('div');
-    pageButtonsContainer.classList.add('page-number-container');
-    pageButtonsContainer.id = 'page-buttons-container';
-  
-    // Create the prev-page-button and next-page-button only for Table Result
-    const tableButton = document.getElementById('table-button');
-    if (tableButton) {
-      const prevPageButton = document.createElement('a');
-      prevPageButton.href = '#';
-      prevPageButton.classList.add('btn', 'btn-danger');
-      prevPageButton.id = 'prev-page-button';
-      prevPageButton.textContent = 'Previous Page';
-      prevPageButton.addEventListener('click', showPreviousPage);
-  
-      const nextPageButton = document.createElement('a');
-      nextPageButton.href = '#';
-      nextPageButton.classList.add('btn', 'btn-danger');
-      nextPageButton.id = 'next-page-button';
-      nextPageButton.textContent = 'Next Page';
-      nextPageButton.addEventListener('click', showNextPage);
-  
-      // Append the buttons to the buttons container
-      pageButtonsContainer.appendChild(prevPageButton);
-      pageButtonsContainer.appendChild(nextPageButton);
-    }
-  
-    // Append the buttons container to the results container
-    const resultsContainer = document.getElementById('results-container');
-    const existingButtonsContainer = document.getElementById('page-buttons-container');
-    if (existingButtonsContainer) {
-      resultsContainer.removeChild(existingButtonsContainer);
-    }
-    resultsContainer.appendChild(pageButtonsContainer);
-  }
-
-  async function createTableResult(wateringOption, sunlightOption) {
-    const resultsContainer = document.getElementById('results-container');
-  
-    showLoadingOverlay();
-  
-    try {
-      const response = await fetchTableResultData(wateringOption, sunlightOption);
-      console.log('Fetched data:', response.data);
-      hideLoadingOverlay();
-  
-      const data = response.data; // Extract the data array from the response
-  
-      if (Array.isArray(data)) {
-        // Update validData with the new data fetched from the API
-        validData = data.map(item => ({
-          ...item,
-          sunlight: getDisplayValue(sunlightOption, item.sunlight),
-          watering: getDisplayValue(wateringOption, item.watering),
-        }));
-    
-        const resultsHTML = createTableResultsHTML(validData, currentPage);
-        resultsContainer.innerHTML = resultsHTML;
-    
-        // Call the function to create the pagination buttons
-        createPageButtons();
-    
         // Set initial button states for the first page
         const nextPageButton = document.getElementById('next-page-button');
         const prevPageButton = document.getElementById('prev-page-button');
-        if (nextPageButton) {
-          nextPageButton.disabled = currentPage >= Math.ceil(validData.length / resultsPerPage);
-        }
-        if (prevPageButton) {
+        if (nextPageButton && prevPageButton) {
+          nextPageButton.disabled = currentPage >= getTotalPages(filteredData.length, resultsPerPage);
           prevPageButton.disabled = currentPage <= 1;
         }
-      } else {
-        console.error('Invalid data format:', data);
+      } catch (error) {
+        console.error('Error fetching or filtering data:', error);
       }
-    } catch (error) {
-      hideLoadingOverlay();
-      console.error('Error fetching table result data:', error);
-    }
-  }
-  
-  
-  // Function to fetch data for Table Result using the new API
-  async function fetchTableResultData(wateringOption, sunlightOption) {
-    const dataAPI = new DataAPI();
-  
-    try {
-      const data = await dataAPI.getData({
-        watering: wateringOption,
-        sunlight: sunlightOption
-      });
-  
-      return data;
-    } catch (error) {
-      throw new Error('Error fetching table result data:', error);
-    }
-  }
-  
-  // Function to create the HTML for table results
-function createTableResultsHTML(data, currentPage) {
-  // Calculate the starting and ending indices for the current page
-  const resultsPerPage = 5; // Set this according to your desired results per page
-  const startIndex = (currentPage - 1) * resultsPerPage;
-  const endIndex = startIndex + resultsPerPage;
 
-  let html = '<h3>Results:</h3>';
+      let html = '<h3>Results:</h3>';
+        html += '<table>';
+        html += '<tr>';
+        html += '<th>Common Name</th>';
+        html += '<th>Sunlight</th>';
+        html += '<th>Watering</th>';
+        html += '</tr>';
+        
+        filteredData.forEach(item => {
+          html += '<tr>';
+          html += '<td>' + capitalFirstLetter(item.common_name) + '</td>';
+          html += '<td>' + capitalFirstLetter(item.sunlight) + '</td>';
+          html += '<td>' + capitalFirstLetter(item.watering) + '</td>';
+          html += '</tr>';
+        });
 
-  // Get the data for the current page
-  const validDataForPage = data.slice(startIndex, endIndex);
+      html += '</table>';
 
-  if (validDataForPage.length > 0) {
-    html += '<table>';
-    html += '<tr>';
-    html += '<th>Common Name</th>';
-    html += '<th>Sunlight</th>';
-    html += '<th>Watering</th>';
-    html += '</tr>';
+      resultsContainer.innerHTML = html;
+    })
+  };
 
-    validDataForPage.forEach(item => {
-      html += '<tr>';
-      html += '<td>' + capitalFirstLetter(item.common_name) + '</td>';
-      html += '<td>' + capitalFirstLetter(item.sunlight) + '</td>';
-      html += '<td>' + capitalFirstLetter(item.watering) + '</td>';
-      html += '</tr>';
-    });
+  // Add event handlers for page buttons
+  const nextPageButton = document.getElementById('next-page-button');
+  const prevPageButton = document.getElementById('prev-page-button');
 
-    html += '</table>';
-  } else {
-    html += '<p>No results found.</p>';
+  if (nextPageButton) {
+    nextPageButton.addEventListener('click', showNextPage);
   }
 
-  return html;
+  if (prevPageButton) {
+    prevPageButton.addEventListener('click', showPreviousPage);
+  }
+});
+
+function showPreviousPage() {
+  const wateringOption = document.getElementById('watering-dropdown').value;
+  const sunlightOption = document.getElementById('sunlight-dropdown').value;
+  const totalPages = getTotalPages();
+
+  if (currentPage > 1) {
+    currentPage -= 1;
+  }
+
+  // Update button states after changing the currentPage
+  updateButtonStates();
+
+  createTableResult(wateringOption, sunlightOption);
+}
+
+// Function to show the next page of results in the table
+function showNextPage() {
+  const wateringOption = document.getElementById('watering-dropdown').value;
+  const sunlightOption = document.getElementById('sunlight-dropdown').value;
+  const totalPages = getTotalPages();
+
+  if (currentPage < totalPages) {
+    currentPage += 1;
+  }
+
+  // Update button states after changing the currentPage
+  updateButtonStates();
+
+  createTableResult(wateringOption, sunlightOption);
+}
+
+// Function to create the pagination buttons dynamically and append them to the DOM
+function createPageButtons() {
+  const pageButtonsContainer = document.createElement('div');
+  pageButtonsContainer.classList.add('page-number-container');
+  pageButtonsContainer.id = 'page-buttons-container';
+
+  // Create the prev-page-button and next-page-button only for Table Result
+  const tableButton = document.getElementById('table-button');
+  if (tableButton) {
+    const prevPageButton = document.createElement('a');
+    prevPageButton.href = '#';
+    prevPageButton.classList.add('btn', 'btn-danger');
+    prevPageButton.id = 'prev-page-button';
+    prevPageButton.textContent = 'Previous Page';
+    prevPageButton.addEventListener('click', showPreviousPage);
+
+    const nextPageButton = document.createElement('a');
+    nextPageButton.href = '#';
+    nextPageButton.classList.add('btn', 'btn-danger');
+    nextPageButton.id = 'next-page-button';
+    nextPageButton.textContent = 'Next Page';
+    nextPageButton.addEventListener('click', showNextPage);
+
+    // Append the buttons to the buttons container
+    pageButtonsContainer.appendChild(prevPageButton);
+    pageButtonsContainer.appendChild(nextPageButton);
+  }
+
+  // Append the buttons container to the results container
+  const resultsContainer = document.getElementById('results-container');
+  const existingButtonsContainer = document.getElementById('page-buttons-container');
+  if (existingButtonsContainer) {
+    resultsContainer.removeChild(existingButtonsContainer);
+  }
+  resultsContainer.appendChild(pageButtonsContainer);
 }

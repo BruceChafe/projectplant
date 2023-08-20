@@ -1,4 +1,17 @@
+// document.addEventListener('DOMContentLoaded', async () => {
+//   const dataAPI = new DataAPI();
 
+//   try {
+//       const data = await dataAPI.getData({
+//           // Provide any desired parameters here
+//       });
+
+//       // Display the fetched data in the console
+//       console.log('Fetched data:', data);
+//   } catch (error) {
+//       console.error('Error fetching data:', error);
+//   }
+// });
 
 // // API Base URL with parameters
 // const apiKey = 'sk-ojin6499fba9bbfc11234'
