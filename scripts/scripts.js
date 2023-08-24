@@ -2,14 +2,10 @@
 const apiKey = 'sk-ojin6499fba9bbfc11234';
 const apiKey2 = 'sk-8uOL64d9325a586701870';
 
-// Initialize currentPage for pagination
+// Definiations
 let currentPage = 1;
-
-// Define validData as an empty array
 let validData = [];
-
-// Define the number of results to show per page
-let resultsPerPage = 2;
+let resultsPerPage = 5;
 let data;
 let filteredData;
 let wateringOption;
@@ -83,7 +79,9 @@ document.addEventListener('DOMContentLoaded', function () {
   // Add event handler for Suggest Result button
   const tableButton = document.getElementById('table-button');
   if (tableButton) {
+    console.log('Script loaded.');
     tableButton.addEventListener('click', async function () {
+      console.log('Button clicked.');
       // Handle the click event for the tableButton here
     });
   
@@ -101,7 +99,6 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // Add event handler for Table Result button
-  const tableButton = document.getElementById('table-button');
   if (tableButton) {
     tableButton.addEventListener('click', async function () {
       // Get the selected options
@@ -119,6 +116,9 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log('Starting Data:', responseData);
 
         data = responseData.data;
+filteredData = data.filter(item => {
+  return item.sunlight.includes(sunlightOption) && item.watering === wateringOption;
+});
 
         filteredData = data.filter(item => {
           return item.sunlight.includes(sunlightOption) && item.watering === wateringOption;
@@ -132,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Create the page buttons and set initial button states
         currentPage = 1; 
-        createPageButtons();
+        console.log("huh");
         updateButtonStates();
 
         // Create the initial table result
@@ -170,10 +170,18 @@ function showNextPage() {
 }
 
 // Function to create the pagination buttons dynamically and append them to the DOM
+// Function to create the pagination buttons dynamically and append them to the DOM
 function createPageButtons() {
-  // Remove existing buttons container if it exists
+  console.log("createPageButtons() called");
+  const newPageButtonsContainer = document.createElement('div'); // Make a new box for buttons
+  newPageButtonsContainer.classList.add('page-number-container');
+  newPageButtonsContainer.id = 'page-buttons-container';
+
   const existingButtonsContainer = document.getElementById('page-buttons-container');
+  console.log("Existing container:", existingButtonsContainer);
+  
   if (existingButtonsContainer) {
+    console.log("Removing existing container");
     existingButtonsContainer.remove();
   }
 
@@ -194,15 +202,17 @@ function createPageButtons() {
     nextPageButton.textContent = 'Next Page';
     nextPageButton.addEventListener('click', showNextPage);
 
-    // Append the buttons to the buttons container
-    pageButtonsContainer.appendChild(prevPageButton);
-    pageButtonsContainer.appendChild(nextPageButton);
+    // Append the buttons to the new buttons container
+    newPageButtonsContainer.appendChild(prevPageButton);
+    newPageButtonsContainer.appendChild(nextPageButton);
     
-    // Append the buttons container to the results container
+    // Append the new buttons container to the results container
     const resultsContainer = document.getElementById('results-container');
-    resultsContainer.appendChild(pageButtonsContainer);
+    resultsContainer.appendChild(newPageButtonsContainer);
   }
 }
+
+
 
 // Function to create the table results based on the current page and options
 function createTableResult(wateringOption, sunlightOption) {
