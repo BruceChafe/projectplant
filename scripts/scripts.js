@@ -1,262 +1,396 @@
-// Constants that I might still need
-const apiKey = 'sk-ojin6499fba9bbfc11234';
-const apiKey2 = 'sk-8uOL64d9325a586701870';
+// API Base URL with parameters
+const apiKey = 'sk-ojin6499fba9bbfc11234'
+const apiKey2 = 'sk-8uOL64d9325a586701870'
+const apiUrl = 'https://perenual.com/api/species-list?page=1&key=' + apiKey2 + '&indoor=1';
 
-// Definiations
+// Initialize currentPage for pagination
 let currentPage = 1;
-let validData = [];
-let resultsPerPage = 5;
-let data;
-let filteredData;
-let wateringOption;
-let sunlightOption;
 
-// Initialize pageButtonsContainer outside of the function
-let pageButtonsContainer = document.createElement('div');
-pageButtonsContainer.classList.add('page-number-container');
-pageButtonsContainer.id = 'page-buttons-container';
+// Function to get the total number of pages based on the validData
+function getTotalPages() {
+    const resultsPerPage = 5; // Set this according to your desired results per page
+    const totalResults = validData.length;
+    return Math.ceil(totalResults / resultsPerPage);
+}
+
+// Define validData as a global variable to store API response
+let validData = [];
 
 // Function to capitalize the first letter of each word
 function capitalFirstLetter(string) {
-  if (typeof string !== 'string') {
-    return string;
-  }
+    if (typeof string !== 'string') {
+        return string;
+    }
 
-  return string
-    .split(' ')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+    return string
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
 }
 
-// Function to calculate total number of pages
-function getTotalPages(dataLength, resultsPerPage) {
-  return Math.ceil(dataLength / resultsPerPage);
+// Function to simulate API call with a delay using Promises
+function simulateAPIcall(apiUrl) {
+    return new Promise((resolve, reject) => {
+        // Simulate API call with a delay of 1 second
+        setTimeout(() => {
+            fetch(apiUrl)
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then((responseData) => {
+                    console.log("API Response Data:", responseData);
+                    resolve(responseData.data);
+                })
+                .catch((error) => {
+                    console.error('Error fetching data:', error);
+                    reject(error);
+                });
+        }, 1000);
+    });
 }
 
 // Function to show loading overlay and disable buttons during API calls
 function showLoadingOverlay() {
-  const container = document.querySelector('.loading-overlay-container');
+    const container = document.querySelector('.loading-overlay-container');
 
-  // Remove any existing loading overlay
-  const existingOverlay = document.querySelector('.loading-overlay');
-  if (existingOverlay) {
-    existingOverlay.remove();
-  }
+    // Remove any existing loading overlay
+    const existingOverlay = document.querySelector('.loading-overlay');
+    if (existingOverlay) {
+        existingOverlay.remove();
+    }
 
-  // Create a new loading overlay
-  const overlay = document.createElement('div');
-  overlay.classList.add('loading-overlay');
-  overlay.textContent = 'Loading...';
+    // Create a new loading overlay
+    const overlay = document.createElement('div');
+    overlay.classList.add('loading-overlay');
+    overlay.textContent = 'Loading...';
 
-  // Disable the suggest and table result buttons during API calls
-  const suggestButton = document.getElementById('suggest-button');
-  const tableButton = document.getElementById('table-button');
-  suggestButton.classList.add('disabled');
-  tableButton.classList.add('disabled');
+    // Disable the suggest and table result buttons during API calls
+    const suggestButton = document.getElementById('suggest-button');
+    const tableButton = document.getElementById('table-button');
+    suggestButton.classList.add('disabled');
+    tableButton.classList.add('disabled');
 
-  // Append the overlay to the container
-  container.appendChild(overlay);
+    // Append the overlay to the container
+    container.appendChild(overlay);
 }
 
 // Function to hide loading overlay and enable buttons after API calls
 function hideLoadingOverlay() {
-  const overlay = document.querySelector('.loading-overlay');
-  if (overlay) {
-    overlay.remove();
-  }
+    const overlay = document.querySelector('.loading-overlay');
+    if (overlay) {
+        overlay.remove();
+    }
 
-  // Enable the suggest and table result buttons after API calls
-  const suggestButton = document.getElementById('suggest-button');
-  const tableButton = document.getElementById('table-button');
-  suggestButton.classList.remove('disabled');
-  tableButton.classList.remove('disabled');
+    // Enable the suggest and table result buttons after API calls
+    const suggestButton = document.getElementById('suggest-button');
+    const tableButton = document.getElementById('table-button');
+    suggestButton.classList.remove('disabled');
+    tableButton.classList.remove('disabled');
+}
+
+// Function to display the correct value for select dropdown options
+function getDisplayValue(selectedOption, apiValue) {
+    const upgradeRequest = "Upgrade Plans To";
+    if (typeof apiValue === "string" && apiValue.includes(upgradeRequest)) {
+        if (apiValue === "Upgrade Plans To Premium/Supreme - https://perenual.com/subscription-api-pricing. I'm sorry") {
+            return selectedOption;
+        }
+        const paywallInfo = apiValue.split("-");
+        if (paywallInfo.length === 2 && paywallInfo[0].trim() === "Upgrade Plans To Premium/Supreme") {
+            const selectedValue = paywallInfo[1].trim();
+            return selectedValue === "null" ? selectedOption : selectedValue;
+        }
+    }
 }
 
 // Add event handler for DOMContentLoaded
 document.addEventListener('DOMContentLoaded', function () {
-  const resultsContainer = document.getElementById('results-container'); 
+    // Add event handler for Suggest Result buttonn
+    const suggestButton = document.getElementById('suggest-button');
+    if (suggestButton) {
+        suggestButton.addEventListener('click', function () {
+            createSuggestResult();
+            listSuggestData();
+        });
+    }
 
-  // Add event handler for Suggest Result button
-  const tableButton = document.getElementById('table-button');
-  if (tableButton) {
-    console.log('Script loaded.');
-    tableButton.addEventListener('click', async function () {
-      console.log('Button clicked.');
-      // Handle the click event for the tableButton here
-    });
-  
+    // Add event handler for Table Result button
+    const tableButton = document.getElementById('table-button');
+    if (tableButton) {
+        tableButton.addEventListener('click', function () {
+            const wateringOption = document.getElementById('watering-dropdown').value;
+            const sunlightOption = document.getElementById('sunlight-dropdown').value;
+            currentPage = 1; // Reset to the first page when switching to table results
+            createTableResult(wateringOption, sunlightOption);
+            createPageButtons(); // Create the buttons only for Table Result
+
+            // Set initial button states for the first page
+            const nextPageButton = document.getElementById('next-page-button');
+            const prevPageButton = document.getElementById('prev-page-button');
+            if (nextPageButton) {
+                nextPageButton.disabled = currentPage >= getTotalPages();
+            }
+            if (prevPageButton) {
+                prevPageButton.disabled = currentPage <= 1;
+            }
+        });
+    }
+
     // Add event handlers for page buttons
     const nextPageButton = document.getElementById('next-page-button');
     const prevPageButton = document.getElementById('prev-page-button');
-  
+
     if (nextPageButton) {
-      nextPageButton.addEventListener('click', showNextPage);
+        nextPageButton.addEventListener('click', showNextPage);
     }
-  
+
     if (prevPageButton) {
-      prevPageButton.addEventListener('click', showPreviousPage);
+        prevPageButton.addEventListener('click', showPreviousPage);
     }
-  }
+})
 
-  // Add event handler for Table Result button
-  if (tableButton) {
-    tableButton.addEventListener('click', async function () {
-      // Get the selected options
-      wateringOption = document.getElementById('watering-dropdown').value;
-      sunlightOption = document.getElementById('sunlight-dropdown').value;
+// Function to fetch suggested Plant ID URL
+function createSuggestResult(event, data, selectedWatering, selectedSunlight) {
+    const resultsContainer = document.getElementById('results-container');
 
-      // Log the selected options
-      console.log('Watering Option:', wateringOption);
-      console.log('Sunlight Option:', sunlightOption);
+    resultsContainer.innerHTML = '';
 
-      try {
-        // Fetch data using the dataAPI
-        const dataAPI = new DataAPI();
-        const responseData = await dataAPI.getData();
-        console.log('Starting Data:', responseData);
+    const wateringOption = document.getElementById('watering-dropdown').value;
+    const sunlightOption = document.getElementById('sunlight-dropdown').value;
 
-        data = responseData.data;
-filteredData = data.filter(item => {
-  return item.sunlight.includes(sunlightOption) && item.watering === wateringOption;
-});
+    const apiUrlWithWatering = apiUrl + '&watering=' + wateringOption;
+    const apiUrlWithWateringSunlight = apiUrlWithWatering + '&sunlight=' + sunlightOption;
 
-        filteredData = data.filter(item => {
-          return item.sunlight.includes(sunlightOption) && item.watering === wateringOption;
+    // Simulate API call with a delay
+    simulateAPIcall(apiUrlWithWateringSunlight)
+        .then((data) => {
+            console.log("Data Received:", data);
+
+            const filteredData = data.filter(item => item.id <= 3000);
+            console.log("Filtered Data:", filteredData);
+
+            const randomIndex = Math.floor(Math.random() * filteredData.length);
+            const randomItem = data[randomIndex];
+            console.log("Plant ID:", randomItem.id);
+
+            const detailsURL = 'https://perenual.com/api/species/details/' + randomItem.id + '?key=' + apiKey2;
+            console.log("Details URL:", detailsURL);
+
+            listSuggestData(detailsURL, randomItem, resultsContainer);
+
+            const nextRandomData = filteredData.filter(item => item.id !== randomItem.id);
+            console.log("Next Random Data:", nextRandomData);
         });
+}
 
-        console.log('Filtered Data:', filteredData);
+function listSuggestData(detailsURL, randomItem, resultsContainer) {
+    showLoadingOverlay();
 
-        // Clear existing results before adding new ones
-        const resultsContainer = document.getElementById('results-container');
-        resultsContainer.innerHTML = '';
+    fetch(detailsURL)
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then((detailsData) => {
+            console.log("Details Data:", detailsData);
 
-        // Create the page buttons and set initial button states
-        currentPage = 1; 
-        console.log("huh");
-        updateButtonStates();
+            // Generate HTML for resultsContainer
+            let
+                html = '<br>'
+            html += '<h3>Results:</h3>';
+            html += '<div>';
+            html += capitalFirstLetter(detailsData.common_name)
+            html += '<br>'
+            if (detailsData.default_image?.original_url) {
+                html += '<img src="' + detailsData.default_image?.original_url + '" alt="Plant Image" width="500">';
+            }
+            html += '<br>'
+            html += '<p>Scientific Name: ' + capitalFirstLetter(detailsData.scientific_name) + '</p>';
+            html += '<p>Family: ' + capitalFirstLetter(detailsData.family) + '</p>';
+            html += '<p>Propagation: ' + capitalFirstLetter(detailsData.propagation) + '</p>';
+            html += '<p>Watering: ' + capitalFirstLetter(detailsData.watering) + '</p>';
+            html += '<p>Sunlight: ' + capitalFirstLetter(detailsData.sunlight) + '</p>';
+            html += '<p>Maintenance: ' + capitalFirstLetter(detailsData.maintenance) + '</p>';
+            html += '<p>Growth Rate: ' + capitalFirstLetter(detailsData.growth_rate) + '</p>';
+            // Check the value of detailsData.drought_tolerant and change text accordingly
+            if (detailsData.drought_tolerant === true) {
+                html += '<p>Drought Tolerant: Yes</p>';
+            } else {
+                html += '<p>Drought Tolerant: No</p>';
+            }
+            // Check the value of detailsData.indoor and change text accordingly
+            if (detailsData.indoor === true) {
+                html += '<p>Inddor: Yes</p>';
+            } else {
+                html += '<p>Indoor: No</p>';
+            }
+            // Check the value of detailsData.poisonous_to_humans and change text accordingly
+            if (detailsData.poisonous_to_humans === 0) {
+                html += '<p>Poisonous To Humans: Yes</p>';
+            } else {
+                html += '<p>Poisonous To Humans: No</p>';
+            }
+            // Check the value of detailsData.poisonous_to_pets and change text accordingly
+            if (detailsData.poisonous_to_pets === 0) {
+                html += '<p>Poisonous To Pets: Yes</p>';
+            } else {
+                html += '<p>Poisonous To Pets: No</p>';
+            }
+            html += '<p>Description: ' + detailsData.description + '</p>';
 
-        // Create the initial table result
-        createTableResult(wateringOption, sunlightOption);
-      } catch (error) {
-        console.error('Error fetching or filtering data:', error);
-      }
-    });
-  }
-});
+
+            html += '</div>';
+
+            resultsContainer.innerHTML = html;
+
+            hideLoadingOverlay();
+        });
+}
 
 function showPreviousPage() {
-  const wateringOption = document.getElementById('watering-dropdown').value;
-  const sunlightOption = document.getElementById('sunlight-dropdown').value;
-  const totalPages = getTotalPages(filteredData.length, resultsPerPage);
+    const wateringOption = document.getElementById('watering-dropdown').value;
+    const sunlightOption = document.getElementById('sunlight-dropdown').value;
+    const totalPages = getTotalPages();
 
-  if (currentPage > 1) {
-    currentPage -= 1;
-  }
+    if (currentPage > 1) {
+        currentPage -= 1;
+    }
 
-  createTableResult(wateringOption, sunlightOption);
+    // Update button states after changing the currentPage
+    updateButtonStates();
+
+    createTableResult(wateringOption, sunlightOption);
 }
 
 // Function to show the next page of results in the table
 function showNextPage() {
-  const wateringOption = document.getElementById('watering-dropdown').value;
-  const sunlightOption = document.getElementById('sunlight-dropdown').value;
-  const totalPages = getTotalPages(filteredData.length, resultsPerPage);
+    const wateringOption = document.getElementById('watering-dropdown').value;
+    const sunlightOption = document.getElementById('sunlight-dropdown').value;
+    const totalPages = getTotalPages();
 
-  if (currentPage < totalPages) {
-    currentPage += 1;
-  }
+    if (currentPage < totalPages) {
+        currentPage += 1;
+    }
 
-  createTableResult(wateringOption, sunlightOption);
+    createTableResult(wateringOption, sunlightOption);
 }
 
-// Function to create the pagination buttons dynamically and append them to the DOM
 // Function to create the pagination buttons dynamically and append them to the DOM
 function createPageButtons() {
-  console.log("createPageButtons() called");
-  const newPageButtonsContainer = document.createElement('div'); // Make a new box for buttons
-  newPageButtonsContainer.classList.add('page-number-container');
-  newPageButtonsContainer.id = 'page-buttons-container';
+    const pageButtonsContainer = document.createElement('div');
+    pageButtonsContainer.classList.add('page-number-container');
+    pageButtonsContainer.id = 'page-buttons-container';
 
-  const existingButtonsContainer = document.getElementById('page-buttons-container');
-  console.log("Existing container:", existingButtonsContainer);
-  
-  if (existingButtonsContainer) {
-    console.log("Removing existing container");
-    existingButtonsContainer.remove();
-  }
+    // Create the prev-page-button and next-page-button only for Table Result
+    const tableButton = document.getElementById('table-button');
+    if (tableButton) {
+        const prevPageButton = document.createElement('a');
+        prevPageButton.href = '#';
+        prevPageButton.classList.add('btn', 'btn-danger');
+        prevPageButton.id = 'prev-page-button';
+        prevPageButton.textContent = 'Previous Page';
+        prevPageButton.addEventListener('click', showPreviousPage);
 
-  // Create the prev-page-button and next-page-button only for Table Result
-  const tableButton = document.getElementById('table-button');
-  if (tableButton) {
-    const prevPageButton = document.createElement('a');
-    prevPageButton.href = '#';
-    prevPageButton.classList.add('btn', 'btn-danger');
-    prevPageButton.id = 'prev-page-button';
-    prevPageButton.textContent = 'Previous Page';
-    prevPageButton.addEventListener('click', showPreviousPage);
+        const nextPageButton = document.createElement('a');
+        nextPageButton.href = '#';
+        nextPageButton.classList.add('btn', 'btn-danger');
+        nextPageButton.id = 'next-page-button';
+        nextPageButton.textContent = 'Next Page';
+        nextPageButton.addEventListener('click', showNextPage);
 
-    const nextPageButton = document.createElement('a');
-    nextPageButton.href = '#';
-    nextPageButton.classList.add('btn', 'btn-danger');
-    nextPageButton.id = 'next-page-button';
-    nextPageButton.textContent = 'Next Page';
-    nextPageButton.addEventListener('click', showNextPage);
+        // Append the buttons to the buttons container
+        pageButtonsContainer.appendChild(prevPageButton);
+        pageButtonsContainer.appendChild(nextPageButton);
+    }
 
-    // Append the buttons to the new buttons container
-    newPageButtonsContainer.appendChild(prevPageButton);
-    newPageButtonsContainer.appendChild(nextPageButton);
-    
-    // Append the new buttons container to the results container
+    // Append the buttons container to the results container
     const resultsContainer = document.getElementById('results-container');
-    resultsContainer.appendChild(newPageButtonsContainer);
-  }
+    const existingButtonsContainer = document.getElementById('page-buttons-container');
+    if (existingButtonsContainer) {
+        resultsContainer.removeChild(existingButtonsContainer);
+    }
+    resultsContainer.appendChild(pageButtonsContainer);
 }
 
+// Function to fetch and display Table Result
 
+function createTableResult(event, data, selectedWatering, selectedSunlight) {
+    const resultsContainer = document.getElementById('results-container');
 
-// Function to create the table results based on the current page and options
-function createTableResult(wateringOption, sunlightOption) {
-  const startIndex = (currentPage - 1) * resultsPerPage;
-  const endIndex = startIndex + resultsPerPage;
+    showLoadingOverlay();
+    resultsContainer.innerHTML = '';
 
-  let html = '<h3>Results:</h3>';
+    const wateringOption = document.getElementById('watering-dropdown').value;
+    const sunlightOption = document.getElementById('sunlight-dropdown').value;
 
-  const validDataForPage = filteredData.slice(startIndex, endIndex);
+    const apiUrlWithWatering = apiUrl + '&watering=' + wateringOption;
+    const apiUrlWithWateringSunlight = apiUrlWithWatering + '&sunlight=' + sunlightOption;
 
-  if (validDataForPage.length > 0) {
-    html += '<table>';
-    html += '<tr>';
-    html += '<th>Common Name</th>';
-    html += '<th>Sunlight</th>';
-    html += '<th>Watering</th>';
-    html += '</tr>';
+    // Simulate API call with a delay and handle the result
+    simulateAPIcall(apiUrlWithWateringSunlight)
+        .then((data) => {
+            console.log("Data Received:", data);
+            hideLoadingOverlay();
 
-    validDataForPage.forEach(item => {
-      html += '<tr>';
-      html += '<td>' + capitalFirstLetter(item.common_name) + '</td>';
-      html += '<td>' + capitalFirstLetter(item.sunlight) + '</td>';
-      html += '<td>' + capitalFirstLetter(item.watering) + '</td>';
-      html += '</tr>';
-    });
+            // Filter out data with ID 3001 and above
+            const filteredData = data.filter(item => item.id <= 3000);
+            console.log("Filtered Data:", filteredData);
 
-    html += '</table>';
-  } else {
-    html += '<p>No results found.</p>';
-  }
+            const resultsHTML = createTableResultsHTML(filteredData, currentPage);
+            resultsContainer.innerHTML = resultsHTML;
 
-  const resultsContainer = document.getElementById('results-container');
-  resultsContainer.innerHTML = html;
-  createPageButtons(); // Create the pagination buttons after updating the results
+            // Call the function to create the pagination buttons
+            createPageButtons();
+
+            // Set initial button states for the first page
+            const nextPageButton = document.getElementById('next-page-button');
+            const prevPageButton = document.getElementById('prev-page-button');
+            if (nextPageButton) {
+                nextPageButton.disabled = currentPage >= getTotalPages();
+            }
+            if (prevPageButton) {
+                prevPageButton.disabled = currentPage <= 1;
+            }
+        });
 }
 
-// Function to update button states based on the current page
-function updateButtonStates() {
-  const nextPageButton = document.getElementById('next-page-button');
-  const prevPageButton = document.getElementById('prev-page-button');
-  const totalPages = getTotalPages(filteredData.length, resultsPerPage);
+// Function to create HTML for Table Result
+function createTableResultsHTML(data, currentPage) {
+    // Calculate the starting and ending indices for the current page
+    const resultsPerPage = 5; // Set this according to your desired results per page
+    const startIndex = (currentPage - 1) * resultsPerPage;
+    const endIndex = startIndex + resultsPerPage;
 
-  if (nextPageButton && prevPageButton) {
-    nextPageButton.disabled = currentPage >= totalPages;
-    prevPageButton.disabled = currentPage <= 1;
-  }
+    let html = '<h3>Results:</h3>';
+
+    // Get the data for the current page
+    const validDataForPage = data.slice(startIndex, endIndex);
+
+    if (validDataForPage.length > 0) {
+        html += '<table>';
+        html += '<tr>';
+        html += '<th>Common Name</th>';
+        html += '<th>Sunlight</th>';
+        html += '<th>Watering</th>';
+        html += '</tr>';
+
+        validDataForPage.forEach(item => {
+            html += '<tr>';
+            html += '<td>' + capitalFirstLetter(item.common_name) + '</td>';
+            html += '<td>' + capitalFirstLetter(item.sunlight) + '</td>';
+            html += '<td>' + capitalFirstLetter(item.watering) + '</td>';
+            html += '</tr>';
+        });
+
+        html += '</table>';
+    } else {
+        html += '<p>No results found.</p>';
+    }
+
+    return html;
 }
