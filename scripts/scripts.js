@@ -1,20 +1,21 @@
 // API Base URL with parameters
-const apiKey = 'sk-ojin6499fba9bbfc11234'
-const apiKey2 = 'sk-8uOL64d9325a586701870'
+const apiKey2 = 'sk-ojin6499fba9bbfc11234'
+const apiKey = 'sk-8uOL64d9325a586701870'
 const apiUrl = 'https://perenual.com/api/species-list?page=1&key=' + apiKey2 + '&indoor=1';
 
 // Initialize currentPage for pagination
 let currentPage = 1;
 
 // Function to get the total number of pages based on the validData
-function getTotalPages() {
+function getTotalPages(filteredData) {
     const resultsPerPage = 5; // Set this according to your desired results per page
-    const totalResults = validData.length;
+    const totalResults = filteredData.length;
     return Math.ceil(totalResults / resultsPerPage);
 }
 
-// Define validData as a global variable to store API response
+// Define validData and filteredData as global variables to store API responses
 let validData = [];
+let filteredData = [];
 
 // Function to capitalize the first letter of each word
 function capitalFirstLetter(string) {
@@ -91,18 +92,120 @@ function hideLoadingOverlay() {
     tableButton.classList.remove('disabled');
 }
 
-// Function to display the correct value for select dropdown options
-function getDisplayValue(selectedOption, apiValue) {
-    const upgradeRequest = "Upgrade Plans To";
-    if (typeof apiValue === "string" && apiValue.includes(upgradeRequest)) {
-        if (apiValue === "Upgrade Plans To Premium/Supreme - https://perenual.com/subscription-api-pricing. I'm sorry") {
-            return selectedOption;
+// Function to show the next page of results in the table
+function showNextPage() {
+    const wateringOption = document.getElementById('watering-dropdown').value;
+    const sunlightOption = document.getElementById('sunlight-dropdown').value;
+    const totalPages = getTotalPages(filteredData);
+    console.log('totalPages', totalPages);
+
+    if (currentPage < totalPages) {
+        currentPage += 1;
+    }
+
+    // Disable the next button if we are on the last page
+    const nextPageButton = document.getElementById('next-page-button');
+    if (nextPageButton) {
+        if (currentPage >= totalPages) {
+            nextPageButton.classList.add('disabled');
+        } else {
+            nextPageButton.classList.remove('disabled');
         }
-        const paywallInfo = apiValue.split("-");
-        if (paywallInfo.length === 2 && paywallInfo[0].trim() === "Upgrade Plans To Premium/Supreme") {
-            const selectedValue = paywallInfo[1].trim();
-            return selectedValue === "null" ? selectedOption : selectedValue;
+    }
+
+    // Re-enable the previous button since we are moving to the next page
+    const prevPageButton = document.getElementById('prev-page-button');
+    if (prevPageButton) {
+        if (currentPage === 1) {
+            prevPageButton.classList.add('disabled');
+        } else {
+            prevPageButton.classList.remove('disabled');
         }
+    }
+
+    createTableResult(wateringOption, sunlightOption);
+}
+
+function showPreviousPage() {
+    const wateringOption = document.getElementById('watering-dropdown').value;
+    const sunlightOption = document.getElementById('sunlight-dropdown').value;
+    const totalPages = getTotalPages(filteredData);
+
+    if (currentPage > 1) {
+        currentPage -= 1;
+    }
+
+    // Disable the previous button if we are on the first page
+    const prevPageButton = document.getElementById('prev-page-button');
+    if (prevPageButton) {
+        if (currentPage === 1) {
+            prevPageButton.classList.add('disabled');
+        } else {
+            prevPageButton.classList.remove('disabled');
+        }
+    }
+
+    // Re-enable the next button since we are moving to the previous page
+    const nextPageButton = document.getElementById('next-page-button');
+    if (nextPageButton) {
+        if (currentPage < totalPages) {
+            nextPageButton.classList.add('disabled');
+        } else {
+            nextPageButton.classList.remove('disabled');
+        }
+    }
+
+    createTableResult(wateringOption, sunlightOption);
+}
+
+// Function to create the pagination buttons dynamically and append them to the DOM
+function createPageButtons() {
+    const pageButtonsContainer = document.createElement('div');
+    pageButtonsContainer.classList.add('page-number-container');
+    pageButtonsContainer.id = 'page-buttons-container';
+
+    // Create the prev-page-button and next-page-button only for Table Result
+    const tableButton = document.getElementById('table-button');
+    if (tableButton) {
+        const prevPageButton = document.createElement('a');
+        prevPageButton.href = '#';
+        prevPageButton.classList.add('btn', 'btn-danger');
+        prevPageButton.id = 'prev-page-button';
+        prevPageButton.textContent = 'Previous Page';
+        prevPageButton.addEventListener('click', showPreviousPage);
+
+        const nextPageButton = document.createElement('a');
+        nextPageButton.href = '#';
+        nextPageButton.classList.add('btn', 'btn-danger');
+        nextPageButton.id = 'next-page-button';
+        nextPageButton.textContent = 'Next Page';
+        nextPageButton.addEventListener('click', showNextPage);
+
+        // Append the buttons to the buttons container
+        pageButtonsContainer.appendChild(prevPageButton);
+        pageButtonsContainer.appendChild(nextPageButton);
+    }
+
+    // Append the buttons container to the results container
+    const resultsContainer = document.getElementById('results-container');
+    const existingButtonsContainer = document.getElementById('page-buttons-container');
+    if (existingButtonsContainer) {
+        resultsContainer.removeChild(existingButtonsContainer);
+    }
+    resultsContainer.appendChild(pageButtonsContainer);
+}
+
+// Function to update the prevPageButton and nextPageButton status based on currentPage and total pages
+function updateButtonStates() {
+    const prevPageButton = document.getElementById('prev-page-button');
+    const nextPageButton = document.getElementById('next-page-button');
+    const totalPages = getTotalPages(filteredData);
+
+    if (nextPageButton) {
+        nextPageButton.disabled = currentPage >= totalPages;
+    }
+    if (prevPageButton) {
+        prevPageButton.disabled = currentPage <= 1;
     }
 }
 
@@ -121,21 +224,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const tableButton = document.getElementById('table-button');
     if (tableButton) {
         tableButton.addEventListener('click', function () {
-            const wateringOption = document.getElementById('watering-dropdown').value;
-            const sunlightOption = document.getElementById('sunlight-dropdown').value;
             currentPage = 1; // Reset to the first page when switching to table results
-            createTableResult(wateringOption, sunlightOption);
+            createTableResult();
             createPageButtons(); // Create the buttons only for Table Result
-
-            // Set initial button states for the first page
-            const nextPageButton = document.getElementById('next-page-button');
-            const prevPageButton = document.getElementById('prev-page-button');
-            if (nextPageButton) {
-                nextPageButton.disabled = currentPage >= getTotalPages();
-            }
-            if (prevPageButton) {
-                prevPageButton.disabled = currentPage <= 1;
-            }
+            updateButtonStates(); // Update button states for Table Result
         });
     }
 
@@ -150,7 +242,46 @@ document.addEventListener('DOMContentLoaded', function () {
     if (prevPageButton) {
         prevPageButton.addEventListener('click', showPreviousPage);
     }
-})
+});
+function createTableResult() {
+    const resultsContainer = document.getElementById('results-container');
+
+    showLoadingOverlay();
+    resultsContainer.innerHTML = '';
+
+    const wateringOption = document.getElementById('watering-dropdown').value;
+    const sunlightOption = document.getElementById('sunlight-dropdown').value;
+
+    const apiUrlWithWatering = apiUrl + '&watering=' + wateringOption;
+    const apiUrlWithWateringSunlight = apiUrlWithWatering + '&sunlight=' + sunlightOption;
+
+    // Simulate API call with a delay and handle the result
+    simulateAPIcall(apiUrlWithWateringSunlight)
+        .then((data) => {
+            console.log("Data Received:", data);
+            hideLoadingOverlay();
+
+            // Filter out data with ID 3001 and above
+            filteredData = data.filter(item => item.id <= 3000); // Assign to filteredData
+            console.log("Filtered Data:", filteredData);
+
+            const resultsHTML = createTableResultsHTML(filteredData, currentPage);
+            resultsContainer.innerHTML = resultsHTML;
+
+            // Call the function to create the pagination buttons
+            createPageButtons();
+
+            // Set initial button states for the first page
+            const nextPageButton = document.getElementById('next-page-button');
+            const prevPageButton = document.getElementById('prev-page-button');
+            if (nextPageButton) {
+                nextPageButton.disabled = currentPage >= getTotalPages(filteredData);
+            }
+            if (prevPageButton) {
+                prevPageButton.disabled = currentPage <= 1;
+            }
+        });
+}
 
 // Function to fetch suggested Plant ID URL
 function createSuggestResult(event, data, selectedWatering, selectedSunlight) {
@@ -208,6 +339,8 @@ function listSuggestData(detailsURL, randomItem, resultsContainer) {
             html += '<br>'
             if (detailsData.default_image?.original_url) {
                 html += '<img src="' + detailsData.default_image?.original_url + '" alt="Plant Image" width="500">';
+            } else {
+                html += '<img src="images/imagenotfound.png">';
             }
             html += '<br>'
             html += '<p>Scientific Name: ' + capitalFirstLetter(detailsData.scientific_name) + '</p>';
@@ -243,7 +376,6 @@ function listSuggestData(detailsURL, randomItem, resultsContainer) {
             }
             html += '<p>Description: ' + detailsData.description + '</p>';
 
-
             html += '</div>';
 
             resultsContainer.innerHTML = html;
@@ -252,112 +384,6 @@ function listSuggestData(detailsURL, randomItem, resultsContainer) {
         });
 }
 
-function showPreviousPage() {
-    const wateringOption = document.getElementById('watering-dropdown').value;
-    const sunlightOption = document.getElementById('sunlight-dropdown').value;
-    const totalPages = getTotalPages();
-
-    if (currentPage > 1) {
-        currentPage -= 1;
-    }
-
-    // Update button states after changing the currentPage
-    updateButtonStates();
-
-    createTableResult(wateringOption, sunlightOption);
-}
-
-// Function to show the next page of results in the table
-function showNextPage() {
-    const wateringOption = document.getElementById('watering-dropdown').value;
-    const sunlightOption = document.getElementById('sunlight-dropdown').value;
-    const totalPages = getTotalPages();
-
-    if (currentPage < totalPages) {
-        currentPage += 1;
-    }
-
-    createTableResult(wateringOption, sunlightOption);
-}
-
-// Function to create the pagination buttons dynamically and append them to the DOM
-function createPageButtons() {
-    const pageButtonsContainer = document.createElement('div');
-    pageButtonsContainer.classList.add('page-number-container');
-    pageButtonsContainer.id = 'page-buttons-container';
-
-    // Create the prev-page-button and next-page-button only for Table Result
-    const tableButton = document.getElementById('table-button');
-    if (tableButton) {
-        const prevPageButton = document.createElement('a');
-        prevPageButton.href = '#';
-        prevPageButton.classList.add('btn', 'btn-danger');
-        prevPageButton.id = 'prev-page-button';
-        prevPageButton.textContent = 'Previous Page';
-        prevPageButton.addEventListener('click', showPreviousPage);
-
-        const nextPageButton = document.createElement('a');
-        nextPageButton.href = '#';
-        nextPageButton.classList.add('btn', 'btn-danger');
-        nextPageButton.id = 'next-page-button';
-        nextPageButton.textContent = 'Next Page';
-        nextPageButton.addEventListener('click', showNextPage);
-
-        // Append the buttons to the buttons container
-        pageButtonsContainer.appendChild(prevPageButton);
-        pageButtonsContainer.appendChild(nextPageButton);
-    }
-
-    // Append the buttons container to the results container
-    const resultsContainer = document.getElementById('results-container');
-    const existingButtonsContainer = document.getElementById('page-buttons-container');
-    if (existingButtonsContainer) {
-        resultsContainer.removeChild(existingButtonsContainer);
-    }
-    resultsContainer.appendChild(pageButtonsContainer);
-}
-
-// Function to fetch and display Table Result
-
-function createTableResult(event, data, selectedWatering, selectedSunlight) {
-    const resultsContainer = document.getElementById('results-container');
-
-    showLoadingOverlay();
-    resultsContainer.innerHTML = '';
-
-    const wateringOption = document.getElementById('watering-dropdown').value;
-    const sunlightOption = document.getElementById('sunlight-dropdown').value;
-
-    const apiUrlWithWatering = apiUrl + '&watering=' + wateringOption;
-    const apiUrlWithWateringSunlight = apiUrlWithWatering + '&sunlight=' + sunlightOption;
-
-    // Simulate API call with a delay and handle the result
-    simulateAPIcall(apiUrlWithWateringSunlight)
-        .then((data) => {
-            console.log("Data Received:", data);
-            hideLoadingOverlay();
-
-            // Filter out data with ID 3001 and above
-            const filteredData = data.filter(item => item.id <= 3000);
-            console.log("Filtered Data:", filteredData);
-
-            const resultsHTML = createTableResultsHTML(filteredData, currentPage);
-            resultsContainer.innerHTML = resultsHTML;
-
-            // Call the function to create the pagination buttons
-            createPageButtons();
-
-            // Set initial button states for the first page
-            const nextPageButton = document.getElementById('next-page-button');
-            const prevPageButton = document.getElementById('prev-page-button');
-            if (nextPageButton) {
-                nextPageButton.disabled = currentPage >= getTotalPages();
-            }
-            if (prevPageButton) {
-                prevPageButton.disabled = currentPage <= 1;
-            }
-        });
-}
 
 // Function to create HTML for Table Result
 function createTableResultsHTML(data, currentPage) {
