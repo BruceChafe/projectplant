@@ -5,17 +5,45 @@ const apiUrl = 'https://perenual.com/api/species-list?page=1&key=' + apiKey2 + '
 
 // Initialize currentPage for pagination
 let currentPage = 1;
+let currentResult = 1;
+let validData = [];
+let filteredData = [];
+let currentResultIndex = 0;
+let randomItem
 
 // Function to get the total number of pages based on the validData
 function getTotalPages(filteredData) {
-    const resultsPerPage = 5; // Set this according to your desired results per page
+    const resultsPerPage = 5; // Set this according to your desired results per pƒageç
     const totalResults = filteredData.length;
     return Math.ceil(totalResults / resultsPerPage);
 }
 
-// Define validData and filteredData as global variables to store API responses
-let validData = [];
-let filteredData = [];
+// Function to get the total number of results based on the validData
+function getTotalResults(filteredData) {
+    const resultsPerPage = 1; // Set this according to your desired results per pƒageç
+    const totalResults = filteredData.length;
+    return Math.ceil(totalResults / resultsPerPage);
+}
+
+// Add event handler for DOMContentLoaded
+document.addEventListener('DOMContentLoaded', function () {
+    // Add event handler for Suggest Result buttonn
+    const suggestButton = document.getElementById('suggest-button');
+    if (suggestButton) {
+        suggestButton.addEventListener('click', function () {
+            createSuggestResult(filteredData);
+        });
+    }
+
+    // Add event handler for Table Result button
+    const tableButton = document.getElementById('table-button');
+    if (tableButton) {
+        tableButton.addEventListener('click', function () {
+            currentPage = 1; // Reset to the first page when switching to table results
+            createTableResult();
+        });
+    }
+})
 
 // Function to capitalize the first letter of each word
 function capitalFirstLetter(string) {
@@ -92,7 +120,7 @@ function hideLoadingOverlay() {
     tableButton.classList.remove('disabled');
 }
 
-// Function to show the next page of results in the table
+// Show Results Functions
 function showNextPage() {
     const wateringOption = document.getElementById('watering-dropdown').value;
     const sunlightOption = document.getElementById('sunlight-dropdown').value;
@@ -101,26 +129,6 @@ function showNextPage() {
 
     if (currentPage < totalPages) {
         currentPage += 1;
-    }
-
-    // Disable the next button if we are on the last page
-    const nextPageButton = document.getElementById('next-page-button');
-    if (nextPageButton) {
-        if (currentPage >= totalPages) {
-            nextPageButton.classList.add('disabled');
-        } else {
-            nextPageButton.classList.remove('disabled');
-        }
-    }
-
-    // Re-enable the previous button since we are moving to the next page
-    const prevPageButton = document.getElementById('prev-page-button');
-    if (prevPageButton) {
-        if (currentPage === 1) {
-            prevPageButton.classList.add('disabled');
-        } else {
-            prevPageButton.classList.remove('disabled');
-        }
     }
 
     createTableResult(wateringOption, sunlightOption);
@@ -133,33 +141,11 @@ function showPreviousPage() {
 
     if (currentPage > 1) {
         currentPage -= 1;
+        createTableResult(wateringOption, sunlightOption);
     }
-
-    // Disable the previous button if we are on the first page
-    const prevPageButton = document.getElementById('prev-page-button');
-    if (prevPageButton) {
-        if (currentPage === 1) {
-            prevPageButton.classList.add('disabled');
-        } else {
-            prevPageButton.classList.remove('disabled');
-        }
-    }
-
-    // Re-enable the next button since we are moving to the previous page
-    const nextPageButton = document.getElementById('next-page-button');
-    if (nextPageButton) {
-        if (currentPage < totalPages) {
-            nextPageButton.classList.add('disabled');
-        } else {
-            nextPageButton.classList.remove('disabled');
-        }
-    }
-
-    createTableResult(wateringOption, sunlightOption);
 }
 
-// Function to create the pagination buttons dynamically and append them to the DOM
-function createPageButtons() {
+function createTableButtons() {
     const pageButtonsContainer = document.createElement('div');
     pageButtonsContainer.classList.add('page-number-container');
     pageButtonsContainer.id = 'page-buttons-container';
@@ -193,56 +179,108 @@ function createPageButtons() {
         resultsContainer.removeChild(existingButtonsContainer);
     }
     resultsContainer.appendChild(pageButtonsContainer);
+
+    // Set initial button states
+    updateTableButtons();
 }
 
-// Function to update the prevPageButton and nextPageButton status based on currentPage and total pages
-function updateButtonStates() {
+function updateTableButtons() {
     const prevPageButton = document.getElementById('prev-page-button');
     const nextPageButton = document.getElementById('next-page-button');
     const totalPages = getTotalPages(filteredData);
 
-    if (nextPageButton) {
-        nextPageButton.disabled = currentPage >= totalPages;
-    }
     if (prevPageButton) {
-        prevPageButton.disabled = currentPage <= 1;
+        if (currentPage === 1) {
+            prevPageButton.classList.add('disabled');
+        }
+    }
+
+    if (nextPageButton) {
+        if (currentPage === totalPages) {
+            nextPageButton.classList.add('disabled');
+        }
     }
 }
 
-// Add event handler for DOMContentLoaded
-document.addEventListener('DOMContentLoaded', function () {
-    // Add event handler for Suggest Result buttonn
+// Show Suggest Functions
+function showNextSuggest() {
+    currentResult += 1;
+    if (currentResult > getTotalResults(filteredData)) {
+        currentResult = 1;
+    }
+    createSuggestResult();
+}
+
+function showPreviousSuggest() {
+    currentResult -= 1;
+    if (currentResult < 1) {
+        currentResult = getTotalResults(filteredData);
+    }
+    createSuggestResult();
+}
+
+function createSuggestButtons() {
+    const pageButtonsContainer = document.createElement('div');
+    pageButtonsContainer.classList.add('page-number-container');
+    pageButtonsContainer.id = 'page-buttons-container';
+
+    // Create the prev-suggest-button and next-suggest-button only for Suggest Result
     const suggestButton = document.getElementById('suggest-button');
     if (suggestButton) {
-        suggestButton.addEventListener('click', function () {
-            createSuggestResult();
-            listSuggestData();
-        });
+        const prevSuggestButton = document.createElement('a');
+        prevSuggestButton.href = '#';
+        prevSuggestButton.classList.add('btn', 'btn-danger');
+        prevSuggestButton.id = 'prev-suggest-button';
+        prevSuggestButton.textContent = 'Previous Suggestion';
+        prevSuggestButton.addEventListener('click', showPreviousSuggest);
+
+        const nextSuggestButton = document.createElement('a');
+        nextSuggestButton.href = '#';
+        nextSuggestButton.classList.add('btn', 'btn-danger');
+        nextSuggestButton.id = 'next-suggest-button';
+        nextSuggestButton.textContent = 'Next Suggestion';
+        nextSuggestButton.addEventListener('click', showNextSuggest);
+
+        // Append the buttons to the buttons container
+        pageButtonsContainer.appendChild(prevSuggestButton);
+        pageButtonsContainer.appendChild(nextSuggestButton);
     }
 
-    // Add event handler for Table Result button
-    const tableButton = document.getElementById('table-button');
-    if (tableButton) {
-        tableButton.addEventListener('click', function () {
-            currentPage = 1; // Reset to the first page when switching to table results
-            createTableResult();
-            createPageButtons(); // Create the buttons only for Table Result
-            updateButtonStates(); // Update button states for Table Result
-        });
+    // Append the buttons container to the results container
+    const resultsContainer = document.getElementById('results-container');
+    const existingButtonsContainer = document.getElementById('page-buttons-container');
+    if (existingButtonsContainer) {
+        resultsContainer.removeChild(existingButtonsContainer);
+    }
+    resultsContainer.appendChild(pageButtonsContainer);
+
+    // Set initial button states
+    updateSuggestButtons();
+}
+
+function updateSuggestButtons() {
+    const prevSuggestButton = document.getElementById('prev-suggest-button');
+    const nextSuggestButton = document.getElementById('next-suggest-button');
+    const totalResults = getTotalResults(filteredData);
+
+    if (prevSuggestButton) {
+        if (currentResult === 1) {
+            prevSuggestButton.classList.add('disabled');
+        } else {
+            prevSuggestButton.classList.remove('disabled');
+        }
     }
 
-    // Add event handlers for page buttons
-    const nextPageButton = document.getElementById('next-page-button');
-    const prevPageButton = document.getElementById('prev-page-button');
-
-    if (nextPageButton) {
-        nextPageButton.addEventListener('click', showNextPage);
+    if (nextSuggestButton) {
+        if (currentResult === totalResults) {
+            nextSuggestButton.classList.add('disabled');
+        } else {
+            nextSuggestButton.classList.remove('disabled');
+        }
     }
+}
 
-    if (prevPageButton) {
-        prevPageButton.addEventListener('click', showPreviousPage);
-    }
-});
+// Table Results
 function createTableResult() {
     const resultsContainer = document.getElementById('results-container');
 
@@ -259,34 +297,61 @@ function createTableResult() {
     simulateAPIcall(apiUrlWithWateringSunlight)
         .then((data) => {
             console.log("Data Received:", data);
-            hideLoadingOverlay();
 
-            // Filter out data with ID 3001 and above
             filteredData = data.filter(item => item.id <= 3000); // Assign to filteredData
             console.log("Filtered Data:", filteredData);
 
             const resultsHTML = createTableResultsHTML(filteredData, currentPage);
             resultsContainer.innerHTML = resultsHTML;
 
-            // Call the function to create the pagination buttons
-            createPageButtons();
-
-            // Set initial button states for the first page
-            const nextPageButton = document.getElementById('next-page-button');
-            const prevPageButton = document.getElementById('prev-page-button');
-            if (nextPageButton) {
-                nextPageButton.disabled = currentPage >= getTotalPages(filteredData);
-            }
-            if (prevPageButton) {
-                prevPageButton.disabled = currentPage <= 1;
-            }
+            // Call createTableButtons() after the results are displayed
+            hideLoadingOverlay();
+            createTableButtons();
         });
 }
 
-// Function to fetch suggested Plant ID URL
-function createSuggestResult(event, data, selectedWatering, selectedSunlight) {
+function createTableResultsHTML(data, currentPage) {
+    // Calculate the starting and ending indices for the current page
+    const resultsPerPage = 5; // Set this according to your desired results per page
+    const startIndex = (currentPage - 1) * resultsPerPage;
+    const endIndex = startIndex + resultsPerPage;
+    const totalPages = getTotalPages(filteredData);
+
+    let html = '<h3>Results:</h3>';
+
+    // Get the data for the current page
+    const validDataForPage = data.slice(startIndex, endIndex);
+
+    if (validDataForPage.length > 0) {
+        html += '<table>';
+        html += '<tr>';
+        html += '<th>Common Name</th>';
+        html += '<th>Sunlight</th>';
+        html += '<th>Watering</th>';
+        html += '</tr>';
+
+        validDataForPage.forEach(item => {
+            html += '<tr>';
+            html += '<td>' + capitalFirstLetter(item.common_name) + '</td>';
+            html += '<td>' + capitalFirstLetter(item.sunlight) + '</td>';
+            html += '<td>' + capitalFirstLetter(item.watering) + '</td>';
+            html += '</tr>';
+        });
+
+        html += '</table>';
+        html += '<p>Page ' + currentPage + ' of ' + totalPages + '</p>';
+    } else {
+        html += '<p>No results found.</p>';
+    }
+
+    return html;
+}
+
+// Show Suggest Results
+function createSuggestResult() {
     const resultsContainer = document.getElementById('results-container');
 
+    showLoadingOverlay();
     resultsContainer.innerHTML = '';
 
     const wateringOption = document.getElementById('watering-dropdown').value;
@@ -300,26 +365,21 @@ function createSuggestResult(event, data, selectedWatering, selectedSunlight) {
         .then((data) => {
             console.log("Data Received:", data);
 
-            const filteredData = data.filter(item => item.id <= 3000);
+            filteredData = data.filter(item => item.id <= 3000);
             console.log("Filtered Data:", filteredData);
 
-            const randomIndex = Math.floor(Math.random() * filteredData.length);
-            const randomItem = data[randomIndex];
+            randomItem = filteredData[Math.floor(Math.random() * filteredData.length)]; 
             console.log("Plant ID:", randomItem.id);
 
             const detailsURL = 'https://perenual.com/api/species/details/' + randomItem.id + '?key=' + apiKey2;
             console.log("Details URL:", detailsURL);
 
-            listSuggestData(detailsURL, randomItem, resultsContainer);
-
-            const nextRandomData = filteredData.filter(item => item.id !== randomItem.id);
-            console.log("Next Random Data:", nextRandomData);
+            createSuggestResultsHTML(detailsURL, randomItem, resultsContainer);
+    
         });
 }
 
-function listSuggestData(detailsURL, randomItem, resultsContainer) {
-    showLoadingOverlay();
-
+function createSuggestResultsHTML(detailsURL, randomItem, resultsContainer) {
     fetch(detailsURL)
         .then((response) => {
             if (!response.ok) {
@@ -381,42 +441,7 @@ function listSuggestData(detailsURL, randomItem, resultsContainer) {
             resultsContainer.innerHTML = html;
 
             hideLoadingOverlay();
-        });
-}
-
-
-// Function to create HTML for Table Result
-function createTableResultsHTML(data, currentPage) {
-    // Calculate the starting and ending indices for the current page
-    const resultsPerPage = 5; // Set this according to your desired results per page
-    const startIndex = (currentPage - 1) * resultsPerPage;
-    const endIndex = startIndex + resultsPerPage;
-
-    let html = '<h3>Results:</h3>';
-
-    // Get the data for the current page
-    const validDataForPage = data.slice(startIndex, endIndex);
-
-    if (validDataForPage.length > 0) {
-        html += '<table>';
-        html += '<tr>';
-        html += '<th>Common Name</th>';
-        html += '<th>Sunlight</th>';
-        html += '<th>Watering</th>';
-        html += '</tr>';
-
-        validDataForPage.forEach(item => {
-            html += '<tr>';
-            html += '<td>' + capitalFirstLetter(item.common_name) + '</td>';
-            html += '<td>' + capitalFirstLetter(item.sunlight) + '</td>';
-            html += '<td>' + capitalFirstLetter(item.watering) + '</td>';
-            html += '</tr>';
-        });
-
-        html += '</table>';
-    } else {
-        html += '<p>No results found.</p>';
+            createSuggestButtons();
+       });
     }
-
-    return html;
-}
+    
