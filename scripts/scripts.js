@@ -11,6 +11,13 @@ let filteredData = [];
 let currentResultIndex = 0;
 let randomItem
 
+const suggestButton = document.getElementById('suggest-button');
+if (suggestButton) {
+    suggestButton.addEventListener('click', function () {
+        createSuggestResult(filteredData);
+    });
+}
+
 // Function to get the total number of pages based on the validData
 function getTotalPages(filteredData) {
     const resultsPerPage = 5; // Set this according to your desired results per pƒageç
@@ -24,6 +31,8 @@ function getTotalResults(filteredData) {
     const totalResults = filteredData.length;
     return Math.ceil(totalResults / resultsPerPage);
 }
+
+
 
 // Add event handler for DOMContentLoaded
 document.addEventListener('DOMContentLoaded', function () {
@@ -208,7 +217,8 @@ function showNextSuggest() {
     if (currentResult > getTotalResults(filteredData)) {
         currentResult = 1;
     }
-    createSuggestResult();
+    createUpdatedSuggestResult(filteredData);
+    
 }
 
 function showPreviousSuggest() {
@@ -216,7 +226,8 @@ function showPreviousSuggest() {
     if (currentResult < 1) {
         currentResult = getTotalResults(filteredData);
     }
-    createSuggestResult();
+    createSuggestResult(filteredData);
+    
 }
 
 function createSuggestButtons() {
@@ -227,22 +238,15 @@ function createSuggestButtons() {
     // Create the prev-suggest-button and next-suggest-button only for Suggest Result
     const suggestButton = document.getElementById('suggest-button');
     if (suggestButton) {
-        const prevSuggestButton = document.createElement('a');
-        prevSuggestButton.href = '#';
-        prevSuggestButton.classList.add('btn', 'btn-danger');
-        prevSuggestButton.id = 'prev-suggest-button';
-        prevSuggestButton.textContent = 'Previous Suggestion';
-        prevSuggestButton.addEventListener('click', showPreviousSuggest);
 
         const nextSuggestButton = document.createElement('a');
         nextSuggestButton.href = '#';
         nextSuggestButton.classList.add('btn', 'btn-danger');
         nextSuggestButton.id = 'next-suggest-button';
-        nextSuggestButton.textContent = 'Next Suggestion';
+        nextSuggestButton.textContent = 'Try Again';
         nextSuggestButton.addEventListener('click', showNextSuggest);
 
         // Append the buttons to the buttons container
-        pageButtonsContainer.appendChild(prevSuggestButton);
         pageButtonsContainer.appendChild(nextSuggestButton);
     }
 
@@ -375,11 +379,97 @@ function createSuggestResult() {
             console.log("Details URL:", detailsURL);
 
             createSuggestResultsHTML(detailsURL, randomItem, resultsContainer);
-    
         });
 }
 
+function createUpdatedSuggestResult() {
+    const resultsContainer = document.getElementById('results-container');
+
+    filteredData = filteredData.filter(item => item.id !== randomItem.id);
+    console.log("Updated filterData:", filteredData);
+
+    const totalPages = getTotalResults(filteredData);
+    const resultsLeft = (totalPages - 1);
+
+    showLoadingOverlay();
+    resultsContainer.innerHTML = '';
+    
+    randomItem = filteredData[Math.floor(Math.random() * filteredData.length)];  // Corrected variable name
+    
+    const detailsURL = 'https://perenual.com/api/species/details/' + randomItem.id + '?key=' + apiKey2;  // Corrected variable name
+
+    fetch(detailsURL)
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then((detailsData) => {
+            console.log("Details Data:", detailsData);
+    
+            // Generate HTML for resultsContainer
+            let html = '<br>';
+            html += '<h3>Results:</h3>';
+            html += '<div>';
+                html += capitalFirstLetter(detailsData.common_name)
+                html += '<br>'
+                if (detailsData.default_image?.original_url) {
+                    html += '<img src="' + detailsData.default_image?.original_url + '" alt="Plant Image" width="500">';
+                } else {
+                    html += '<img src="images/imagenotfound.png">';
+                }
+                html += '<br>'
+                html += '<p>Scientific Name: ' + capitalFirstLetter(detailsData.scientific_name) + '</p>';
+                html += '<p>Family: ' + capitalFirstLetter(detailsData.family) + '</p>';
+                html += '<p>Propagation: ' + capitalFirstLetter(detailsData.propagation) + '</p>';
+                html += '<p>Watering: ' + capitalFirstLetter(detailsData.watering) + '</p>';
+                html += '<p>Sunlight: ' + capitalFirstLetter(detailsData.sunlight) + '</p>';
+                html += '<p>Maintenance: ' + capitalFirstLetter(detailsData.maintenance) + '</p>';
+                html += '<p>Growth Rate: ' + capitalFirstLetter(detailsData.growth_rate) + '</p>';
+                // Check the value of detailsData.drought_tolerant and change text accordingly
+                if (detailsData.drought_tolerant === true) {
+                    html += '<p>Drought Tolerant: Yes</p>';
+                } else {
+                    html += '<p>Drought Tolerant: No</p>';
+                }
+                // Check the value of detailsData.indoor and change text accordingly
+                if (detailsData.indoor === true) {
+                    html += '<p>Inddor: Yes</p>';
+                } else {
+                    html += '<p>Indoor: No</p>';
+                }
+                // Check the value of detailsData.poisonous_to_humans and change text accordingly
+                if (detailsData.poisonous_to_humans === 0) {
+                    html += '<p>Poisonous To Humans: Yes</p>';
+                } else {
+                    html += '<p>Poisonous To Humans: No</p>';
+                }
+                // Check the value of detailsData.poisonous_to_pets and change text accordingly
+                if (detailsData.poisonous_to_pets === 0) {
+                    html += '<p>Poisonous To Pets: Yes</p>';
+                } else {
+                    html += '<p>Poisonous To Pets: No</p>';
+                }
+                html += '<p>Description: ' + detailsData.description + '</p>';
+
+                html += '<p>Results Left: ' + resultsLeft + '</p>';
+
+    
+                html += '</div>';
+    
+                resultsContainer.innerHTML = html;
+    
+                hideLoadingOverlay();
+                createSuggestButtons();
+            })
+        }
+
 function createSuggestResultsHTML(detailsURL, randomItem, resultsContainer) {
+
+    const totalPages = getTotalResults(filteredData);
+    const resultsLeft = (totalPages - 1);
+
     fetch(detailsURL)
         .then((response) => {
             if (!response.ok) {
@@ -435,6 +525,8 @@ function createSuggestResultsHTML(detailsURL, randomItem, resultsContainer) {
                 html += '<p>Poisonous To Pets: No</p>';
             }
             html += '<p>Description: ' + detailsData.description + '</p>';
+
+            html += '<p>Results Left: ' + resultsLeft + '</p>';
 
             html += '</div>';
 
