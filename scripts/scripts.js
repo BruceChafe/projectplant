@@ -32,8 +32,6 @@ function getTotalResults(filteredData) {
     return Math.ceil(totalResults / resultsPerPage);
 }
 
-
-
 // Add event handler for DOMContentLoaded
 document.addEventListener('DOMContentLoaded', function () {
     // Add event handler for Suggest Result buttonn
@@ -54,6 +52,78 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 })
 
+// Add event listener for Learn More button
+document.addEventListener('click', function (event) {
+    const target = event.target;
+    if (target.classList.contains('btn-learn-more')) {
+        const itemId = target.getAttribute('data-item-id');
+        console.log('triggered');
+        showItemDetails(itemId);
+
+    }
+});
+
+function showItemDetails(itemId) {
+    // Find the collapsible container for the clicked item
+    const collapsibleContainer = document.querySelector(`[data-item-id="${itemId}"] .collapsible-container`);
+    
+    if (collapsibleContainer) {
+        // Toggle the visibility of the collapsible division
+        const collapsible = collapsibleContainer.querySelector('.collapse');
+        if (collapsible) {
+            collapsible.classList.toggle('show');
+        }
+    }
+}
+
+function generatePlantDetailsHTML(detailsData) {
+    let html = '<br>';
+    html += '<h3>Results:</h3>';
+    html += '<div>';
+    html += capitalFirstLetter(detailsData.common_name)
+    html += '<br>'
+    if (detailsData.default_image?.original_url) {
+        html += '<img src="' + detailsData.default_image?.original_url + '" alt="Plant Image" width="500">';
+    } else {
+        html += '<img src="images/imagenotfound.png">';
+    }
+    html += '<br>'
+    html += '<p>Scientific Name: ' + capitalFirstLetter(detailsData.scientific_name) + '</p>';
+    html += '<p>Family: ' + capitalFirstLetter(detailsData.family) + '</p>';
+    html += '<p>Propagation: ' + capitalFirstLetter(detailsData.propagation) + '</p>';
+    html += '<p>Watering: ' + capitalFirstLetter(detailsData.watering) + '</p>';
+    html += '<p>Sunlight: ' + capitalFirstLetter(detailsData.sunlight) + '</p>';
+    html += '<p>Maintenance: ' + capitalFirstLetter(detailsData.maintenance) + '</p>';
+    html += '<p>Growth Rate: ' + capitalFirstLetter(detailsData.growth_rate) + '</p>';
+    // Check the value of detailsData.drought_tolerant and change text accordingly
+    if (detailsData.drought_tolerant === true) {
+        html += '<p>Drought Tolerant: Yes</p>';
+    } else {
+        html += '<p>Drought Tolerant: No</p>';
+    }
+    // Check the value of detailsData.indoor and change text accordingly
+    if (detailsData.indoor === true) {
+        html += '<p>Indoor: Yes</p>';
+    } else {
+        html += '<p>Indoor: No</p>';
+    }
+    // Check the value of detailsData.poisonous_to_humans and change text accordingly
+    if (detailsData.poisonous_to_humans === 0) {
+        html += '<p>Poisonous To Humans: Yes</p>';
+    } else {
+        html += '<p>Poisonous To Humans: No</p>';
+    }
+    // Check the value of detailsData.poisonous_to_pets and change text accordingly
+    if (detailsData.poisonous_to_pets === 0) {
+        html += '<p>Poisonous To Pets: Yes</p>';
+    } else {
+        html += '<p>Poisonous To Pets: No</p>';
+    }
+    html += '<p>Description: ' + detailsData.description + '</p>';
+    html += '</div>';
+    return html;
+}
+
 // Function to capitalize the first letter of each word
 function capitalFirstLetter(string) {
     if (typeof string !== 'string') {
@@ -65,6 +135,8 @@ function capitalFirstLetter(string) {
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ');
 }
+
+// function expandTableReslts();
 
 // Function to simulate API call with a delay using Promises
 function simulateAPIcall(apiUrl) {
@@ -90,44 +162,33 @@ function simulateAPIcall(apiUrl) {
     });
 }
 
-// Function to show loading overlay and disable buttons during API calls
-function showLoadingOverlay() {
+let loadingOverlayVisible = false;
+
+function toggleLoadingOverlay(showOverlay) {
     const container = document.querySelector('.loading-overlay-container');
+    
+    if (showOverlay) {
+        // Show loading overlay
+        if (!loadingOverlayVisible) {
+            // Create a new loading overlay
+            const overlay = document.createElement('div');
+            overlay.classList.add('loading-overlay');
+            overlay.textContent = 'Loading...';
 
-    // Remove any existing loading overlay
-    const existingOverlay = document.querySelector('.loading-overlay');
-    if (existingOverlay) {
-        existingOverlay.remove();
+            // Append the overlay to the container
+            container.appendChild(overlay);
+            loadingOverlayVisible = true;
+        }
+    } else {
+        // Hide loading overlay
+        const overlay = document.querySelector('.loading-overlay');
+        if (overlay) {
+            overlay.remove();
+            loadingOverlayVisible = false;
+        }
     }
-
-    // Create a new loading overlay
-    const overlay = document.createElement('div');
-    overlay.classList.add('loading-overlay');
-    overlay.textContent = 'Loading...';
-
-    // Disable the suggest and table result buttons during API calls
-    const suggestButton = document.getElementById('suggest-button');
-    const tableButton = document.getElementById('table-button');
-    suggestButton.classList.add('disabled');
-    tableButton.classList.add('disabled');
-
-    // Append the overlay to the container
-    container.appendChild(overlay);
 }
 
-// Function to hide loading overlay and enable buttons after API calls
-function hideLoadingOverlay() {
-    const overlay = document.querySelector('.loading-overlay');
-    if (overlay) {
-        overlay.remove();
-    }
-
-    // Enable the suggest and table result buttons after API calls
-    const suggestButton = document.getElementById('suggest-button');
-    const tableButton = document.getElementById('table-button');
-    suggestButton.classList.remove('disabled');
-    tableButton.classList.remove('disabled');
-}
 
 // Show Results Functions
 function showNextPage() {
@@ -286,9 +347,9 @@ function updateSuggestButtons() {
 
 // Table Results
 function createTableResult() {
-    const resultsContainer = document.getElementById('results-container');
+    toggleLoadingOverlay(true);
 
-    showLoadingOverlay();
+    const resultsContainer = document.getElementById('results-container');
     resultsContainer.innerHTML = '';
 
     const wateringOption = document.getElementById('watering-dropdown').value;
@@ -305,57 +366,169 @@ function createTableResult() {
             filteredData = data.filter(item => item.id <= 3000); // Assign to filteredData
             console.log("Filtered Data:", filteredData);
 
-            const resultsHTML = createTableResultsHTML(filteredData, currentPage);
-            resultsContainer.innerHTML = resultsHTML;
+            // Collect promises for fetching details
+            const fetchPromises = filteredData.map(item => {
+                const detailsURL = 'https://perenual.com/api/species/details/' + item.id + '?key=' + apiKey2;
 
-            // Call createTableButtons() after the results are displayed
-            hideLoadingOverlay();
-            createTableButtons();
+                return fetch(detailsURL)
+                    .then((response) => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then((detailsData) => {
+                        return { item, detailsData }; // Combine item and detailsData
+                    })
+                    .catch((error) => {
+                        console.error('Error fetching data:', error);
+                    });
+            });
+
+            // Wait for all API calls to complete before rendering the HTML
+            Promise.all(fetchPromises)
+                .then((results) => {
+                    const detailsByItemId = {};
+                    results.forEach((result) => {
+                        detailsByItemId[result.item.id] = result.detailsData;
+                    });
+
+                    // Generate HTML after all details are fetched
+                    createTableResultsHTML(filteredData, currentPage, detailsByItemId)
+                        .then((resultsHTML) => {
+                            resultsContainer.innerHTML = resultsHTML;
+                            createTableButtons();
+                            toggleLoadingOverlay(false);
+                        })
+                        .catch((error) => {
+                            console.error('Error generating HTML:', error);
+                        });
+                });
         });
 }
 
-function createTableResultsHTML(data, currentPage) {
-    // Calculate the starting and ending indices for the current page
-    const resultsPerPage = 5; // Set this according to your desired results per page
-    const startIndex = (currentPage - 1) * resultsPerPage;
-    const endIndex = startIndex + resultsPerPage;
-    const totalPages = getTotalPages(filteredData);
 
-    let html = '<h3>Results:</h3>';
+// Asynchronous function to create table results HTML
+async function createTableResultsHTML(data, currentPage, detailsByItemId) {
+    return new Promise((resolve, reject) => {
+        // Calculate the starting and ending indices for the current page
+        const resultsPerPage = 5; // Set this according to your desired results per page
+        const startIndex = (currentPage - 1) * resultsPerPage;
+        const endIndex = startIndex + resultsPerPage;
+        const totalPages = getTotalPages(filteredData);
 
-    // Get the data for the current page
-    const validDataForPage = data.slice(startIndex, endIndex);
+        let html = '<h3>Results:</h3>';
 
-    if (validDataForPage.length > 0) {
-        html += '<table>';
-        html += '<tr>';
-        html += '<th>Common Name</th>';
-        html += '<th>Sunlight</th>';
-        html += '<th>Watering</th>';
-        html += '</tr>';
+        // Get the data for the current page
+        const validDataForPage = data.slice(startIndex, endIndex);
 
-        validDataForPage.forEach(item => {
+        if (validDataForPage.length > 0) {
+            html += '<table class="table">';
+            html += '<thead>';
             html += '<tr>';
-            html += '<td>' + capitalFirstLetter(item.common_name) + '</td>';
-            html += '<td>' + capitalFirstLetter(item.sunlight) + '</td>';
-            html += '<td>' + capitalFirstLetter(item.watering) + '</td>';
+            html += '<th scope="col">Common Name</th>';
+            html += '<th scope="col">Sunlight</th>';
+            html += '<th scope="col">Watering</th>';
+            html += '<th scope="col"></th>';
             html += '</tr>';
-        });
+            html += '</thead>';
+            html += '<tbody>'; // Start table body
 
-        html += '</table>';
-        html += '<p>Page ' + currentPage + ' of ' + totalPages + '</p>';
-    } else {
-        html += '<p>No results found.</p>';
-    }
+            // Create an object to store responses by item.id
+            const responsesByItemId = {};
 
-    return html;
+            const fetchPromises = validDataForPage.map(item => {
+                const detailsURL = 'https://perenual.com/api/species/details/' + item.id + '?key=' + apiKey2;
+
+                return fetch(detailsURL)
+                    .then((response) => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then((detailsData) => {
+                        // Store the response using item.id as the key
+                        responsesByItemId[item.id] = detailsData;
+
+                        return detailsData;
+                    })
+                    .catch((error) => {
+                        console.error('Error fetching data:', error);
+                    });
+            });
+
+            // Wait for all API calls to complete before rendering the HTML
+            Promise.all(fetchPromises)
+                .then(() => {
+                    // Generate the HTML in the original order
+                    validDataForPage.forEach(item => {
+                        const detailsData = detailsByItemId[item.id]; // Retrieve detailsData from the passed object
+
+                        // Generate HTML for each item using detailsData
+                        let itemHtml = '<tr>';
+                        itemHtml += '<td>' + capitalFirstLetter(item.common_name) + '</td>';
+                        itemHtml += '<td>' + capitalFirstLetter(item.sunlight) + '</td>';
+                        itemHtml += '<td>' + capitalFirstLetter(item.watering) + '</td>';
+                        itemHtml += '<td>';
+                        // Add Bootstrap collapse elements
+                        itemHtml += '<div class="accordion" id="accordion' + item.id + '">';
+                        itemHtml += '<div class="card">';
+                        itemHtml += '<div class="card-header" id="heading' + item.id + '">';
+                        itemHtml += '<button class="btn btn-primary btn-learn-more" type="button" data-toggle="collapse" data-target="#collapse' + item.id + '" aria-expanded="true" aria-controls="collapse' + item.id + '">Learn More</button>';
+                        itemHtml += '</div>';
+                        itemHtml += '</div>';
+                        itemHtml += '</div>';
+                        itemHtml += '</td>';
+                        itemHtml += '</tr>';
+
+                        // Pass the item data to generatePlantDetailsHTML to build the URL
+                        itemHtml += '<tr class="collapse-row">';
+                        itemHtml += '<td colspan="4">';
+                        itemHtml += '<div id="collapse' + item.id + '" class="collapse" aria-labelledby="heading' + item.id + '">';
+                        itemHtml += '<div class="card-body">';
+                        itemHtml += generatePlantDetailsHTML(detailsData); // Use detailsData
+                        itemHtml += '</div>';
+                        itemHtml += '</div>';
+                        itemHtml += '</td>';
+                        itemHtml += '</tr>';
+
+                        // Append the generated HTML to the table
+                        html += itemHtml;
+
+                        // Check if this is the last item and update the HTML once all API calls are complete
+                        if (item === validDataForPage[validDataForPage.length - 1]) {
+                            html += '</tbody>'; // End table body
+                            html += '</table>';
+                            html += '<p>Page ' + currentPage + ' of ' + totalPages + '</p>';
+
+                            // Resolve the Promise with the generated HTML
+                            resolve(html);
+                        }
+                    });
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        } else {
+            // No valid data for this page
+            html += '<p>No results found for this page.</p>';
+            html += '</tbody>'; // End table body
+            html += '</table>';
+            html += '<p>Page ' + currentPage + ' of ' + totalPages + '</p>';
+
+            // Resolve the Promise with the generated HTML
+            resolve(html);
+        }
+    });
 }
+
 
 // Show Suggest Results
 function createSuggestResult() {
-    const resultsContainer = document.getElementById('results-container');
+    toggleLoadingOverlay(true);
 
-    showLoadingOverlay();
+    const resultsContainer = document.getElementById('results-container');
     resultsContainer.innerHTML = '';
 
     const wateringOption = document.getElementById('watering-dropdown').value;
@@ -382,89 +555,6 @@ function createSuggestResult() {
         });
 }
 
-function createUpdatedSuggestResult() {
-    const resultsContainer = document.getElementById('results-container');
-
-    filteredData = filteredData.filter(item => item.id !== randomItem.id);
-    console.log("Updated filterData:", filteredData);
-
-    const totalPages = getTotalResults(filteredData);
-    const resultsLeft = (totalPages - 1);
-
-    showLoadingOverlay();
-    resultsContainer.innerHTML = '';
-    
-    randomItem = filteredData[Math.floor(Math.random() * filteredData.length)];  // Corrected variable name
-    
-    const detailsURL = 'https://perenual.com/api/species/details/' + randomItem.id + '?key=' + apiKey2;  // Corrected variable name
-
-    fetch(detailsURL)
-        .then((response) => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then((detailsData) => {
-            console.log("Details Data:", detailsData);
-    
-            // Generate HTML for resultsContainer
-            let html = '<br>';
-            html += '<h3>Results:</h3>';
-            html += '<div>';
-                html += capitalFirstLetter(detailsData.common_name)
-                html += '<br>'
-                if (detailsData.default_image?.original_url) {
-                    html += '<img src="' + detailsData.default_image?.original_url + '" alt="Plant Image" width="500">';
-                } else {
-                    html += '<img src="images/imagenotfound.png">';
-                }
-                html += '<br>'
-                html += '<p>Scientific Name: ' + capitalFirstLetter(detailsData.scientific_name) + '</p>';
-                html += '<p>Family: ' + capitalFirstLetter(detailsData.family) + '</p>';
-                html += '<p>Propagation: ' + capitalFirstLetter(detailsData.propagation) + '</p>';
-                html += '<p>Watering: ' + capitalFirstLetter(detailsData.watering) + '</p>';
-                html += '<p>Sunlight: ' + capitalFirstLetter(detailsData.sunlight) + '</p>';
-                html += '<p>Maintenance: ' + capitalFirstLetter(detailsData.maintenance) + '</p>';
-                html += '<p>Growth Rate: ' + capitalFirstLetter(detailsData.growth_rate) + '</p>';
-                // Check the value of detailsData.drought_tolerant and change text accordingly
-                if (detailsData.drought_tolerant === true) {
-                    html += '<p>Drought Tolerant: Yes</p>';
-                } else {
-                    html += '<p>Drought Tolerant: No</p>';
-                }
-                // Check the value of detailsData.indoor and change text accordingly
-                if (detailsData.indoor === true) {
-                    html += '<p>Inddor: Yes</p>';
-                } else {
-                    html += '<p>Indoor: No</p>';
-                }
-                // Check the value of detailsData.poisonous_to_humans and change text accordingly
-                if (detailsData.poisonous_to_humans === 0) {
-                    html += '<p>Poisonous To Humans: Yes</p>';
-                } else {
-                    html += '<p>Poisonous To Humans: No</p>';
-                }
-                // Check the value of detailsData.poisonous_to_pets and change text accordingly
-                if (detailsData.poisonous_to_pets === 0) {
-                    html += '<p>Poisonous To Pets: Yes</p>';
-                } else {
-                    html += '<p>Poisonous To Pets: No</p>';
-                }
-                html += '<p>Description: ' + detailsData.description + '</p>';
-
-                html += '<p>Results Left: ' + resultsLeft + '</p>';
-
-    
-                html += '</div>';
-    
-                resultsContainer.innerHTML = html;
-    
-                hideLoadingOverlay();
-                createSuggestButtons();
-            })
-        }
-
 function createSuggestResultsHTML(detailsURL, randomItem, resultsContainer) {
 
     const totalPages = getTotalResults(filteredData);
@@ -480,60 +570,44 @@ function createSuggestResultsHTML(detailsURL, randomItem, resultsContainer) {
         .then((detailsData) => {
             console.log("Details Data:", detailsData);
 
-            // Generate HTML for resultsContainer
-            let
-                html = '<br>'
-            html += '<h3>Results:</h3>';
-            html += '<div>';
-            html += capitalFirstLetter(detailsData.common_name)
-            html += '<br>'
-            if (detailsData.default_image?.original_url) {
-                html += '<img src="' + detailsData.default_image?.original_url + '" alt="Plant Image" width="500">';
-            } else {
-                html += '<img src="images/imagenotfound.png">';
-            }
-            html += '<br>'
-            html += '<p>Scientific Name: ' + capitalFirstLetter(detailsData.scientific_name) + '</p>';
-            html += '<p>Family: ' + capitalFirstLetter(detailsData.family) + '</p>';
-            html += '<p>Propagation: ' + capitalFirstLetter(detailsData.propagation) + '</p>';
-            html += '<p>Watering: ' + capitalFirstLetter(detailsData.watering) + '</p>';
-            html += '<p>Sunlight: ' + capitalFirstLetter(detailsData.sunlight) + '</p>';
-            html += '<p>Maintenance: ' + capitalFirstLetter(detailsData.maintenance) + '</p>';
-            html += '<p>Growth Rate: ' + capitalFirstLetter(detailsData.growth_rate) + '</p>';
-            // Check the value of detailsData.drought_tolerant and change text accordingly
-            if (detailsData.drought_tolerant === true) {
-                html += '<p>Drought Tolerant: Yes</p>';
-            } else {
-                html += '<p>Drought Tolerant: No</p>';
-            }
-            // Check the value of detailsData.indoor and change text accordingly
-            if (detailsData.indoor === true) {
-                html += '<p>Inddor: Yes</p>';
-            } else {
-                html += '<p>Indoor: No</p>';
-            }
-            // Check the value of detailsData.poisonous_to_humans and change text accordingly
-            if (detailsData.poisonous_to_humans === 0) {
-                html += '<p>Poisonous To Humans: Yes</p>';
-            } else {
-                html += '<p>Poisonous To Humans: No</p>';
-            }
-            // Check the value of detailsData.poisonous_to_pets and change text accordingly
-            if (detailsData.poisonous_to_pets === 0) {
-                html += '<p>Poisonous To Pets: Yes</p>';
-            } else {
-                html += '<p>Poisonous To Pets: No</p>';
-            }
-            html += '<p>Description: ' + detailsData.description + '</p>';
+            const detailsHTML = generatePlantDetailsHTML(detailsData);
+            resultsContainer.innerHTML = detailsHTML;
 
-            html += '<p>Results Left: ' + resultsLeft + '</p>';
-
-            html += '</div>';
-
-            resultsContainer.innerHTML = html;
-
-            hideLoadingOverlay();
+            toggleLoadingOverlay(false);
             createSuggestButtons();
        });
-    }
-    
+}
+
+function createUpdatedSuggestResult() {
+    toggleLoadingOverlay(true);
+    const resultsContainer = document.getElementById('results-container');
+
+    filteredData = filteredData.filter(item => item.id !== randomItem.id);
+    console.log("Updated filterData:", filteredData);
+
+    const totalPages = getTotalResults(filteredData);
+    const resultsLeft = (totalPages - 1);
+
+    resultsContainer.innerHTML = '';
+
+    randomItem = filteredData[Math.floor(Math.random() * filteredData.length)];  // Corrected variable name
+
+    const detailsURL = 'https://perenual.com/api/species/details/' + randomItem.id + '?key=' + apiKey2;  // Corrected variable name
+
+    fetch(detailsURL)
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then((detailsData) => {
+            console.log("Details Data:", detailsData);
+
+            const detailsHTML = generatePlantDetailsHTML(detailsData); // Use the shared function
+            resultsContainer.innerHTML = detailsHTML;
+
+            toggleLoadingOverlay(false);
+            createSuggestButtons();
+        });
+}
