@@ -1,6 +1,6 @@
 // Define API keys and the base URL
-const apiKey2 = 'sk-e7y064f655871f6692077';
-const apiKey5 = 'sk-BkuA64f6375362dbd2075';
+const apiKey5 = 'sk-e7y064f655871f6692077';
+const apiKey2 = 'sk-BkuA64f6375362dbd2075';
 const apiKey4 = 'sk-FYwN64f615f0529382072';
 const apiKey3 = 'sk-ojin6499fba9bbfc11234';
 const apiKey = 'sk-8uOL64d9325a586701870';
@@ -534,13 +534,7 @@ async function createTableResultsHTML(data, currentPage, totalPages) {
                 itemHtml += '<td>' + capitalFirstLetter(item.sunlight) + '</td>';
                 itemHtml += '<td>' + capitalFirstLetter(item.watering) + '</td>';
                 itemHtml += '<td>';
-                itemHtml += '<div class="accordion" id="accordion' + item.id + '">';
-                itemHtml += '<div class="card">';
-                itemHtml += '<div class="card-header" id="heading' + item.id + '">';
                 itemHtml += '<button class="btn btn-primary btn-learn-more" type="button" data-toggle="collapse" data-target="#collapse' + item.id + '" aria-expanded="true" aria-controls="collapse' + item.id + '">Learn More</button>';
-                itemHtml += '</div>';
-                itemHtml += '</div>';
-                itemHtml += '</div>';
                 itemHtml += '</td>';
                 itemHtml += '</tr>';
 
