@@ -16,7 +16,6 @@ let currentResultIndex = 0;
 let randomItem;
 let isLoading = false;
 let loadingOverlayVisible = false;
-const tableButton = document.getElementById('table-button');
 
 // Function to construct the API URL with watering and sunlight options
 function constructApiUrl(wateringOption, sunlightOption) {
@@ -72,14 +71,58 @@ function displayResultCount(currentResult, totalResults) {
 }
 
 // Event Listeners
-document.addEventListener('click', function (event) {
-    const target = event.target;
-    if (target.classList.contains('btn-learn-more')) {
-        const itemId = target.getAttribute('data-item-id');
-        console.log('Learn More button clicked');
-        showItemDetails(itemId);
-    }
+// Add a click event listener to the document
+document.addEventListener('click', async function (event) {
+    const target = event.target; // Get the clicked element
 
+    // Check if the clicked element has the class 'btn-learn-more'
+    if (target.classList.contains('btn-learn-more')) {
+        const dataTarget = target.getAttribute('data-target'); // Get the value of the 'data-target' attribute
+        const itemIdMatch = dataTarget.match(/#collapse(\d+)/); // Use a regular expression to extract an item ID from the 'data-target'
+
+        // Check if an item ID was found in the 'data-target'
+        if (itemIdMatch) {
+            const itemId = itemIdMatch[1]; // Extract the item ID
+            console.log('Learn More button clicked for item ID:', itemId);
+
+            // Check if the collapsible section is currently closed (not open)
+            const collapsible = document.querySelector(dataTarget + ' .card-body');
+            if (collapsible && !collapsible.classList.contains('show')) {
+                // Check if the collapsible section is already populated with data
+                if (!collapsible.innerHTML.trim()) {
+                    // Construct the URL for fetching plant details using the item ID and API key
+                    const detailsURL = 'https://perenual.com/api/species/details/' + itemId + '?key=' + apiKey2;
+
+                    try {
+                        // Fetch plant details data from the API
+                        const response = await fetch(detailsURL);
+
+                        // Check if the network response is okay; if not, throw an error
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+
+                        // Parse the response as JSON to get the plant details data
+                        const detailsData = await response.json();
+                        console.log("Details Data:", detailsData);
+
+                        // Generate plant details HTML with the fetched data
+                        const plantDetailsHTML = generatePlantDetailsHTML(detailsData);
+
+                        // Insert the generated plant details HTML into the collapsible section
+                        if (collapsible) {
+                            collapsible.innerHTML = plantDetailsHTML;
+                        }
+                    } catch (error) {
+                        console.error('Error fetching plant details:', error);
+                    }
+                }
+            }
+        }
+    }
+});
+
+document.addEventListener('click', function (event) {
     if (event.target.id === 'suggest-button') {
         event.preventDefault();
         console.log('Suggest a Plant button clicked');
@@ -299,9 +342,9 @@ function simulateAPIcall(apiUrl) {
                 .catch((error) => {
                     console.error('Error fetching data:', error);
                     reject(error);
-                });
-        }, 1000); // Simulate a 1-second delay
-    });
+                }); // Simulate a 1-second delay
+        });
+    })
 }
 
 // Function to toggle the loading overlay
@@ -342,28 +385,10 @@ function showPreviousPage() {
 
 // Function to create table page navigation buttons
 function createTableButtons(currentPage, totalPages, prevButtonId, nextButtonId, onClickPrev, onClickNext) {
+
     const pageButtonsContainer = createPageButtons(currentPage, totalPages, 'prev-page-button', 'next-page-button', showPreviousPage, showNextPage);
     pageButtonsContainer.classList.add('page-number-container');
     pageButtonsContainer.id = 'page-buttons-container';
-
-    if (tableButton) {
-        const prevPageButton = document.createElement('a');
-        prevPageButton.href = '#';
-        prevPageButton.classList.add('btn', 'btn-danger');
-        prevPageButton.id = 'prev-page-button';
-        prevPageButton.textContent = 'Previous Page';
-        prevPageButton.addEventListener('click', showPreviousPage);
-
-        const nextPageButton = document.createElement('a');
-        nextPageButton.href = '#';
-        nextPageButton.classList.add('btn', 'btn-danger');
-        nextPageButton.id = 'next-page-button';
-        nextPageButton.textContent = 'Next Page';
-        nextPageButton.addEventListener('click', showNextPage);
-
-        pageButtonsContainer.appendChild(prevPageButton);
-        pageButtonsContainer.appendChild(nextPageButton);
-    }
 
     const resultsContainer = document.getElementById('results-container');
     const existingButtonsContainer = document.getElementById('page-buttons-container');
@@ -543,7 +568,6 @@ async function createTableResultsHTML(data, currentPage, totalPages) {
                     itemHtml += '<td colspan="4">';
                     itemHtml += '<div id="collapse' + item.id + '" class="collapse" aria-labelledby="heading' + item.id + '">';
                     itemHtml += '<div class="card-body">';
-                    itemHtml += generatePlantDetailsHTML(detailsData);
                     itemHtml += '</div>';
                     itemHtml += '</div>';
                     itemHtml += '</td>';
