@@ -1,6 +1,6 @@
 // Define API keys and the base URL
-const apiKey5 = 'sk-e7y064f655871f6692077';
-const apiKey2 = 'sk-BkuA64f6375362dbd2075';
+const apiKey2 = 'sk-e7y064f655871f6692077';
+const apiKey5 = 'sk-BkuA64f6375362dbd2075';
 const apiKey4 = 'sk-FYwN64f615f0529382072';
 const apiKey3 = 'sk-ojin6499fba9bbfc11234';
 const apiKey = 'sk-8uOL64d9325a586701870';
@@ -14,7 +14,6 @@ let validData = [];
 let filteredData = [];
 let currentResultIndex = 0;
 let randomItem;
-let isLoading = false;
 let loadingOverlayVisible = false;
 
 // Function to construct the API URL with watering and sunlight options
@@ -132,25 +131,14 @@ document.addEventListener('click', function (event) {
     if (event.target.id === 'table-button') {
         event.preventDefault();
         console.log('Show Results button clicked');
+        filteredData = [];
         createTableResult(currentPage);
     }
 
     if (event.target.id === 'next-suggest-button') {
         event.preventDefault();
         console.log('Try Again button clicked');
-        fetchRandomPlant();
-    }
-
-    if (event.target.id === 'next-page-button') {
-        event.preventDefault();
-        console.log('Next Page button clicked');
-        showNextPage();
-    }
-
-    if (event.target.id === 'prev-page-button') {
-        event.preventDefault();
-        console.log('Previous Page button clicked');
-        showPreviousPage();
+        showNextSuggest();
     }
 });
 
@@ -179,6 +167,9 @@ function showItemDetails(itemId) {
 
 // Function to fetch and filter data based on user-selected options
 function fetchAndFilterData(wateringOption, sunlightOption) {
+    if (filteredData.length > 0 ) {
+        return Promise.resolve(filteredData);
+    }
     const apiUrlWithFilters = constructApiUrl(wateringOption, sunlightOption);
     return simulateAPIcall(apiUrlWithFilters)
         .then((data) => {
@@ -210,9 +201,6 @@ function fetchRandomPlant() {
                 // Construct the details URL for the selected random item
                 const detailsURL = 'https://perenual.com/api/species/details/' + randomItem.id + '?key=' + apiKey2;
                 console.log("Details URL:", detailsURL);
-            })
-            .finally(() => {
-                isLoading = false; // Reset the loading state when the operation is complete
             });
     } else {
         // If filteredData is not empty, select a random item
@@ -270,7 +258,7 @@ function generatePlantDetailsHTML(detailsData) {
     html += capitalFirstLetter(detailsData.common_name);
     html += '<br>';
     if (detailsData.default_image?.original_url) {
-        html += '<img src="' + detailsData.default_image?.original_url + '" alt="Plant Image" width="500">';
+        html += '<img src="' + detailsData.default_image?.regular_url + '" alt="Plant Image" width="500">';
     } else {
         html += '<img src="images/imagenotfound.png">';
     }
@@ -322,6 +310,25 @@ function capitalFirstLetter(string) {
         .split(' ')
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ');
+}
+
+// Function to format sunlight data
+function formatSunlight(sunlightArray) {
+    if (!sunlightArray || !Array.isArray(sunlightArray)) {
+        return '';
+    }
+
+    // Capitalize the first letter of each word in each sunlight value
+    const formattedSunlight = sunlightArray.map(sunlight => {
+        const words = sunlight.split(' ');
+        const capitalizedWords = words.map(word => {
+            return word.charAt(0).toUpperCase() + word.slice(1);
+        });
+        return capitalizedWords.join(' ');
+    });
+
+    // Join the formatted values with a comma and space
+    return formattedSunlight.join(', ');
 }
 
 // Function to simulate an API call with a delay using Promises
@@ -450,7 +457,6 @@ function createSuggestButtons() {
         nextSuggestButton.classList.add('btn', 'btn-danger');
         nextSuggestButton.id = 'next-suggest-button';
         nextSuggestButton.textContent = 'Try Again';
-        nextSuggestButton.addEventListener('click', showNextSuggest);
 
         pageButtonsContainer.appendChild(resultCount);
         pageButtonsContainer.appendChild(nextSuggestButton);
@@ -495,10 +501,6 @@ function updateSuggestButtons() {
 
 // Function to create table results
 async function createTableResult(page) {
-    if (isLoading) {
-        return;
-    }
-
     isLoading = true;
     toggleLoadingOverlay(true);
 
@@ -513,10 +515,14 @@ async function createTableResult(page) {
         console.log("Filtered Data:", filteredData);
 
         const totalPages = getTotalPages(filteredData);
-        const currentPageData = getPageData(filteredData, page);
-        const resultsHTML = await createTableResultsHTML(currentPageData, page, totalPages);
+        console.log("totalPages:", totalPages);
 
+        const currentPageData = getPageData(filteredData, page);
+        console.log("currentPageData:", currentPageData);
+
+        const resultsHTML = await createTableResultsHTML(currentPageData, page, totalPages);
         resultsContainer.innerHTML = resultsHTML;
+
         createTableButtons(page, totalPages, 'prev-page-button', 'next-page-button', showPreviousPage, showNextPage);
         displayResultCount(currentPageData.length, getTotalResults(filteredData));
     } catch (error) {
@@ -527,6 +533,7 @@ async function createTableResult(page) {
     }
 }
 
+
 // Asynchronous function to create table results HTML
 async function createTableResultsHTML(data, currentPage, totalPages) {
     let html = '<h3>Results:</h3>';
@@ -535,6 +542,7 @@ async function createTableResultsHTML(data, currentPage, totalPages) {
         html += '<table class="table">';
         html += '<thead>';
         html += '<tr>';
+        html += '<th scope="col"></th>';
         html += '<th scope="col">Common Name</th>';
         html += '<th scope="col">Sunlight</th>';
         html += '<th scope="col">Watering</th>';
@@ -555,17 +563,20 @@ async function createTableResultsHTML(data, currentPage, totalPages) {
                 const detailsData = await response.json();
 
                 let itemHtml = '<tr>';
+                if (detailsData.default_image?.original_url) {
+                    itemHtml += '<td>' + '<img src="' + detailsData.default_image?.thumbnail + '" alt="Plant Image" width="75">' + '</th>';
+                } else {
+                    itemHtml += '<td>' + '<img src="images/imagenotfound.png" alt="Plant Image" width="75">' + '</th>';
+                }        
                 itemHtml += '<td>' + capitalFirstLetter(item.common_name) + '</td>';
-                itemHtml += '<td>' + capitalFirstLetter(item.sunlight) + '</td>';
+                itemHtml += '<td>' + formatSunlight(item.sunlight) + '</td>';
                 itemHtml += '<td>' + capitalFirstLetter(item.watering) + '</td>';
-                itemHtml += '<td>';
-                itemHtml += '<button class="btn btn-primary btn-learn-more" type="button" data-toggle="collapse" data-target="#collapse' + item.id + '" aria-expanded="true" aria-controls="collapse' + item.id + '">Learn More</button>';
-                itemHtml += '</td>';
+                itemHtml += '<td>' + '<button class="btn btn-primary btn-learn-more" type="button" data-toggle="collapse" data-target="#collapse' + item.id + '" aria-expanded="true" aria-controls="collapse' + item.id + '">Learn More</button>' + '</td>';
                 itemHtml += '</tr>';
 
                 if (detailsData) {
                     itemHtml += '<tr class="collapse-row">';
-                    itemHtml += '<td colspan="4">';
+                    itemHtml += '<td colspan="5">';
                     itemHtml += '<div id="collapse' + item.id + '" class="collapse" aria-labelledby="heading' + item.id + '">';
                     itemHtml += '<div class="card-body">';
                     itemHtml += '</div>';
@@ -592,10 +603,6 @@ async function createTableResultsHTML(data, currentPage, totalPages) {
 
 // Function to create a suggestion result
 function createSuggestResult() {
-    if (isLoading) {
-        return;
-    }
-
     isLoading = true;
     toggleLoadingOverlay(true);
 
