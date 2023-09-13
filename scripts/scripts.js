@@ -15,6 +15,7 @@ let filteredData = [];
 let currentResultIndex = 0;
 let randomItem;
 let loadingOverlayVisible = false;
+let timer;
 
 // Function to construct the API URL with watering and sunlight options
 function constructApiUrl(wateringOption, sunlightOption) {
@@ -265,9 +266,9 @@ function generatePlantDetailsHTML(detailsData) {
     html += '<br>';
     html += '<p>Scientific Name: ' + capitalFirstLetter(detailsData.scientific_name) + '</p>';
     html += '<p>Family: ' + capitalFirstLetter(detailsData.family) + '</p>';
-    html += '<p>Propagation: ' + capitalFirstLetter(detailsData.propagation) + '</p>';
+    html += '<p>Propagation: ' + fortmatResponse(detailsData.propagation) + '</p>';
     html += '<p>Watering: ' + capitalFirstLetter(detailsData.watering) + '</p>';
-    html += '<p>Sunlight: ' + capitalFirstLetter(detailsData.sunlight) + '</p>';
+    html += '<p>Sunlight: ' + fortmatResponse(detailsData.sunlight) + '</p>';
     html += '<p>Maintenance: ' + capitalFirstLetter(detailsData.maintenance) + '</p>';
     html += '<p>Growth Rate: ' + capitalFirstLetter(detailsData.growth_rate) + '</p>';
 
@@ -313,21 +314,36 @@ function capitalFirstLetter(string) {
 }
 
 // Function to format sunlight data
-function formatSunlight(sunlightArray) {
+function fortmatResponse(sunlightArray) {
     if (!sunlightArray || !Array.isArray(sunlightArray)) {
         return '';
     }
 
     // Capitalize the first letter of each word in each sunlight value
     const formattedSunlight = sunlightArray.map(sunlight => {
-        const words = sunlight.split(' ');
-        const capitalizedWords = words.map(word => {
-            return word.charAt(0).toUpperCase() + word.slice(1);
+        // Split the sunlight value by commas and trim spaces
+        const values = sunlight.split(',').map(value => value.trim());
+
+        // Capitalize the first letter of each word in each value, except for specific words like "and"
+        const formattedValues = values.map(value => {
+            // Replace '/' with ' and/or '
+            const replacedValue = value.replace('/', ' and/or ');
+
+            const words = replacedValue.split(' ');
+            const capitalizedWords = words.map(word => {
+                // Check if the word is "and" and always keep it lowercase
+                if (word.toLowerCase() === 'and/or') {
+                    return word; // Keep "and" in lowercase
+                }
+                return word.charAt(0).toUpperCase() + word.slice(1);
+            });
+            return capitalizedWords.join(' ');
         });
-        return capitalizedWords.join(' ');
+
+        // Join the formatted values with commas
+        return formattedValues.join(', ');
     });
 
-    // Join the formatted values with a comma and space
     return formattedSunlight.join(', ');
 }
 
@@ -357,6 +373,12 @@ function simulateAPIcall(apiUrl) {
 // Function to toggle the loading overlay
 function toggleLoadingOverlay(showOverlay) {
     const container = document.querySelector('.loading-overlay-container');
+
+    if(timer) {
+        clearTimeout(timer);
+        timer = null;
+    }
+
     if (showOverlay) {
         if (!loadingOverlayVisible) {
             const overlay = document.createElement('div');
@@ -364,14 +386,38 @@ function toggleLoadingOverlay(showOverlay) {
             overlay.textContent = 'Loading...';
             container.appendChild(overlay);
             loadingOverlayVisible = true;
+
+            timer = setTimeout(() => {
+                displayErrorMessage();
+            }, 15000)
         }
+
     } else {
         const overlay = document.querySelector('.loading-overlay');
         if (overlay) {
             overlay.remove();
             loadingOverlayVisible = false;
         }
+
     }
+}
+
+function displayErrorMessage() {
+    const overlay = document.querySelector('.loading-overlay');
+    if (overlay) {
+        overlay.remove();
+        loadingOverlayVisible = false;
+    }
+
+    const errorMessage = document.createElement('div');
+    errorMessage.textContent = 'something went wrong.';
+    const tryAgainButton = document.createElement('button');
+    tryAgainButton.textContent = 'Try Again';
+
+    tryAgainButton.addEventListener('click', () => {
+
+    }
+)
 }
 
 // Function to show the next page of table results
@@ -501,7 +547,6 @@ function updateSuggestButtons() {
 
 // Function to create table results
 async function createTableResult(page) {
-    isLoading = true;
     toggleLoadingOverlay(true);
 
     const resultsContainer = document.getElementById('results-container');
@@ -528,17 +573,15 @@ async function createTableResult(page) {
     } catch (error) {
         console.error('Error fetching and displaying data:', error);
     } finally {
-        isLoading = false;
-        toggleLoadingOverlay(false);
+         toggleLoadingOverlay(false);
     }
 }
 
-
 // Asynchronous function to create table results HTML
-async function createTableResultsHTML(data, currentPage, totalPages) {
+async function createTableResultsHTML(detailsData, currentPage, totalPages) {
     let html = '<h3>Results:</h3>';
 
-    if (data.length > 0) {
+    if (detailsData.length > 0) {
         html += '<table class="table">';
         html += '<thead>';
         html += '<tr>';
@@ -551,42 +594,27 @@ async function createTableResultsHTML(data, currentPage, totalPages) {
         html += '</thead>';
         html += '<tbody>'; 
 
-        for (const item of data) {
-            const detailsURL = 'https://perenual.com/api/species/details/' + item.id + '?key=' + apiKey2;
+        for (const item of detailsData) {
             try {
-                const response = await fetch(detailsURL);
-
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-
-                const detailsData = await response.json();
-
                 let itemHtml = '<tr>';
-                if (detailsData.default_image?.original_url) {
-                    itemHtml += '<td>' + '<img src="' + detailsData.default_image?.thumbnail + '" alt="Plant Image" width="75">' + '</th>';
+                if (item.default_image?.thumbnail) {
+                    itemHtml += '<td>' + '<img src="' + item.default_image?.thumbnail + '" alt="Plant Image" width="75">' + '</th>';
                 } else {
                     itemHtml += '<td>' + '<img src="images/imagenotfound.png" alt="Plant Image" width="75">' + '</th>';
                 }        
                 itemHtml += '<td>' + capitalFirstLetter(item.common_name) + '</td>';
-                itemHtml += '<td>' + formatSunlight(item.sunlight) + '</td>';
+                itemHtml += '<td>' + fortmatResponse(item.sunlight) + '</td>';
                 itemHtml += '<td>' + capitalFirstLetter(item.watering) + '</td>';
                 itemHtml += '<td>' + '<button class="btn btn-primary btn-learn-more" type="button" data-toggle="collapse" data-target="#collapse' + item.id + '" aria-expanded="true" aria-controls="collapse' + item.id + '">Learn More</button>' + '</td>';
                 itemHtml += '</tr>';
-
-                if (detailsData) {
-                    itemHtml += '<tr class="collapse-row">';
-                    itemHtml += '<td colspan="5">';
-                    itemHtml += '<div id="collapse' + item.id + '" class="collapse" aria-labelledby="heading' + item.id + '">';
-                    itemHtml += '<div class="card-body">';
-                    itemHtml += '</div>';
-                    itemHtml += '</div>';
-                    itemHtml += '</td>';
-                    itemHtml += '</tr>';
-                } else {
-                    console.error('Details data is undefined for item ID:', item.id);
-                }
-
+                itemHtml += '<tr class="collapse-row">';
+                itemHtml += '<td colspan="5">';
+                itemHtml += '<div id="collapse' + item.id + '" class="collapse" aria-labelledby="heading' + item.id + '">';
+                itemHtml += '<div class="card-body">';
+                itemHtml += '</div>';
+                itemHtml += '</div>';
+                itemHtml += '</td>';
+                itemHtml += '</tr>';
                 html += itemHtml;
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -603,7 +631,6 @@ async function createTableResultsHTML(data, currentPage, totalPages) {
 
 // Function to create a suggestion result
 function createSuggestResult() {
-    isLoading = true;
     toggleLoadingOverlay(true);
 
     const resultsContainer = document.getElementById('results-container');
@@ -625,11 +652,9 @@ function createSuggestResult() {
 
                 getSuggestPlant();
             })
-            .finally(() => {
-                isLoading = false;
-            });
     } else {
         const detailsURL = 'https://perenual.com/api/species/details/' + randomItem.id + '?key=' + apiKey2;
         console.log("Details URL:", detailsURL);
+        getSuggestPlant();
     }
 }
