@@ -259,7 +259,7 @@ function generatePlantDetailsHTML(detailsData) {
     html += capitalFirstLetter(detailsData.common_name);
     html += '<br>';
     if (detailsData.default_image?.original_url) {
-        html += '<img src="' + detailsData.default_image?.regular_url + '" alt="Plant Image" width="500">';
+        html += '<img src="' + detailsData.default_image?.regular_url + '" alt="Plant Image" class="suggest-image">';
     } else {
         html += '<img src="images/imagenotfound.png">';
     }
@@ -598,9 +598,9 @@ async function createTableResultsHTML(detailsData, currentPage, totalPages) {
             try {
                 let itemHtml = '<tr>';
                 if (item.default_image?.thumbnail) {
-                    itemHtml += '<td>' + '<img src="' + item.default_image?.thumbnail + '" alt="Plant Image" width="75">' + '</th>';
+                    itemHtml += '<td>' + '<img src="' + item.default_image?.thumbnail + '" alt="Plant Image" class="table-image">' + '</th>';
                 } else {
-                    itemHtml += '<td>' + '<img src="images/imagenotfound.png" alt="Plant Image" width="75">' + '</th>';
+                    itemHtml += '<td>' + '<img src="images/imagenotfound.png" alt="Plant Image" class="table-image">' + '</th>';
                 }        
                 itemHtml += '<td>' + capitalFirstLetter(item.common_name) + '</td>';
                 itemHtml += '<td>' + fortmatResponse(item.sunlight) + '</td>';

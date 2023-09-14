@@ -4,6 +4,14 @@ $secondary: #fbf5e5;
 $success: #8bd3dd;
 $danger: #c3f0ca;
 
+.table-image {
+    max-width: 75px;
+}
+
+.suggest-image {
+    max-width: 500px;
+}
+
 // import bootsrap
 @import '../node_modules/bootstrap/scss/bootstrap';
 
