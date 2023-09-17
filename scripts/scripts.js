@@ -658,3 +658,89 @@ function createSuggestResult() {
         getSuggestPlant();
     }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Add an event listener to the "Start Here" button
+    const startButton = document.getElementById('start-button');
+    const leftSectionContainer = document.querySelector('.left-section');
+    const rightSectionContainer = document.querySelector('.right-section');
+    let currentStep = 0;
+  
+    startButton.addEventListener('click', function (event) {
+      event.preventDefault(); // Prevent the default behavior of the button (e.g., submitting a form)
+  
+      // Define your new content here (e.g., a new HTML structure)
+      const steps = [
+        {
+          leftContent: '<img src="image1.jpg" alt="Image 1">',
+          rightContent: `
+          <div class="container">
+          <form>
+            <div class="form-group">
+              <label for="checkboxOptions">Choose Options:</label>
+              <div id="checkboxOptions"></div>
+            </div>
+          </form>
+        </div>
+        
+          `,
+        },
+        {
+          leftContent: '<img src="image2.jpg" alt="Image 2">',
+          rightContent: `
+            <p>Step 2: Another question</p>
+            <button id="okay-button">Okay</button>
+          `,
+        },
+        {
+          leftContent: '<img src="image3.jpg" alt="Image 3">',
+          rightContent: `
+            <p>Step 3: Final question</p>
+            <button id="okay-button">Okay</button>
+          `,
+        },
+        {
+          leftContent: 'Ready to get your results?',
+          rightContent: `
+            <button id="get-results-button">Get Results</button>
+          `,
+        },
+      ];
+    
+      // Function to update the content in both containers
+      function updateContainers() {
+        leftSectionContainer.innerHTML = steps[currentStep].leftContent;
+        rightSectionContainer.innerHTML = steps[currentStep].rightContent;
+      }
+    
+      // Initial content update
+      updateContainers();
+    
+      // Event listener for the "Okay" button
+      document.addEventListener('click', function (event) {
+        if (event.target.id === 'okay-button') {
+          currentStep++;
+    
+          // Check if it's the final step
+          if (currentStep === steps.length) {
+            // Handle the final step (e.g., show results)
+            leftSectionContainer.innerHTML = 'Final step content';
+            rightSectionContainer.innerHTML = 'Final step content';
+          } else {
+            // Update content for the next step
+            updateContainers();
+          }
+        }
+      });
+    
+      // Event listener for the "Get Results" button (final step)
+      document.addEventListener('click', function (event) {
+        if (event.target.id === 'get-results-button') {
+          // Handle the action when the user wants to get results
+          leftSectionContainer.innerHTML = 'Results content';
+          rightSectionContainer.innerHTML = ''; // You may clear the right container if needed
+        }
+      });
+    });
+})
+

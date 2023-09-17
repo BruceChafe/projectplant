@@ -4,6 +4,47 @@ $secondary: #fbf5e5;
 $success: #8bd3dd;
 $danger: #c3f0ca;
 
+body {
+
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+.left-section {
+    background-color: #8bd3dd;
+    height: 100vh; /* 100% of the viewport height */
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    color: #333; /* Text color for left section */
+}
+
+.right-section {
+    background-color: #c3f0ca;
+    height: 100vh; /* 100% of the viewport height */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff; /* Text color for right section */
+}
+
+
+.sentences {
+    text-align: left;
+    padding-left: 5%;
+    margin-bottom: 20px;
+}
+
+.start-button {
+    background-color: #007BFF; /* Button color */
+    color: #fff; /* Text color */
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
 .table-image {
     max-width: 75px;
 }

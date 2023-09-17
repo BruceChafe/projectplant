@@ -1,34 +1,66 @@
 <!DOCTYPE html>
+<html lang="en">
 
-<html>
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width" />
-        <title> NAME ME! </title>
-    </head>
+<head>
+  <!-- Include Bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 
-    <body>
-        <header>
-            <nav>
-                <ul>
-                    <li><a href="/home.html">Home</a></li>
-                    <li><a href="/about.html">About</a></li>
-                    <li><a href="/contact.html">Contact</a></li>
-                </ul>
-            </nav>
-        </header>
+  <!-- Include Bootstrap JS (Popper.js and Bootstrap JS) and jQuery -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-        <section>
-            <p>Hello there!</p>
-        </section>
+  <!-- Include your custom CSS and JavaScript files -->
+  <link href="css/main.min.css" rel="stylesheet">
+  <script src="scripts/scripts.js"></script>
 
-        <section>
-            <p>Obi-Wan Kenobi</p>
-        </section>
+  <title>Project Plant</title>
+</head>
 
-        <footer>
-            <p>Project Plant - Copyright 2023</p>
-        </footer>
-    </body>
+<body>
+  <nav class="navbar navbar-expand-lg bg-secondary">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Project Plant</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/main.html">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/about.html">About</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/contact.html">Contact</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid">
+    <div class="row no-gutters">
+      <div class="col-md-7 left-section">
+        <div class="sentences text-left">
+          <h2>What kind of plant should I get?</h2>
+          <p>Take this quick 3-question quix to find out!</p>
+          <a href="#" class="btn btn-danger" id="start-button">Start Here</a>
+        </div>
+      </div>
+      <div class="col-md-5 right-section">
+        <img src="images/huy-phan-8gzVQJstcQo-unsplash.jpeg" alt="Top Image" class="img-fluid w-100 h-100"
+          style="object-fit: cover;">
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <!-- ... (your footer code) ... -->
+  </footer>
+  </div>
+</body>
 
 </html>
