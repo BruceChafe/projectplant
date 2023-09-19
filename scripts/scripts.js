@@ -73,6 +73,16 @@ let selectedSunlightOption = null;
 //     }
 // }
 
+function scrollToSection(sectionId) {
+    const section = document.getElementById(sectionId);
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+
+  // Add click event listeners to your buttons
+  
+
 // Event Listeners
 // Add a click event listener to the document
 document.addEventListener('click', async function (event) {
@@ -126,75 +136,42 @@ document.addEventListener('click', async function (event) {
 });
 
 document.addEventListener('click', function (event) {
-    if (event.target.id === 'suggest-button') {
+    if (event.target.id === 'start-button') {
         event.preventDefault();
         console.log('Suggest a Plant button clicked');
-        createSuggestResult();
+        scrollToSection('section-1');
     }
 
-    if (event.target.id === 'table-button') {
+    if (event.target.id === 'start-button-1') {
         event.preventDefault();
         console.log('Show Results button clicked');
         filteredData = [];
-        createTableResult(currentPage);
+        scrollToSection('section-2');
     }
 
-    if (event.target.id === 'next-suggest-button') {
+    if (event.target.id === 'start-button-2') {
         event.preventDefault();
         console.log('Try Again button clicked');
-        showNextSuggest();
+        scrollToSection('section-3');
     }
 
-    if (event.target.id === 'start-button') {
+    if (event.target.id === 'start-button-3') {
         event.preventDefault();
         console.log('Start button clicked');
-        window.location.href = '/contact copy.html';
-        
+        scrollToSection('section-3');
     }
 
 });
 
-document.addEventListener('DOMContentLoaded', function () {
-    const sections = document.querySelectorAll('.section-content');
-    let currentSectionIndex = 0;
-
-    function showSection(index) {
-        sections.forEach((section, i) => {
-            if (i === index) {
-                section.style.display = 'block';
-            } else {
-                section.style.display = 'none';
-            }
-        });
-    }
-
-    // // Show the first section when the page loads
-    // showSection(currentSectionIndex);
-
-    // Event listener for the "Start" button
-    document.getElementById('start-button').addEventListener('click', function () {
-        if (currentSectionIndex < sections.length - 1) {
-            currentSectionIndex++;
-            showSection(currentSectionIndex);
-        }
-    });
-
-    // // Event listener for the "Next" button
-    // document.getElementById('next-button').addEventListener('click', function () {
-    //     if (currentSectionIndex < sections.length - 1) {
-    //         currentSectionIndex++;
-    //         showSection(currentSectionIndex);
-    //     }
-    // });
-
-    // // Event listener for the "Previous" button
-    // document.getElementById('prev-button').addEventListener('click', function () {
-    //     if (currentSectionIndex > 0) {
-    //         currentSectionIndex--;
-    //         showSection(currentSectionIndex);
-    //     }
-    // });
-});
+// document.getElementById('start-button-2').addEventListener('click', function (event) {
+//     event.preventDefault();
+//     scrollToSection('section-3');
+//   });
+  
+// document.getElementById('start-button-3').addEventListener('click', function (event) {
+//     event.preventDefault();
+//     scrollToSection('section-4');
+//   });
 
 // // Function to calculate total pages based on filteredData
 // function getTotalPages(filteredData) {

@@ -2,7 +2,7 @@
 $primary: #f3d2c1;
 $secondary: #fbf5e5;
 $success: #8bd3dd;
-$danger: #c3f0ca;
+// $danger: #c3f0ca;
 
 body {
 
@@ -37,15 +37,6 @@ body {
     text-align: left;
     padding-left: 5%;
     margin-bottom: 20px;
-}
-
-.start-button {
-    background-color: #007BFF; /* Button color */
-    color: #fff; /* Text color */
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
 }
 
 /* Style for step containers */
