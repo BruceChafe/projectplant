@@ -69,29 +69,29 @@
         </div>
         <div class="sentences text-left">
           <h2>Watering</h2>
-          <p>Section 1 Content</p>
-          <div class="form-check" class="row">
-            <input class="form-check-input" type="radio" name="flexRadioStepOne" id="frequent">
+          <p>Just how often do you think you want to be watering?</p>
+          <div class="form-check row">
+            <input class="form-check-input" type="radio" name="flexRadioStepWatering" id="frequent">
             <label class="form-check-label" for="frequent">
-              Frequent
+                The more the better!
             </label>
           </div>
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="flexRadioStepOne" id="average">
+            <input class="form-check-input" type="radio" name="flexRadioStepWatering" id="average">
             <label class="form-check-label" for="average">
-              average
+                I can commit to once every week or so!
             </label>
           </div>
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="flexRadioStepOne" id="minimum">
+            <input class="form-check-input" type="radio" name="flexRadioStepWatering" id="minimum">
             <label class="form-check-label" for="minimum">
-              minimum
+                I will forget to water it!
             </label>
           </div>
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="flexRadioStepOne" id="none">
+            <input class="form-check-input" type="radio" name="flexRadioStepWatering" id="none">
             <label class="form-check-label" for="none">
-              none
+                Not at all!
             </label>
           </div>
           <a href="#" class="btn btn-danger" id="start-button-1">Start Here</a>
@@ -122,33 +122,33 @@
           <!-- Content for the right section -->
         </div>
         <div class="sentences text-left">
-          <h2>Watering</h2>
+          <h2>Sunlight</h2>
           <p>Section 1 Content</p>
           <div class="form-check" class="row">
-            <input class="form-check-input" type="radio" name="flexRadioStepOne" id="frequent">
-            <label class="form-check-label" for="frequent">
-              Frequent
+            <input class="form-check-input" type="radio" name="flexRadioStepSunlight" id="part_shade">
+            <label class="form-check-label" for="part_shade">
+                Part Shade
             </label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="flexRadioStepOne" id="average">
-            <label class="form-check-label" for="average">
-              average
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="flexRadioStepSunlight" id="full_shade">
+            <label class="form-check-label" for="full_shade">
+                Full Shade
             </label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="flexRadioStepOne" id="minimum">
-            <label class="form-check-label" for="minimum">
-              minimum
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="flexRadioStepSunlight" id="sun-part_shade">
+            <label class="form-check-label" for="sun-part_shade">
+                Part Sun
             </label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="flexRadioStepOne" id="none">
-            <label class="form-check-label" for="none">
-              none
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="flexRadioStepSunlight" id="full_sun">
+            <label class="form-check-label" for="full_sun">
+                Full Sun
             </label>
-          </div>
-          <a href="#" class="btn btn-danger" id="start-button-2">Start Here</a>
+        </div>
+          <a href="#" class="btn btn-danger" id="start-button-2">Next Question!</a>
         </div>
 
       </div>
@@ -162,33 +162,21 @@
           <!-- Content for the section -->
         </div>
         <div class="sentences text-left">
-          <h2>Watering</h2>
+          <h2>Can it be posnioius to pets?</h2>
           <p>Section 1 Content</p>
           <div class="form-check" class="row">
-            <input class="form-check-input" type="radio" name="flexRadioStepOne" id="frequent">
-            <label class="form-check-label" for="frequent">
-              Frequent
+            <input class="form-check-input" type="radio" name="flexRadioStepOne" id="yes">
+            <label class="form-check-label" for="yes">
+              Yes
             </label>
           </div>
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="flexRadioStepOne" id="average">
-            <label class="form-check-label" for="average">
-              average
+            <input class="form-check-input" type="radio" name="flexRadioStepOne" id="no">
+            <label class="form-check-label" for="no">
+              No
             </label>
           </div>
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="flexRadioStepOne" id="minimum">
-            <label class="form-check-label" for="minimum">
-              minimum
-            </label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="flexRadioStepOne" id="none">
-            <label class="form-check-label" for="none">
-              none
-            </label>
-          </div>
-          <a href="#" class="btn btn-danger" id="start-button-3">Start Here</a>
+          <a href="#" class="btn btn-danger" id="start-button-4" data-toggle="modal" data-target="#exampleModal">Results</a>
         </div>
       </div>
       <div class="col-md-7 left-section">
@@ -200,7 +188,26 @@
       </div>
     </div>
   </div>
-
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="plant-details"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
   <footer>
     <!-- ... (your footer code) ... -->
   </footer>
