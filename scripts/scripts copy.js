@@ -1,13 +1,4 @@
-// Define API keys and the base URL
-const apiKey2 = 'sk-e7y064f655871f6692077';
-const apiKey5 = 'sk-BkuA64f6375362dbd2075';
-const apiKey4 = 'sk-FYwN64f615f0529382072';
-const apiKey3 = 'sk-ojin6499fba9bbfc11234';
-const apiKey = 'sk-8uOL64d9325a586701870';
-const apiUrl = 'https://perenual.com/api/species-list?page=1&key=' + apiKey2 + '&indoor=1';
 
-const wateringRadioButtons = document.getElementsByName('flexRadioStepWatering'); // Updated name
-const sunlightRadioButtons = document.getElementsByName('flexRadioStepSunlight'); // Updated name
 
 // Initialize variables for pagination and data storage
 let currentPage = 1;
@@ -22,17 +13,6 @@ let timer;
 let currentStep = 0;
 let selectedWateringOption = null;
 let selectedSunlightOption = null;
-
-// // Function to construct the API URL with watering and sunlight options
-// function constructApiUrl(wateringOption, sunlightOption) {
-//     const apiUrlWithWatering = apiUrl + '&watering=' + wateringOption;
-//     return apiUrlWithWatering + '&sunlight=' + sunlightOption;
-// }
-
-// // Function to select a random item from filteredData
-// function selectRandomItem(filteredData) {
-//     return filteredData[Math.floor(Math.random() * filteredData.length)];
-// }
 
 // // Function to create page navigation buttons
 // function createPageButtons(currentPage, totalPages, prevButtonId, nextButtonId, onClickPrev, onClickNext) {
@@ -75,13 +55,6 @@ let selectedSunlightOption = null;
 //         resultCountElement.textContent = `Results: ${currentResult} out of ${totalResults}`;
 //     }
 // }
-
-function scrollToSection(sectionId) {
-    const section = document.getElementById(sectionId);
-    if (section) {
-      section.scrollIntoView({ behavior: 'smooth' });
-    }
-  }
 
 // Event Listeners
 // Add a click event listener to the document
@@ -179,10 +152,10 @@ document.addEventListener('click', function (event) {
         scrollToSection('section-3');
     }
 
-    if (event.target.id === 'start-button-4') {
-        event.preventDefault();
-        console.log('Start button clicked');
-        }
+    // if (event.target.id === 'start-button-4') {
+    //     event.preventDefault();
+    //     console.log('Start button clicked');
+    //     }
 
 });
 
@@ -424,37 +397,7 @@ document.addEventListener('click', function (event) {
 //     })
 // }
 
-// // Function to toggle the loading overlay
-// function toggleLoadingOverlay(showOverlay) {
-//     const container = document.querySelector('.loading-overlay-container');
-
-//     if (timer) {
-//         clearTimeout(timer);
-//         timer = null;
-//     }
-
-//     if (showOverlay) {
-//         if (!loadingOverlayVisible) {
-//             const overlay = document.createElement('div');
-//             overlay.classList.add('loading-overlay');
-//             overlay.textContent = 'Loading...';
-//             container.appendChild(overlay);
-//             loadingOverlayVisible = true;
-
-//             timer = setTimeout(() => {
-//                 displayErrorMessage();
-//             }, 15000)
-//         }
-
-//     } else {
-//         const overlay = document.querySelector('.loading-overlay');
-//         if (overlay) {
-//             overlay.remove();
-//             loadingOverlayVisible = false;
-//         }
-
-//     }
-// }
+// 
 
 // function displayErrorMessage() {
 //     const overlay = document.querySelector('.loading-overlay');
@@ -529,75 +472,7 @@ document.addEventListener('click', function (event) {
 //     }
 // }
 
-// // Function to show the next suggestion
-// function showNextSuggest(filterData) {
-//     currentResult += 1;
-//     if (currentResult > getTotalResults(filteredData)) {
-//         currentResult = 1;
-//     }
-//     randomItem = filteredData[Math.floor(Math.random() * filteredData.length)];
-//     getSuggestPlant();
-// }
 
-// // Function to create suggestion buttons
-// function createSuggestButtons() {
-//     const suggestButton = document.getElementById('suggest-button');
-
-//     const pageButtonsContainer = document.createElement('div');
-//     pageButtonsContainer.classList.add('page-number-container');
-//     pageButtonsContainer.id = 'page-buttons-container';
-
-//     if (suggestButton) {
-//         const resultCount = document.createElement('p');
-//         resultCount.classList.add('result-count');
-//         resultCount.textContent = `Results: ${currentResult} out of ${getTotalResults(filteredData)}`;
-
-//         const nextSuggestButton = document.createElement('a');
-//         nextSuggestButton.href = '#';
-//         nextSuggestButton.classList.add('btn', 'btn-danger');
-//         nextSuggestButton.id = 'next-suggest-button';
-//         nextSuggestButton.textContent = 'Try Again';
-
-//         pageButtonsContainer.appendChild(resultCount);
-//         pageButtonsContainer.appendChild(nextSuggestButton);
-//     }
-
-//     const resultsContainer = document.getElementById('results-container');
-//     const existingButtonsContainer = document.getElementById('page-buttons-container');
-//     if (existingButtonsContainer) {
-//         resultsContainer.removeChild(existingButtonsContainer);
-//     }
-//     resultsContainer.appendChild(pageButtonsContainer);
-//     updateSuggestButtons();
-// }
-
-// // Function to update suggestion buttons
-// function updateSuggestButtons() {
-//     const prevSuggestButton = document.getElementById('prev-suggest-button');
-//     const nextSuggestButton = document.getElementById('next-suggest-button');
-//     const totalResults = getTotalResults(filteredData);
-//     const resultCountElement = document.querySelector('.result-count');
-
-//     if (prevSuggestButton) {
-//         if (currentResult === 1) {
-//             prevSuggestButton.classList.add('disabled');
-//         } else {
-//             prevSuggestButton.classList.remove('disabled');
-//         }
-//     }
-
-//     if (nextSuggestButton) {
-//         if (currentResult === totalResults) {
-//             nextSuggestButton.classList.add('disabled');
-//         } else {
-//             nextSuggestButton.classList.remove('disabled');
-//         }
-//     }
-
-//     if (resultCountElement) {
-//         resultCountElement.textContent = `Results: ${currentResult} out of ${totalResults}`;
-//     }
-// }
 
 // // Function to create table results
 // async function createTableResult(page) {

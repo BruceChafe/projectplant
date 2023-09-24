@@ -41,10 +41,10 @@
     </div>
   </nav>
 
-  <div class="container-fluid">
+  <!-- Landing Page -->
+  <div class="container-fluid" id="section-0">
     <div class="row no-gutters">
-
-      <div class="col-md-7 left-section">
+      <div class="col-md-5 green-section">
         <div class="section-content"></div>
         <div class="sentences text-left">
           <h2>What kind of plant should I get?</h2>
@@ -52,8 +52,7 @@
           <a href="#" class="btn btn-danger" id="start-button">Start Here</a>
         </div>
       </div>
-
-      <div class="col-md-5 right-section">
+      <div class="col-md-7 left-section">
         <div class="section-content"></div>
         <img src="images/huy-phan-8gzVQJstcQo-unsplash.jpeg" alt="Top Image" class="img-fluid w-100 h-100"
           style="object-fit: cover;">
@@ -61,16 +60,17 @@
     </div>
   </div>
 
-  <div class="container-fluid" id="section-1">
+<!-- Step 1 - Watering -->
+  <div class="container-fluid" id="section-1" style='display: none;'>
     <div class="row no-gutters">
-      <div class="col-md-5 right-section">
-        <div class="section-content">
-          <!-- Content for the section -->
-        </div>
+      <div class="col-md-7 green-section">
+        <img src="images/huy-phan-8gzVQJstcQo-unsplash.jpeg" alt="Top Image" class="img-fluid w-100 h-100"
+        style="object-fit: cover;">
+      </div>
+      <div class="col-md-5 blue-section">
         <div class="sentences text-left">
           <h2>Watering</h2>
-          <p>Just how often do you think you want to be watering?</p>
-          <div class="form-check row">
+          <div class="form-check">
             <input class="form-check-input" type="radio" name="flexRadioStepWatering" id="frequent">
             <label class="form-check-label" for="frequent">
                 The more the better!
@@ -95,36 +95,20 @@
             </label>
           </div>
           <a href="#" class="btn btn-danger" id="start-button-1">Start Here</a>
+          <button class="btn btn-danger forward" id="next-button-watering">Next</button>
         </div>
-      </div>
-      <div class="col-md-7 left-section">
-        <div class="section-content">
-          <!-- Content for the right section -->
-        </div>
-        <img src="images/huy-phan-8gzVQJstcQo-unsplash.jpeg" alt="Top Image" class="img-fluid w-100 h-100"
-          style="object-fit: cover;">
       </div>
     </div>
   </div>
+  
 
-  <div class="container-fluid" id="section-2">
+<!-- Step 2 - Sunlight -->
+  <div class="container-fluid" id="section-2" style='display: none;'>
     <div class="row no-gutters">
-      <div class="col-md-7 left-section">
-        <div class="section-content">
-          <!-- Content for the section -->
-        </div>
-        <img src="images/huy-phan-8gzVQJstcQo-unsplash.jpeg" alt="Top Image" class="img-fluid w-100 h-100"
-          style="object-fit: cover;">
-
-      </div>
-      <div class="col-md-5 right-section">
-        <div class="section-content">
-          <!-- Content for the right section -->
-        </div>
+      <div class="col-md-5 green-section">
         <div class="sentences text-left">
           <h2>Sunlight</h2>
-          <p>Section 1 Content</p>
-          <div class="form-check" class="row">
+          <div class="form-check">
             <input class="form-check-input" type="radio" name="flexRadioStepSunlight" id="part_shade">
             <label class="form-check-label" for="part_shade">
                 Part Shade
@@ -149,22 +133,28 @@
             </label>
         </div>
           <a href="#" class="btn btn-danger" id="start-button-2">Next Question!</a>
+          <button class="btn btn-danger forward" id="next-button-sunlight">Next</button>
+          <button class="btn btn-danger back" id="back-button-sunlight">Back</button>        
         </div>
-
+      </div>
+      <div class="col-md-7 blue-section">
+        <img src="images/huy-phan-8gzVQJstcQo-unsplash.jpeg" alt="Top Image" class="img-fluid w-100 h-100"
+          style="object-fit: cover;">
       </div>
     </div>
   </div>
 
-  <div class="container-fluid" id="section-3">
+<!-- Step 3 - Poison -->
+  <div class="container-fluid" id="section-3" style='display: none;'>
     <div class="row no-gutters">
-      <div class="col-md-5 right-section">
-        <div class="section-content">
-          <!-- Content for the section -->
-        </div>
+      <div class="col-md-7 green-section">
+        <img src="images/huy-phan-8gzVQJstcQo-unsplash.jpeg" alt="Top Image" class="img-fluid w-100 h-100"
+          style="object-fit: cover;">
+      </div>
+      <div class="col-md-5 blue-section">
         <div class="sentences text-left">
-          <h2>Can it be posnioius to pets?</h2>
-          <p>Section 1 Content</p>
-          <div class="form-check" class="row">
+          <h2>Can it be poisonous to pets?</h2>
+          <div class="form-check">
             <input class="form-check-input" type="radio" name="flexRadioStepOne" id="yes">
             <label class="form-check-label" for="yes">
               Yes
@@ -176,24 +166,19 @@
               No
             </label>
           </div>
-          <a href="#" class="btn btn-danger" id="start-button-4" data-toggle="modal" data-target="#exampleModal">Results</a>
+          <a href="#" class="btn btn-danger" id="suggest-button">Results</a>
+          <button class="btn btn-danger back" id="back-button-poisonous">Back</button>
         </div>
-      </div>
-      <div class="col-md-7 left-section">
-        <div class="section-content">
-          <!-- Content for the right section -->
-        </div>
-        <img src="images/huy-phan-8gzVQJstcQo-unsplash.jpeg" alt="Top Image" class="img-fluid w-100 h-100"
-          style="object-fit: cover;">
       </div>
     </div>
   </div>
+
 <!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
+<div class="modal fade" id="suggestModal" tabindex="-1" role="dialog" aria-labelledby="suggestModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <h5 class="modal-title" id="suggestModalLabel">Recommended Result:</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -201,9 +186,8 @@
       <div class="modal-body">
         <div id="plant-details"></div>
       </div>
-      <div class="modal-footer">
+      <div class="modal-footer" id="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
       </div>
     </div>
   </div>

@@ -12,6 +12,50 @@ let selectedWateringOption = null;
 let selectedSunlightOption = null;
 let randomItem;
 let filteredData = [];
+let timer;
+let currentResult = 1;
+
+// Function to hide a section by setting its display property to "none"
+function hideSection(sectionId) {
+    const section = document.getElementById(sectionId);
+    if (section) {
+        section.style.display = 'none';
+    }
+}
+
+// Function to show a section by setting its display property to "block"
+function showSection(sectionId) {
+    const section = document.getElementById(sectionId);
+    if (section) {
+        section.style.display = 'block';
+    }
+}
+
+// Function to navigate to the next section
+function navigateToNextSection() {
+    const currentSection = document.querySelector('.step-container.visible');
+    if (!currentSection) return; // No visible section found
+
+    const nextSection = currentSection.nextElementSibling;
+    if (nextSection) {
+        currentSection.classList.remove('visible');
+        nextSection.classList.add('visible');
+        scrollToSection(nextSection.id);
+    }
+}
+
+// Function to navigate to the previous section
+function navigateToPreviousSection() {
+    const currentSection = document.querySelector('.step-container.visible');
+    if (!currentSection) return; // No visible section found
+
+    const previousSection = currentSection.previousElementSibling;
+    if (previousSection) {
+        currentSection.classList.remove('visible');
+        previousSection.classList.add('visible');
+        scrollToSection(previousSection.id);
+    }
+}
 
 // Event Listeners
 document.addEventListener('click', async function (event) {
@@ -31,42 +75,66 @@ document.addEventListener('click', async function (event) {
 
     if (event.target.id === 'start-button') {
         event.preventDefault();
+        hideSection('section-0');
+        showSection('section-1');
         scrollToSection('section-1');
     }
 
     if (event.target.id === 'start-button-1') {
         event.preventDefault();
+        hideSection('section-1');
+        showSection('section-2')
         scrollToSection('section-2');
     }
 
     if (event.target.id === 'start-button-2') {
         event.preventDefault();
+        hideSection('section-2')
+        showSection('section-3')
         scrollToSection('section-3');
     }
 
-    if (event.target.id === 'start-button-3') {
-        event.preventDefault();
-        scrollToSection('section-3');
-    }
-
-    if (event.target.id === 'start-button-4') {
+    if (event.target.id === 'suggest-button') {
         event.preventDefault();
         console.log('Selected Watering Option:', selectedWateringOption);
         console.log('Selected Sunlight Option:', selectedSunlightOption);
         createSuggestResult();
-        $('#exampleModal').modal('show');
+        $('#suggestModal').modal('show');
+    }
+
+    if (event.target.id === 'next-button-watering') {
+        event.preventDefault();
+        console.log('Next Clicked');
+        hideSection('section-1');
+        showSection('section-2')
+        scrollToSection('section-2');
+    }
+
+    if (event.target.id === 'back-button-sunlight') {
+        event.preventDefault();
+        console.log('Back Clicked');
+        hideSection('section-2');
+        showSection('section-1')
+        scrollToSection('section-1');
+    }
+
+    if (event.target.id === 'next-button-sunlight') {
+        event.preventDefault();
+        console.log('Next Clicked');
+        hideSection('section-2');
+        showSection('section-3')
+        scrollToSection('section-3');
+    }
+
+    if (event.target.id === 'back-button-poisonous') {
+        event.preventDefault();
+        console.log('Back Clicked');
+        hideSection('section-3');
+        showSection('section-2')
+        scrollToSection('section-2');
     }
 })
 
-// Add an event listener to the modal when it is shown
-$('#exampleModal').on('shown.bs.modal', function () {
-    // Get the plant details HTML using your generatePlantDetailsHTML function
-    const plantDetailsHTML = generatePlantDetailsHTML(/* pass your detailsData here */);
-  
-    // Update the content of the 'plant-details' element with the generated HTML
-    document.getElementById('plant-details').innerHTML = plantDetailsHTML;
-  });
-  
 
 // Function to capitalize the first letter of each word
 function capitalFirstLetter(string) {
@@ -191,22 +259,77 @@ function fetchPlantDetails(itemId) {
         .then((detailsData) => {
             console.log("Details Data:", detailsData);
 
-            // const resultsContainer = document.getElementById('results-container');
-            // const detailsHTML = generatePlantDetailsHTML(detailsData);
-            // resultsContainer.innerHTML = detailsHTML;
+            const resultsContainer = document.getElementById('plant-details');
+            const detailsHTML = generatePlantDetailsHTML(detailsData);
+            resultsContainer.innerHTML = detailsHTML;
 
-            // toggleLoadingOverlay(false);
-            // createSuggestButtons();
+            createSuggestButtons();
         })
         .catch((error) => {
             console.error('Error fetching plant details:', error);
         });
 }
 
+function getTotalResults(filteredData) {
+    return filteredData.length;
+}
+
+// Function to show the next suggestion
+function showNextSuggest(filterData) {
+    currentResult += 1;
+    if (currentResult > getTotalResults(filteredData)) {
+        currentResult = 1;
+    }
+    randomItem = filteredData[Math.floor(Math.random() * filteredData.length)];
+    getSuggestPlant();
+}
+
+// Function to create suggestion buttons
+function createSuggestButtons() {
+    const suggestButtonsContainer = document.getElementById('modal-footer')
+
+    const resultCount = document.createElement('p');
+    resultCount.classList.add('result-count');
+    resultCount.textContent = `Results: ${currentResult} out of ${getTotalResults(filteredData)}`;
+
+    const nextSuggestButton = document.createElement('button');
+    nextSuggestButton.classList.add('btn', 'btn-danger');
+    nextSuggestButton.id = 'next-suggest-button';
+    nextSuggestButton.textContent = 'Try Again';
+
+    nextSuggestButton.addEventListener('click', () => {
+    showNextSuggest(filteredData);
+    });
+
+    suggestButtonsContainer.innerHTML = '';
+    suggestButtonsContainer.appendChild(resultCount);
+    suggestButtonsContainer.appendChild(nextSuggestButton);
+
+    updateSuggestButtons();
+}
+
+// Function to update suggestion buttons
+function updateSuggestButtons() {
+    const nextSuggestButton = document.getElementById('next-suggest-button');
+    const totalResults = getTotalResults(filteredData);
+    const resultCountElement = document.querySelector('.result-count');
+
+    if (nextSuggestButton) {
+        if (currentResult === totalResults) {
+            nextSuggestButton.classList.add('disabled');
+        } else {
+            nextSuggestButton.classList.remove('disabled');
+        }
+    }
+
+    if (resultCountElement) {
+        resultCountElement.textContent = `Results: ${currentResult} out of ${totalResults}`;
+    }
+}
+
 function generatePlantDetailsHTML(detailsData) {
-    let html = '<br>';
-    html += '<h3>Results:</h3>';
-    html += '<div>';
+    let 
+    html = '<div>';
     html += capitalFirstLetter(detailsData.common_name);
     html += '<br>';
     if (detailsData.default_image?.original_url) {
@@ -253,9 +376,6 @@ function generatePlantDetailsHTML(detailsData) {
 }
 
 function createSuggestResult() {
-    // const resultsContainer = document.getElementById('results-container');
-    // resultsContainer.innerHTML = '';
-
     if (!randomItem) {
         fetchAndFilterData(selectedWateringOption, selectedSunlightOption)
             .then((filteredData) => {
@@ -275,4 +395,3 @@ function createSuggestResult() {
         getSuggestPlant();
     }
 }
-  

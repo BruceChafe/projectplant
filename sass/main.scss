@@ -5,10 +5,26 @@ $success: #8bd3dd;
 // $danger: #c3f0ca;
 
 body {
-
     height: 100vh;
     margin: 0;
     padding: 0;
+}
+
+.navbar {
+    position: absolute;
+    height: 6vh;
+}
+
+.back {
+    position: absolute;
+    bottom: 5vh;
+    left: 1vw;
+}
+
+.forward {
+    position: absolute;
+    bottom: 5vh;
+    right: 1vw;
 }
 
 .radio-label {
@@ -19,18 +35,18 @@ body {
     border-top: 50px;
 }
 
-.left-section {
+.blue-section {
     background-color: #8bd3dd;
-    height: 100vh; /* 100% of the viewport height */
+    height: 94vh; /* 100% of the viewport height */
     display: flex;
     justify-content: left;
     align-items: center;
     color: #333; /* Text color for left section */
 }
 
-.right-section {
+.green-section {
     background-color: #c3f0ca;
-    height: 100vh; /* 100% of the viewport height */
+    height: 94vh; /* 100% of the viewport height */
     display: flex;
     justify-content: center;
     align-items: center;
