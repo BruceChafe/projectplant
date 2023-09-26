@@ -7,7 +7,6 @@ const apiKey = 'sk-8uOL64d9325a586701870';
 const apiUrl = 'https://perenual.com/api/species-list?page=1&key=' + apiKey2 + '&indoor=1';
 
 // Initialize variables for pagination and data storage
-
 let currentPage = 1;
 let selectedWateringOption = null;
 let selectedSunlightOption = null;
@@ -15,48 +14,6 @@ let randomItem;
 let filteredData = [];
 let timer;
 let currentResult = 1;
-
-// Function to hide a section by setting its display property to "none"
-function hideSection(sectionId) {
-    const section = document.getElementById(sectionId);
-    if (section) {
-        section.style.display = 'none';
-    }
-}
-
-// Function to show a section by setting its display property to "block"
-function showSection(sectionId) {
-    const section = document.getElementById(sectionId);
-    if (section) {
-        section.style.display = 'block';
-    }
-}
-
-// Function to navigate to the next section
-function navigateToNextSection() {
-    const currentSection = document.querySelector('.step-container.visible');
-    if (!currentSection) return; // No visible section found
-
-    const nextSection = currentSection.nextElementSibling;
-    if (nextSection) {
-        currentSection.classList.remove('visible');
-        nextSection.classList.add('visible');
-        scrollToSection(nextSection.id);
-    }
-}
-
-// Function to navigate to the previous section
-function navigateToPreviousSection() {
-    const currentSection = document.querySelector('.step-container.visible');
-    if (!currentSection) return; // No visible section found
-
-    const previousSection = currentSection.previousElementSibling;
-    if (previousSection) {
-        currentSection.classList.remove('visible');
-        previousSection.classList.add('visible');
-        scrollToSection(previousSection.id);
-    }
-}
 
 // Event Listeners
 document.addEventListener('click', async function (event) {
@@ -135,8 +92,106 @@ document.addEventListener('click', async function (event) {
         scrollToSection('section-2');
     }
 })
+//Show More - Table Results
+document.addEventListener('click', async function (event) {
+    const target = event.target; // Get the clicked element
 
-// Function to capitalize the first letter of each word
+    // Check if the clicked element has the class 'btn-learn-more'
+    if (target.classList.contains('btn-learn-more')) {
+        const dataTarget = target.getAttribute('data-target'); // Get the value of the 'data-target' attribute
+        const itemIdMatch = dataTarget.match(/#collapse(\d+)/); // Use a regular expression to extract an item ID from the 'data-target'
+
+        // Check if an item ID was found in the 'data-target'
+        if (itemIdMatch) {
+            const itemId = itemIdMatch[1]; // Extract the item ID
+            console.log('Learn More button clicked for item ID:', itemId);
+
+            // Check if the collapsible section is currently closed (not open)
+            const collapsible = document.querySelector(dataTarget + ' .card-body');
+            if (collapsible && !collapsible.classList.contains('show')) {
+                // Check if the collapsible section is already populated with data
+                if (!collapsible.innerHTML.trim()) {
+                    // Construct the URL for fetching plant details using the item ID and API key
+                    const detailsURL = 'https://perenual.com/api/species/details/' + itemId + '?key=' + apiKey2;
+
+                    try {
+                        // Fetch plant details data from the API
+                        const response = await fetch(detailsURL);
+
+                        // Check if the network response is okay; if not, throw an error
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+
+                        // Parse the response as JSON to get the plant details data
+                        const detailsData = await response.json();
+                        console.log("Details Data:", detailsData);
+
+                        // Generate plant details HTML with the fetched data
+                        const plantDetailsHTML = generatePlantDetailsHTML(detailsData);
+
+                        // Insert the generated plant details HTML into the collapsible section
+                        if (collapsible) {
+                            collapsible.innerHTML = plantDetailsHTML;
+                        }
+                    } catch (error) {
+                        console.error('Error fetching plant details:', error);
+                    }
+                }
+            }
+        }
+    }
+});
+
+// Home Page Functions
+// Hide a section by setting its display property to "none"
+function hideSection(sectionId) {
+    const section = document.getElementById(sectionId);
+    if (section) {
+        section.style.display = 'none';
+    }
+}
+// Show a section by setting its display property to "block"
+function showSection(sectionId) {
+    const section = document.getElementById(sectionId);
+    if (section) {
+        section.style.display = 'block';
+    }
+}
+// Section Scroll
+function scrollToSection(sectionId) {
+    const section = document.getElementById(sectionId);
+    if (section) {
+        section.scrollIntoView({ behavior: 'smooth' });
+    }
+}
+// Navigate to the next section
+function navigateToNextSection() {
+    const currentSection = document.querySelector('.step-container.visible');
+    if (!currentSection) return; // No visible section found
+
+    const nextSection = currentSection.nextElementSibling;
+    if (nextSection) {
+        currentSection.classList.remove('visible');
+        nextSection.classList.add('visible');
+        scrollToSection(nextSection.id);
+    }
+}
+// Navigate to the previous section
+function navigateToPreviousSection() {
+    const currentSection = document.querySelector('.step-container.visible');
+    if (!currentSection) return; // No visible section found
+
+    const previousSection = currentSection.previousElementSibling;
+    if (previousSection) {
+        currentSection.classList.remove('visible');
+        previousSection.classList.add('visible');
+        scrollToSection(previousSection.id);
+    }
+}
+
+// Format Function
+// Capitalize the first letter of each word
 function capitalFirstLetter(string) {
     if (typeof string !== 'string') {
         return string;
@@ -147,8 +202,7 @@ function capitalFirstLetter(string) {
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ');
 }
-
-// Function to format sunlight data
+// Format sunlight data
 function fortmatResponse(sunlightArray) {
     if (!sunlightArray || !Array.isArray(sunlightArray)) {
         return '';
@@ -182,13 +236,13 @@ function fortmatResponse(sunlightArray) {
     return formattedSunlight.join(', ');
 }
 
-// Function to construct the API URL with watering and sunlight options
+// API Functions
+// Construct the API URL with watering and sunlight options
 function constructApiUrl(selectedWateringOption, selectedSunlightOption) {
     const apiUrlWithWatering = apiUrl + '&watering=' + selectedWateringOption;
     return apiUrlWithWatering + '&sunlight=' + selectedSunlightOption;
 }
-
-// Function to simulate an API call with a delay using Promises
+// Simulate an API call with a delay using Promises
 function simulateAPIcall(apiUrl) {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
@@ -210,19 +264,7 @@ function simulateAPIcall(apiUrl) {
         });
     })
 }
-
-// Function to select a random item from filteredData
-function selectRandomItem(filteredData) {
-    return filteredData[Math.floor(Math.random() * filteredData.length)];
-}
-
-function scrollToSection(sectionId) {
-    const section = document.getElementById(sectionId);
-    if (section) {
-        section.scrollIntoView({ behavior: 'smooth' });
-    }
-}
-
+// Fetch & filter data
 function fetchAndFilterData(selectedWateringOption, selectedSunlightOption) {
     if (filteredData.length > 0) {
         return Promise.resolve(filteredData);
@@ -237,14 +279,12 @@ function fetchAndFilterData(selectedWateringOption, selectedSunlightOption) {
         });
 }
 
-// Function to fetch and display a suggested plant
-function getSuggestPlant() {
-    if (!randomItem) {
-        console.error('No random item selected.');
-        return;
-    }
-    fetchPlantDetails(randomItem.id);
+// Function to select a random item from filteredData
+function selectRandomItem(filteredData) {
+    return filteredData[Math.floor(Math.random() * filteredData.length)];
 }
+
+
 
 // Function to fetch plant details
 function fetchPlantDetails(itemId) {
@@ -275,6 +315,35 @@ function getTotalResults(filteredData) {
     return filteredData.length;
 }
 
+// Suggest Functions
+// Function to fetch and display a suggested plant
+function createSuggestResult() {
+    if (!randomItem) {
+        fetchAndFilterData(selectedWateringOption, selectedSunlightOption)
+            .then((filteredData) => {
+                console.log("Filtered Data:", filteredData);
+
+                randomItem = selectRandomItem(filteredData);
+                console.log("Plant ID:", randomItem.id);
+
+                const detailsURL = 'https://perenual.com/api/species/details/' + randomItem.id + '?key=' + apiKey2;
+                console.log("Details URL:", detailsURL);
+
+                getSuggestPlant();
+            })
+    } else {
+        const detailsURL = 'https://perenual.com/api/species/details/' + randomItem.id + '?key=' + apiKey2;
+        console.log("Details URL:", detailsURL);
+        getSuggestPlant();
+    }
+}
+function getSuggestPlant() {
+    if (!randomItem) {
+        console.error('No random item selected.');
+        return;
+    }
+    fetchPlantDetails(randomItem.id);
+}
 // Function to show the next suggestion
 function showNextSuggest() {
     currentResult += 1;
@@ -284,7 +353,6 @@ function showNextSuggest() {
     randomItem = filteredData[Math.floor(Math.random() * filteredData.length)];
     getSuggestPlant();
 }
-
 // Function to create suggestion buttons
 function createSuggestButtons() {
     const suggestButtonsContainer = document.getElementById('modal-footer');
@@ -327,7 +395,6 @@ function createSuggestButtons() {
 
     updateSuggestButtons();
 }
-
 // Function to update suggestion buttons
 function updateSuggestButtons() {
     const nextSuggestButton = document.getElementById('next-suggest-button');
@@ -395,26 +462,6 @@ function generatePlantDetailsHTML(detailsData) {
     return html;
 }
 
-function createSuggestResult() {
-    if (!randomItem) {
-        fetchAndFilterData(selectedWateringOption, selectedSunlightOption)
-            .then((filteredData) => {
-                console.log("Filtered Data:", filteredData);
-
-                randomItem = selectRandomItem(filteredData);
-                console.log("Plant ID:", randomItem.id);
-
-                const detailsURL = 'https://perenual.com/api/species/details/' + randomItem.id + '?key=' + apiKey2;
-                console.log("Details URL:", detailsURL);
-
-                getSuggestPlant();
-            })
-    } else {
-        const detailsURL = 'https://perenual.com/api/species/details/' + randomItem.id + '?key=' + apiKey2;
-        console.log("Details URL:", detailsURL);
-        getSuggestPlant();
-    }
-}
 
 // // Function to calculate total pages based on filteredData
 function getTotalPages(filteredData) {
@@ -431,6 +478,14 @@ function getPageData(data, page) {
     return data.slice(startIndex, endIndex);
 }
 
+// // Function to display the count of results
+function displayResultCount(currentResult, totalResults) {
+    const resultCountElement = document.querySelector('.result-count');
+    if (resultCountElement) {
+        resultCountElement.textContent = `Results: ${currentResult} out of ${totalResults}`;
+    }
+}
+
 async function createTableResult(filteredData, page) {
     const resultsContainer = document.getElementById('plant-details');
     resultsContainer.innerHTML = '';
@@ -444,7 +499,7 @@ async function createTableResult(filteredData, page) {
 
     const resultsHTML = await createTableResultsHTML(currentPageData, page, totalPages);
     resultsContainer.innerHTML = resultsHTML;
-
+ 
     createTableButtons(page, totalPages, 'prev-page-button', 'next-page-button', showPreviousPage, showNextPage);
     displayResultCount(currentPageData.length, getTotalResults(filteredData));
 }
@@ -471,16 +526,14 @@ function createPageButtons(prevButtonId, nextButtonId, onClickPrev, onClickNext)
     prevPageButton.classList.add('btn', 'btn-danger');
     prevPageButton.id = prevButtonId;
     prevPageButton.textContent = 'Previous Page';
-    // prevPageButton.addEventListener('click', onClickPrev);
+    prevPageButton.addEventListener('click', () => onClickPrev());
 
     const nextPageButton = document.createElement('a');
     nextPageButton.href = '#';
     nextPageButton.classList.add('btn', 'btn-danger');
     nextPageButton.id = nextButtonId;
     nextPageButton.textContent = 'Next Page';
-    nextPageButton.addEventListener('click', () => {
-        showNextPage(filteredData, currentPage);
-    });
+    nextPageButton.addEventListener('click', () => onClickNext());
 
     pageButtonsContainer.appendChild(prevPageButton);
     pageButtonsContainer.appendChild(nextPageButton);
