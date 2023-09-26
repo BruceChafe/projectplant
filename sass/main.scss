@@ -71,13 +71,15 @@ body {
     transition: opacity 0.5s, transform 0.5s;
 }
 
-/* Apply a sliding effect when changing visibility */
 .step-container.visible {
     opacity: 1;
     display: block;
     transform: translateY(0);
 }
 
+.modal-footer {
+    height: 60px;
+}
 
 .table-image {
     max-width: 75px;

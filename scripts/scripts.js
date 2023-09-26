@@ -8,6 +8,7 @@ const apiUrl = 'https://perenual.com/api/species-list?page=1&key=' + apiKey2 + '
 
 // Initialize variables for pagination and data storage
 
+let currentPage = 1;
 let selectedWateringOption = null;
 let selectedSunlightOption = null;
 let randomItem;
@@ -61,17 +62,17 @@ function navigateToPreviousSection() {
 document.addEventListener('click', async function (event) {
     const wateringRadioButtons = document.querySelectorAll('[name="flexRadioStepWatering"]');
     wateringRadioButtons.forEach((radioButton) => {
-    if (radioButton.checked) {
-        selectedWateringOption = radioButton.id;
-    }
-});
+        if (radioButton.checked) {
+            selectedWateringOption = radioButton.id;
+        }
+    });
 
     const sunlightRadioButtons = document.querySelectorAll('[name="flexRadioStepSunlight"]');
     sunlightRadioButtons.forEach((radioButton) => {
-    if (radioButton.checked) {
-        selectedSunlightOption = radioButton.id;
-  }
-});
+        if (radioButton.checked) {
+            selectedSunlightOption = radioButton.id;
+        }
+    });
 
     if (event.target.id === 'start-button') {
         event.preventDefault();
@@ -134,7 +135,6 @@ document.addEventListener('click', async function (event) {
         scrollToSection('section-2');
     }
 })
-
 
 // Function to capitalize the first letter of each word
 function capitalFirstLetter(string) {
@@ -219,12 +219,12 @@ function selectRandomItem(filteredData) {
 function scrollToSection(sectionId) {
     const section = document.getElementById(sectionId);
     if (section) {
-      section.scrollIntoView({ behavior: 'smooth' });
+        section.scrollIntoView({ behavior: 'smooth' });
     }
 }
 
 function fetchAndFilterData(selectedWateringOption, selectedSunlightOption) {
-    if (filteredData.length > 0 ) {
+    if (filteredData.length > 0) {
         return Promise.resolve(filteredData);
     }
     const apiUrlWithFilters = constructApiUrl(selectedWateringOption, selectedSunlightOption);
@@ -243,7 +243,8 @@ function getSuggestPlant() {
         console.error('No random item selected.');
         return;
     }
-    fetchPlantDetails(randomItem.id);}
+    fetchPlantDetails(randomItem.id);
+}
 
 // Function to fetch plant details
 function fetchPlantDetails(itemId) {
@@ -275,7 +276,7 @@ function getTotalResults(filteredData) {
 }
 
 // Function to show the next suggestion
-function showNextSuggest(filterData) {
+function showNextSuggest() {
     currentResult += 1;
     if (currentResult > getTotalResults(filteredData)) {
         currentResult = 1;
@@ -286,22 +287,41 @@ function showNextSuggest(filterData) {
 
 // Function to create suggestion buttons
 function createSuggestButtons() {
-    const suggestButtonsContainer = document.getElementById('modal-footer')
+    const suggestButtonsContainer = document.getElementById('modal-footer');
+    suggestButtonsContainer.style.position = 'relative';
+
+    const tableResultsButton = document.createElement('button');
+    tableResultsButton.classList.add('btn', 'btn-danger');
+    tableResultsButton.id = 'table-results-button';
+    tableResultsButton.textContent = 'View All Results';
+    tableResultsButton.style.position = 'absolute';
+    tableResultsButton.style.left = '50px';
+
+    tableResultsButton.addEventListener('click', () => {
+        const page = 1;
+        createTableResult(filteredData, page);
+    })
 
     const resultCount = document.createElement('p');
     resultCount.classList.add('result-count');
     resultCount.textContent = `Results: ${currentResult} out of ${getTotalResults(filteredData)}`;
+    resultCount.style.position = 'absolute';
+    resultCount.style.left = '50%';
+    resultCount.style.transform = 'translateX(-50%)';
 
     const nextSuggestButton = document.createElement('button');
     nextSuggestButton.classList.add('btn', 'btn-danger');
     nextSuggestButton.id = 'next-suggest-button';
     nextSuggestButton.textContent = 'Try Again';
+    nextSuggestButton.style.position = 'absolute';
+    nextSuggestButton.style.right = '50px';
 
     nextSuggestButton.addEventListener('click', () => {
-    showNextSuggest(filteredData);
+        showNextSuggest(filteredData);
     });
 
     suggestButtonsContainer.innerHTML = '';
+    suggestButtonsContainer.appendChild(tableResultsButton);
     suggestButtonsContainer.appendChild(resultCount);
     suggestButtonsContainer.appendChild(nextSuggestButton);
 
@@ -328,8 +348,8 @@ function updateSuggestButtons() {
 }
 
 function generatePlantDetailsHTML(detailsData) {
-    let 
-    html = '<div>';
+    let
+        html = '<div>';
     html += capitalFirstLetter(detailsData.common_name);
     html += '<br>';
     if (detailsData.default_image?.original_url) {
@@ -394,4 +414,167 @@ function createSuggestResult() {
         console.log("Details URL:", detailsURL);
         getSuggestPlant();
     }
+}
+
+// // Function to calculate total pages based on filteredData
+function getTotalPages(filteredData) {
+    const resultsPerPage = 5; // Adjust this based on your desired results per page
+    const totalResults = filteredData.length;
+    return Math.ceil(totalResults / resultsPerPage);
+}
+
+// Function to get data for a specific page
+function getPageData(data, page) {
+    const resultsPerPage = 5; // Adjust this based on your desired results per page
+    const startIndex = (page - 1) * resultsPerPage;
+    const endIndex = startIndex + resultsPerPage;
+    return data.slice(startIndex, endIndex);
+}
+
+async function createTableResult(filteredData, page) {
+    const resultsContainer = document.getElementById('plant-details');
+    resultsContainer.innerHTML = '';
+    console.log("Filtered Data:", filteredData);
+
+    const totalPages = getTotalPages(filteredData);
+    console.log("totalPages:", totalPages);
+
+    const currentPageData = getPageData(filteredData, page);
+    console.log("currentPageData:", currentPageData);
+
+    const resultsHTML = await createTableResultsHTML(currentPageData, page, totalPages);
+    resultsContainer.innerHTML = resultsHTML;
+
+    createTableButtons(page, totalPages, 'prev-page-button', 'next-page-button', showPreviousPage, showNextPage);
+    displayResultCount(currentPageData.length, getTotalResults(filteredData));
+}
+
+// Function to create table page navigation buttons
+function createTableButtons(currentPage, totalPages, prevButtonId, nextButtonId, onClickPrev, onClickNext) {
+    const pageButtonsContainer = document.getElementById('modal-footer');
+    pageButtonsContainer.innerHTML = '';
+
+    const pageButtons = createPageButtons(currentPage, totalPages, 'prev-page-button', 'next-page-button', showPreviousPage, showNextPage);
+    pageButtons.classList.add('modal-footer');
+
+    updateTableButtons();
+}
+
+// // Function to create page navigation buttons
+function createPageButtons(prevButtonId, nextButtonId, onClickPrev, onClickNext) {
+    const pageButtonsContainer = document.getElementById('modal-footer');
+    pageButtonsContainer.classList.add('page-number-container');
+    pageButtonsContainer.id = 'page-buttons-container';
+
+    const prevPageButton = document.createElement('a');
+    prevPageButton.href = '#';
+    prevPageButton.classList.add('btn', 'btn-danger');
+    prevPageButton.id = prevButtonId;
+    prevPageButton.textContent = 'Previous Page';
+    // prevPageButton.addEventListener('click', onClickPrev);
+
+    const nextPageButton = document.createElement('a');
+    nextPageButton.href = '#';
+    nextPageButton.classList.add('btn', 'btn-danger');
+    nextPageButton.id = nextButtonId;
+    nextPageButton.textContent = 'Next Page';
+    nextPageButton.addEventListener('click', () => {
+        showNextPage(filteredData, currentPage);
+    });
+
+    pageButtonsContainer.appendChild(prevPageButton);
+    pageButtonsContainer.appendChild(nextPageButton);
+
+    return pageButtonsContainer;
+}
+
+// Function to show the next page of table results
+function showNextPage() {
+    if (currentPage < getTotalPages(filteredData)) {
+        currentPage += 1;
+        createTableResult(currentPage);
+    }
+}
+
+// // Function to show the previous page of table results
+function showPreviousPage() {
+    if (currentPage > 1) {
+        currentPage -= 1;
+        createTableResult(currentPage);
+    }
+}
+
+// // Function to update table page navigation buttons
+function updateTableButtons() {
+    const prevPageButton = document.getElementById('prev-page-button');
+    const nextPageButton = document.getElementById('next-page-button');
+    const totalPages = getTotalPages(filteredData);
+
+    if (prevPageButton) {
+        if (currentPage === 1) {
+            prevPageButton.classList.add('disabled');
+        } else {
+            prevPageButton.classList.remove('disabled');
+        }
+    }
+
+    if (nextPageButton) {
+        if (currentPage === totalPages) {
+            nextPageButton.classList.add('disabled');
+        } else {
+            nextPageButton.classList.remove('disabled');
+        }
+    }
+}
+
+// Asynchronous function to create table results HTML
+async function createTableResultsHTML(detailsData, currentPage, totalPages) {
+    let html = '<h3>Results:</h3>';
+
+    if (detailsData.length > 0) {
+        html += '<table class="table">';
+        html += '<thead>';
+        html += '<tr>';
+        html += '<th scope="col"></th>';
+        html += '<th scope="col">Common Name</th>';
+        html += '<th scope="col">Sunlight</th>';
+        html += '<th scope="col">Watering</th>';
+        html += '<th scope="col"></th>';
+        html += '</tr>';
+        html += '</thead>';
+        html += '<tbody>';
+
+        for (const item of detailsData) {
+            try {
+                let itemHtml = '<tr>';
+                if (item.default_image?.thumbnail) {
+                    itemHtml += '<td>' + '<img src="' + item.default_image?.thumbnail + '" alt="Plant Image" class="table-image">' + '</th>';
+                } else {
+                    itemHtml += '<td>' + '<img src="images/imagenotfound.png" alt="Plant Image" class="table-image">' + '</th>';
+                }
+                itemHtml += '<td>' + capitalFirstLetter(item.common_name) + '</td>';
+                itemHtml += '<td>' + fortmatResponse(item.sunlight) + '</td>';
+                itemHtml += '<td>' + capitalFirstLetter(item.watering) + '</td>';
+                itemHtml += '<td>' + '<button class="btn btn-primary btn-learn-more" type="button" data-toggle="collapse" data-target="#collapse' + item.id + '" aria-expanded="true" aria-controls="collapse' + item.id + '">Learn More</button>' + '</td>';
+                itemHtml += '</tr>';
+                itemHtml += '<tr class="collapse-row">';
+                itemHtml += '<td colspan="5">';
+                itemHtml += '<div id="collapse' + item.id + '" class="collapse" aria-labelledby="heading' + item.id + '">';
+                itemHtml += '<div class="card-body">';
+                itemHtml += '</div>';
+                itemHtml += '</div>';
+                itemHtml += '</td>';
+                itemHtml += '</tr>';
+                html += itemHtml;
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+        html += '</tbody>';
+        html += '<p>Page ' + currentPage + ' of ' + totalPages + '</p>';
+    } else {
+        html += '<p>No results found for this page.</p>';
+    }
+
+    return html;
 }
