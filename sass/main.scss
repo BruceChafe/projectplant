@@ -1,94 +1,216 @@
-// custom variables
-$primary: #f3d2c1;
-$secondary: #fbf5e5;
-$success: #8bd3dd;
-// $danger: #c3f0ca;
+// Custom Colors for Plant Finder Website
+$secondary: #A5CC82;     // Secondary orange color for accents
+$danger: #A2B5CD;       // Danger red for alerts and errors
 
 body {
     height: 100vh;
     margin: 0;
     padding: 0;
+    font-family: 'Arial', sans-serif; // Use a clean, easy-to-read font
+    background-color: #F5F5F5; // Light gray background for a clean look
 }
 
-.navbar {
-    position: absolute;
-    height: 6vh;
+@media (max-width: 768px) {
+    .navbar {
+        height: 8vh;
+    }
+    .content-section {
+        background-color: #E0E7F0; // Use primary color for the background
+        height: 36vh;
+        display: flex;
+        justify-content: left;
+        align-items: center;
+        color: #333333; // White text for better contrast
+    }
+
+    .photo-section {
+        background-color: #E0E7F0; // Use success color for the background
+        height: 56vh;
+        justify-content: center;
+        align-items: center;
+        color: #333333; // Dark text for better readability
+    }
+
+    .sentences {
+        text-align: left;
+        padding-left: 5%;
+        margin-bottom: 20px;
+    }
 }
 
-.back {
-    position: absolute;
-    bottom: 5vh;
-    left: 1vw;
+@media (min-width: 768px) {
+    .navbar {
+        height: auto; // Allow the navbar to adjust its height based on content
+    }
+
+    .back {
+        position: absolute;
+        bottom: 5vh;
+        left: 1vw;
+    }
+
+    .forward {
+        position: absolute;
+        bottom: 5vh;
+        right: 1vw;
+    }
+
+    .radio-label {
+        margin-left: 10px;
+    }
+
+    .start-button-1 {
+        border-top: 50px;
+    }
+
+    .intro-section {
+        background-color: #E0E7F0; // Use primary color for the background
+        height: 94vh;
+        display: flex;
+        justify-content: left;
+        align-items: center;
+        color: #333333; // White text for better contrast
+    }
+
+    .content-section {
+        background-color: #E0E7F0; // Use primary color for the background
+        height: 94vh;
+        display: flex;
+        justify-content: left;
+        align-items: center;
+        color: #333333; // White text for better contrast
+    }
+
+    .photo-section {
+        background-color: #E0E7F0; // Use success color for the background
+        height: 94vh;
+        justify-content: center;
+        align-items: center;
+        color: #333333; // Dark text for better readability
+    }
+
+    .sentences {
+        text-align: left;
+        padding-left: 5%;
+        margin-bottom: 20px;
+    }
+
+    .modal-header {
+        background-color: #CDD7E5;
+        color: #333333;
+    }
+
+    .modal-body {
+        background-color: #F0F4FA;
+        color: #333333;
+    }
+
+    .modal-footer {
+        height: 60px;
+        background-color: #F0F4FA;
+    }
+
+    .table-image {
+        max-width: 75px;
+    }
+
+    .suggest-image {
+        max-width: 500px;
+    }
 }
 
-.forward {
-    position: absolute;
-    bottom: 5vh;
-    right: 1vw;
-}
-
-.radio-label {
-    margin-left: 10px; /* Add your desired margin here */
-}
-
-.start-button-1 {
-    border-top: 50px;
-}
-
-.blue-section {
-    background-color: #8bd3dd;
-    height: 94vh; /* 100% of the viewport height */
-    display: flex;
-    justify-content: left;
-    align-items: center;
-    color: #333; /* Text color for left section */
-}
-
-.green-section {
-    background-color: #c3f0ca;
-    height: 94vh; /* 100% of the viewport height */
-    display: flex;
+/* Container for the entire plant details section */
+.plant-details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Two columns for details */
+    gap: 10px;
+    background-color: #E0E7F0; /* Use the primary color for the background */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2); /* Add a subtle shadow */
+    max-height: 80vh; /* Set a maximum height for the modal content */
+    overflow-y: auto; /* Enable vertical scrolling when content exceeds the height */
+  }
+  
+  /* Common Name */
+  .common-name {
+    display: flex; /* Add this line to enable flexbox layout */
     justify-content: center;
-    align-items: center;
-    color: #fff; /* Text color for right section */
+    font-size: 28px;
+    font-weight: bold;
+    color: #333333; /* Dark text for better readability */
+}
+  
+  /* Image */
+  .image {
+    text-align: center; /* Horizontally center the content */
+    max-width: 100%;
+    border-radius: 10px;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.3); /* A playful shadow effect */
+  }
+  
+  .image img {
+    max-width: 100%;
+    height: auto; /* Maintain the aspect ratio of the image */
+  }
+  
+  /* Details container for scientific name, family, etc. */
+  .details-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Two columns for details */
+    gap: 10px;
+  }
+  
+  /* Container for the entire plant details section */
+.plant-details-grid {
+    display: grid;
+    grid-template-columns: 1fr; /* Single column layout */
+    gap: 20px;
+    background-color: #E0E7F0; /* Light background color */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2); /* Add a subtle shadow */
+  }
+  
+  /* Common Name */
+  .common-name {
+    font-size: 28px;
+    font-weight: bold;
+    color: #333333; /* Fun, playful red color */
+    text-transform: uppercase; /* Uppercase text for extra flair */
+  }
+  
+  /* Image */
+  .image img {
+    max-width: 100%;
+    border-radius: 10px;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.3); /* A playful shadow effect */
+  }
+  
+  /* Details container for scientific name, family, etc. */
+  .details-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Two columns for details */
+    gap: 10px;
+  }
+  
+  /* Grid items for individual details */
+  .grid-item {
+    background-color: #CCE4CC; /* Soft orange background for details */
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2); /* Add a subtle shadow */
+  }
+  
+/* Description text */
+.description {
+    grid-column: span 2; /* Span both columns for description */
+    background-color: #F0F4FA; /* Light gray background color */
+    padding: 20px;
+    border-radius: 10px;
+    font-size: 18px;
+    color: #333333; /* Dark text for better readability */
 }
 
-.sentences {
-    text-align: left;
-    padding-left: 5%;
-    margin-bottom: 20px;
-}
-
-/* Style for step containers */
-.step-container {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    opacity: 0;
-    display: none;
-    transition: opacity 0.5s, transform 0.5s;
-}
-
-.step-container.visible {
-    opacity: 1;
-    display: block;
-    transform: translateY(0);
-}
-
-.modal-footer {
-    height: 60px;
-}
-
-.table-image {
-    max-width: 75px;
-}
-
-.suggest-image {
-    max-width: 500px;
-}
-
-// import bootsrap
+// Import Bootstrap
 @import '../node_modules/bootstrap/scss/bootstrap';
-

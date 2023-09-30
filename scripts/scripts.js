@@ -203,7 +203,7 @@ function capitalFirstLetter(string) {
         .join(' ');
 }
 // Format sunlight data
-function fortmatResponse(sunlightArray) {
+function formatResponse(sunlightArray) {
     if (!sunlightArray || !Array.isArray(sunlightArray)) {
         return '';
     }
@@ -415,54 +415,94 @@ function updateSuggestButtons() {
 }
 
 function generatePlantDetailsHTML(detailsData) {
-    let
-        html = '<div>';
+    // Create a container div for the grid
+    let html = '<div class="container plant-details-grid">';
+  
+    // Common Name
+    html += '<div class="grid-item common-name">';
     html += capitalFirstLetter(detailsData.common_name);
-    html += '<br>';
-    if (detailsData.default_image?.original_url) {
-        html += '<img src="' + detailsData.default_image?.regular_url + '" alt="Plant Image" width="500">';
-    } else {
-        html += '<img src="images/imagenotfound.png">';
-    }
-    html += '<br>';
-    html += '<p>Scientific Name: ' + capitalFirstLetter(detailsData.scientific_name) + '</p>';
-    html += '<p>Family: ' + capitalFirstLetter(detailsData.family) + '</p>';
-    html += '<p>Propagation: ' + fortmatResponse(detailsData.propagation) + '</p>';
-    html += '<p>Watering: ' + capitalFirstLetter(detailsData.watering) + '</p>';
-    html += '<p>Sunlight: ' + fortmatResponse(detailsData.sunlight) + '</p>';
-    html += '<p>Maintenance: ' + capitalFirstLetter(detailsData.maintenance) + '</p>';
-    html += '<p>Growth Rate: ' + capitalFirstLetter(detailsData.growth_rate) + '</p>';
-
-    if (detailsData.drought_tolerant === true) {
-        html += '<p>Drought Tolerant: Yes</p>';
-    } else {
-        html += '<p>Drought Tolerant: No</p>';
-    }
-
-    if (detailsData.indoor === true) {
-        html += '<p>Indoor: Yes</p>';
-    } else {
-        html += '<p>Indoor: No</p>';
-    }
-
-    if (detailsData.poisonous_to_humans === 0) {
-        html += '<p>Poisonous To Humans: Yes</p>';
-    } else {
-        html += '<p>Poisonous To Humans: No</p>';
-    }
-
-    if (detailsData.poisonous_to_pets === 0) {
-        html += '<p>Poisonous To Pets: Yes</p>';
-    } else {
-        html += '<p>Poisonous To Pets: No</p>';
-    }
-
-    html += '<p>Description: ' + detailsData.description + '</p>';
     html += '</div>';
+  
+    // Plant Image
+    html += '<div class="grid-item image">';
+    if (detailsData.default_image?.original_url) {
+      html += '<img src="' + detailsData.default_image?.regular_url + '" alt="Plant Image" width="500">';
+    } else {
+      html += '<img src="images/imagenotfound.png" alt="Image Not Found">';
+    }
+    html += '</div>';
+  
+    // Details Container
+    html += '<div class="container details-container">';
+  
+    // Scientific Name
+    html += '<div class="grid-item scientific-name">';
+    html += 'Scientific Name (Fancy Name): ' + capitalFirstLetter(detailsData.scientific_name);
+    html += '</div>';
+  
+    // Family
+    html += '<div class="grid-item family">';
+    html += 'Plant Family (Plant Clan): ' + capitalFirstLetter(detailsData.family);
+    html += '</div>';
+  
+    // Propagation
+    html += '<div class="grid-item propagation">';
+    html += 'Best Way to Make More Plant Buddies: ' + formatResponse(detailsData.propagation);
+    html += '</div>';
+  
+    // Watering
+    html += '<div class="grid-item watering">';
+    html += 'Thirst Quotient (Watering Needs): ' + capitalFirstLetter(detailsData.watering);
+    html += '</div>';
+  
+    // Sunlight
+    html += '<div class="grid-item sunlight">';
+    html += 'Sunshine Preferences: ' + formatResponse(detailsData.sunlight);
+    html += '</div>';
+  
+    // Maintenance
+    html += '<div class="grid-item maintenance">';
+    html += 'Maintenance Level (Plant TLC): ' + capitalFirstLetter(detailsData.maintenance);
+    html += '</div>';
+  
+    // Growth Rate
+    html += '<div class="grid-item growth-rate">';
+    html += 'Growth Speed (Zoom-Zoom Factor): ' + capitalFirstLetter(detailsData.growth_rate);
+    html += '</div>';
+  
+    // Drought Tolerance
+    html += '<div class="grid-item drought-tolerant">';
+    html += 'Survival in Desert Mode (Drought Tolerance): ' + (detailsData.drought_tolerant ? 'Yes' : 'No');
+    html += '</div>';
+  
+    // Indoor
+    html += '<div class="grid-item indoor">';
+    html += 'Suitable for Indoor Jungle (Indoor Friendly): ' + (detailsData.indoor ? 'Yes' : 'No');
+    html += '</div>';
+  
+    // Poisonous to Humans
+    html += '<div class="grid-item poisonous-human">';
+    html += 'Toxicity to Humans (Human Poisonousness): ' + (detailsData.poisonous_to_humans === 0 ? 'Yes' : 'No');
+    html += '</div>';
+  
+    // Poisonous to Pets
+    html += '<div class="grid-item poisonous-pets">';
+    html += 'Pet-Friendly Score (Pet Poison Factor): ' + (detailsData.poisonous_to_pets === 0 ? 'Yes' : 'No');
+    html += '</div>';
+  
+    // Description
+    html += '<div class="grid-item description">';
+    html += 'Plant Story (Plant Tale): ' + detailsData.description;
+    html += '</div>';
+  
+    // Close the details container
+    html += '</div>'; // End of details-container
+  
+    // Close the container div
+    html += '</div>'; // End of plant-details-grid
+  
     return html;
-}
-
-
+  }
 // // Function to calculate total pages based on filteredData
 function getTotalPages(filteredData) {
     const resultsPerPage = 5; // Adjust this based on your desired results per page
@@ -606,7 +646,7 @@ async function createTableResultsHTML(detailsData, currentPage, totalPages) {
                     itemHtml += '<td>' + '<img src="images/imagenotfound.png" alt="Plant Image" class="table-image">' + '</th>';
                 }
                 itemHtml += '<td>' + capitalFirstLetter(item.common_name) + '</td>';
-                itemHtml += '<td>' + fortmatResponse(item.sunlight) + '</td>';
+                itemHtml += '<td>' + formatResponse(item.sunlight) + '</td>';
                 itemHtml += '<td>' + capitalFirstLetter(item.watering) + '</td>';
                 itemHtml += '<td>' + '<button class="btn btn-primary btn-learn-more" type="button" data-toggle="collapse" data-target="#collapse' + item.id + '" aria-expanded="true" aria-controls="collapse' + item.id + '">Learn More</button>' + '</td>';
                 itemHtml += '</tr>';

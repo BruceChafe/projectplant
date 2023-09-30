@@ -18,6 +18,7 @@
 </head>
 
 <body>
+  <!-- Bootstrap Navbar -->
   <nav class="navbar navbar-expand-lg bg-secondary">
     <div class="container-fluid">
       <a class="navbar-brand" href="#">Project Plant</a>
@@ -44,15 +45,15 @@
   <!-- Landing Page -->
   <div class="container-fluid" id="section-0">
     <div class="row no-gutters">
-      <div class="col-md-5 green-section">
+      <div class="col-md-5 green-section col-sm-12">
         <div class="section-content"></div>
         <div class="sentences text-left">
           <h2>What kind of plant should I get?</h2>
-          <p>Take this quick 3-question quix to find out!</p>
+          <p>Take this quick 3-question quiz to find out!</p>
           <a href="#" class="btn btn-danger" id="start-button">Start Here</a>
         </div>
       </div>
-      <div class="col-md-7 left-section">
+      <div class="col-md-7 left-section col-sm-12">
         <div class="section-content"></div>
         <img src="images/huy-phan-8gzVQJstcQo-unsplash.jpeg" alt="Top Image" class="img-fluid w-100 h-100"
           style="object-fit: cover;">
@@ -60,38 +61,38 @@
     </div>
   </div>
 
-<!-- Step 1 - Watering -->
+  <!-- Step 1 - Watering -->
   <div class="container-fluid" id="section-1" style='display: none;'>
     <div class="row no-gutters">
-      <div class="col-md-7 green-section">
+      <div class="col-md-5 green-section col-12">
         <img src="images/huy-phan-8gzVQJstcQo-unsplash.jpeg" alt="Top Image" class="img-fluid w-100 h-100"
-        style="object-fit: cover;">
+          style="object-fit: cover;">
       </div>
-      <div class="col-md-5 blue-section">
+      <div class="col-md-7 blue-section col-12">
         <div class="sentences text-left">
           <h2>Watering</h2>
           <div class="form-check">
             <input class="form-check-input" type="radio" name="flexRadioStepWatering" id="frequent">
             <label class="form-check-label" for="frequent">
-                The more the better!
+              The more the better!
             </label>
           </div>
           <div class="form-check">
             <input class="form-check-input" type="radio" name="flexRadioStepWatering" id="average">
             <label class="form-check-label" for="average">
-                I can commit to once every week or so!
+              I can commit to once every week or so!
             </label>
           </div>
           <div class="form-check">
             <input class="form-check-input" type="radio" name="flexRadioStepWatering" id="minimum">
             <label class="form-check-label" for="minimum">
-                I will forget to water it!
+              I will forget to water it!
             </label>
           </div>
           <div class="form-check">
             <input class="form-check-input" type="radio" name="flexRadioStepWatering" id="none">
             <label class="form-check-label" for="none">
-                Not at all!
+              Not at all!
             </label>
           </div>
           <a href="#" class="btn btn-danger" id="start-button-1">Start Here</a>
@@ -100,58 +101,53 @@
       </div>
     </div>
   </div>
-  
 
-<!-- Step 2 - Sunlight -->
+  <!-- Step 2 - Sunlight -->
   <div class="container-fluid" id="section-2" style='display: none;'>
     <div class="row no-gutters">
-      <div class="col-md-5 green-section">
+      <div class="col-md-5 green-section col-12">
         <div class="sentences text-left">
           <h2>Sunlight</h2>
           <div class="form-check">
             <input class="form-check-input" type="radio" name="flexRadioStepSunlight" id="part_shade">
             <label class="form-check-label" for="part_shade">
-                Part Shade
+              Part Shade
             </label>
-        </div>
-        <div class="form-check">
+          </div>
+          <div class="form-check">
             <input class="form-check-input" type="radio" name="flexRadioStepSunlight" id="full_shade">
             <label class="form-check-label" for="full_shade">
-                Full Shade
+              Full Shade
             </label>
-        </div>
-        <div class="form-check">
+          </div>
+          <div class="form-check">
             <input class="form-check-input" type="radio" name="flexRadioStepSunlight" id="sun-part_shade">
             <label class="form-check-label" for="sun-part_shade">
-                Part Sun
+              Part Sun
             </label>
-        </div>
-        <div class="form-check">
+          </div>
+          <div class="form-check">
             <input class="form-check-input" type="radio" name="flexRadioStepSunlight" id="full_sun">
             <label class="form-check-label" for="full_sun">
-                Full Sun
+              Full Sun
             </label>
-        </div>
+          </div>
           <a href="#" class="btn btn-danger" id="start-button-2">Next Question!</a>
           <button class="btn btn-danger forward" id="next-button-sunlight">Next</button>
-          <button class="btn btn-danger back" id="back-button-sunlight">Back</button>        
+          <button class="btn btn-danger back" id="back-button-sunlight">Back</button>
         </div>
       </div>
-      <div class="col-md-7 blue-section">
+      <div class="col-md-7 blue-section col-12">
         <img src="images/huy-phan-8gzVQJstcQo-unsplash.jpeg" alt="Top Image" class="img-fluid w-100 h-100"
           style="object-fit: cover;">
       </div>
     </div>
   </div>
 
-<!-- Step 3 - Poison -->
+  <!-- Step 3 - Poison -->
   <div class="container-fluid" id="section-3" style='display: none;'>
     <div class="row no-gutters">
-      <div class="col-md-7 green-section">
-        <img src="images/huy-phan-8gzVQJstcQo-unsplash.jpeg" alt="Top Image" class="img-fluid w-100 h-100"
-          style="object-fit: cover;">
-      </div>
-      <div class="col-md-5 blue-section">
+      <div class="col-md-5 green-section col-12">
         <div class="sentences text-left">
           <h2>Can it be poisonous to pets?</h2>
           <div class="form-check">
@@ -170,30 +166,35 @@
           <button class="btn btn-danger back" id="back-button-poisonous">Back</button>
         </div>
       </div>
+      <div class="col-md-7 blue-section col-12">
+        <img src="images/huy-phan-8gzVQJstcQo-unsplash.jpeg" alt="Top Image" class="img-fluid w-100 h-100"
+          style="object-fit: cover;">
+      </div>
     </div>
   </div>
 
-<!-- Modal -->
-<div class="modal fade" id="suggestModal" tabindex="-1" role="dialog" aria-labelledby="suggestModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="suggestModalLabel">Recommended Result:</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
+  <!-- Modal -->
+  <div class="modal fade" id="suggestModal" tabindex="-1" role="dialog" aria-labelledby="suggestModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="suggestModalLabel">Recommended Result:</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div id="plant-details"></div>
+        </div>
+        <div class="modal-footer" id="modal-footer"></div>
       </div>
-      <div class="modal-body">
-        <div id="plant-details"></div>
-      </div>
-      <div class="modal-footer" id="modal-footer"></div>
     </div>
   </div>
-</div>
+
   <footer>
     <!-- ... (your footer code) ... -->
   </footer>
-  </div>
 </body>
 
 </html>
