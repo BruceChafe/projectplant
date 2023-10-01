@@ -1,6 +1,6 @@
 // Custom Colors for Plant Finder Website
-$secondary: #A5CC82;     // Secondary orange color for accents
-$danger: #A2B5CD;       // Danger red for alerts and errors
+$secondary: #A5CC82; // Secondary orange color for accents
+$danger: #A2B5CD; // Danger red for alerts and errors
 
 body {
     height: 100vh;
@@ -10,10 +10,13 @@ body {
     background-color: #F5F5F5; // Light gray background for a clean look
 }
 
+
+
 @media (max-width: 768px) {
     .navbar {
         height: 8vh;
     }
+
     .content-section {
         background-color: #E0E7F0; // Use primary color for the background
         height: 36vh;
@@ -122,94 +125,144 @@ body {
 /* Container for the entire plant details section */
 .plant-details-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); /* Two columns for details */
+    grid-template-columns: repeat(2, 1fr);
     gap: 10px;
-    background-color: #E0E7F0; /* Use the primary color for the background */
+    background-color: #E0E7F0;
+    /* Use the primary color for the background */
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2); /* Add a subtle shadow */
-    max-height: 80vh; /* Set a maximum height for the modal content */
-    overflow-y: auto; /* Enable vertical scrolling when content exceeds the height */
-  }
-  
-  /* Common Name */
-  .common-name {
-    display: flex; /* Add this line to enable flexbox layout */
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+/* Common Name */
+.common-name {
+    display: flex;
     justify-content: center;
     font-size: 28px;
     font-weight: bold;
-    color: #333333; /* Dark text for better readability */
+    color: #333333;
 }
-  
-  /* Image */
-  .image {
-    text-align: center; /* Horizontally center the content */
+
+/* Image */
+.image {
+    text-align: center;
     max-width: 100%;
     border-radius: 10px;
-    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.3); /* A playful shadow effect */
-  }
-  
-  .image img {
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.3);
+}
+
+.image img {
     max-width: 100%;
-    height: auto; /* Maintain the aspect ratio of the image */
-  }
-  
-  /* Details container for scientific name, family, etc. */
-  .details-container {
+    height: auto;
+}
+
+/* Details container for scientific name, family, etc. */
+.details-container {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* Two columns for details */
+    grid-template-columns: 1fr 1fr;
     gap: 10px;
-  }
-  
-  /* Container for the entire plant details section */
+}
+
+/* Container for the entire plant details section */
 .plant-details-grid {
     display: grid;
-    grid-template-columns: 1fr; /* Single column layout */
+    grid-template-columns: 1fr;
     gap: 20px;
-    background-color: #E0E7F0; /* Light background color */
+    background-color: #E0E7F0;
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2); /* Add a subtle shadow */
-  }
-  
-  /* Common Name */
-  .common-name {
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Common Name */
+.common-name {
     font-size: 28px;
     font-weight: bold;
-    color: #333333; /* Fun, playful red color */
-    text-transform: uppercase; /* Uppercase text for extra flair */
-  }
-  
-  /* Image */
-  .image img {
+    color: #333333;
+    text-transform: uppercase;
+}
+
+/* Image */
+.image img {
     max-width: 100%;
     border-radius: 10px;
-    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.3); /* A playful shadow effect */
-  }
-  
-  /* Details container for scientific name, family, etc. */
-  .details-container {
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Details container for scientific name, family, etc. */
+.details-container {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); /* Two columns for details */
+    grid-template-columns: repeat(2, 1fr);
     gap: 10px;
-  }
-  
-  /* Grid items for individual details */
-  .grid-item {
-    background-color: #CCE4CC; /* Soft orange background for details */
+}
+
+/* Grid items for individual details */
+.grid-item {
+    background-color: #CCE4CC;
     padding: 15px;
     border-radius: 10px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2); /* Add a subtle shadow */
-  }
-  
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+}
+
 /* Description text */
 .description {
-    grid-column: span 2; /* Span both columns for description */
-    background-color: #F0F4FA; /* Light gray background color */
+    grid-column: span 2;
+    background-color: #F0F4FA;
     padding: 20px;
     border-radius: 10px;
     font-size: 18px;
-    color: #333333; /* Dark text for better readability */
+    color: #333333;
+}
+
+/* Table for displaying results */
+#results-table {
+    background-color: #E0E7F0;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    margin-top: 20px;
+    overflow: hidden;
+    width: 100%; /* Ensure the table expands to its container */
+}
+
+/* Table header cells */
+#results-table th {
+    background-color: #CCE4CC;
+    color: #333333;
+    font-weight: bold;
+    padding: 15px 10px;
+    text-align: left;
+    border-bottom: 1px solid #333333;
+}
+
+/* Table data cells */
+#results-table td {
+    background-color: #F0F4FA;
+    color: #333333;
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #333333;
+}
+
+/* Remove the bottom border from the last row */
+#results-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Button style */
+.custom-button.btn-primary {
+    background-color: #333333;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.custom-button.btn-primary:hover {
+    background-color: #555555;
 }
 
 // Import Bootstrap

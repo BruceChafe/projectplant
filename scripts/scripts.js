@@ -14,6 +14,7 @@ let randomItem;
 let filteredData = [];
 let timer;
 let currentResult = 1;
+let totalPages;
 
 // Event Listeners
 document.addEventListener('click', async function (event) {
@@ -90,6 +91,18 @@ document.addEventListener('click', async function (event) {
         hideSection('section-3');
         showSection('section-2')
         scrollToSection('section-2');
+    }
+
+    if (event.target.id === 'prev-page-button') {
+        event.preventDefault();
+        console.log('Back Clicked');
+        showPreviousPage(); 
+    }
+
+    if (event.target.id === 'next-page-button') {
+        event.preventDefault();
+        console.log('Next Clicked');
+        showNextPage();
     }
 })
 //Show More - Table Results
@@ -283,8 +296,6 @@ function fetchAndFilterData(selectedWateringOption, selectedSunlightOption) {
 function selectRandomItem(filteredData) {
     return filteredData[Math.floor(Math.random() * filteredData.length)];
 }
-
-
 
 // Function to fetch plant details
 function fetchPlantDetails(itemId) {
@@ -512,11 +523,16 @@ function getTotalPages(filteredData) {
 
 // Function to get data for a specific page
 function getPageData(data, page) {
-    const resultsPerPage = 5; // Adjust this based on your desired results per page
+    const resultsPerPage = 5;
+    if (!Array.isArray(data)) {
+        // Handle the case where data is not an array, e.g., show an error message or return an empty array.
+        return [];
+    }
     const startIndex = (page - 1) * resultsPerPage;
     const endIndex = startIndex + resultsPerPage;
     return data.slice(startIndex, endIndex);
 }
+
 
 // // Function to display the count of results
 function displayResultCount(currentResult, totalResults) {
@@ -540,23 +556,31 @@ async function createTableResult(filteredData, page) {
     const resultsHTML = await createTableResultsHTML(currentPageData, page, totalPages);
     resultsContainer.innerHTML = resultsHTML;
  
-    createTableButtons(page, totalPages, 'prev-page-button', 'next-page-button', showPreviousPage, showNextPage);
+    createTableButtons(currentPage, totalPages);
     displayResultCount(currentPageData.length, getTotalResults(filteredData));
-}
-
-// Function to create table page navigation buttons
-function createTableButtons(currentPage, totalPages, prevButtonId, nextButtonId, onClickPrev, onClickNext) {
-    const pageButtonsContainer = document.getElementById('modal-footer');
-    pageButtonsContainer.innerHTML = '';
-
-    const pageButtons = createPageButtons(currentPage, totalPages, 'prev-page-button', 'next-page-button', showPreviousPage, showNextPage);
-    pageButtons.classList.add('modal-footer');
 
     updateTableButtons();
 }
 
+// Function to create table page navigation buttons
+function createTableButtons(prevButtonId, nextButtonId, onClickPrev, onClickNext) {
+    const pageButtonsContainer = document.getElementById('modal-footer');
+    if (!pageButtonsContainer) {
+        console.error('Page buttons container not found in the DOM.');
+        return; // Exit the function if the container doesn't exist
+    }
+
+    pageButtonsContainer.innerHTML = '';
+
+    const pageButtons = createPageButtons(prevButtonId, nextButtonId, onClickPrev, onClickNext);
+
+    pageButtons.classList.add('modal-footer');
+}
+
+
+
 // // Function to create page navigation buttons
-function createPageButtons(prevButtonId, nextButtonId, onClickPrev, onClickNext) {
+function createPageButtons() {
     const pageButtonsContainer = document.getElementById('modal-footer');
     pageButtonsContainer.classList.add('page-number-container');
     pageButtonsContainer.id = 'page-buttons-container';
@@ -564,16 +588,14 @@ function createPageButtons(prevButtonId, nextButtonId, onClickPrev, onClickNext)
     const prevPageButton = document.createElement('a');
     prevPageButton.href = '#';
     prevPageButton.classList.add('btn', 'btn-danger');
-    prevPageButton.id = prevButtonId;
+    prevPageButton.id = 'prev-page-button';
     prevPageButton.textContent = 'Previous Page';
-    prevPageButton.addEventListener('click', () => onClickPrev());
 
     const nextPageButton = document.createElement('a');
     nextPageButton.href = '#';
     nextPageButton.classList.add('btn', 'btn-danger');
-    nextPageButton.id = nextButtonId;
+    nextPageButton.id = 'next-page-button';
     nextPageButton.textContent = 'Next Page';
-    nextPageButton.addEventListener('click', () => onClickNext());
 
     pageButtonsContainer.appendChild(prevPageButton);
     pageButtonsContainer.appendChild(nextPageButton);
@@ -585,7 +607,8 @@ function createPageButtons(prevButtonId, nextButtonId, onClickPrev, onClickNext)
 function showNextPage() {
     if (currentPage < getTotalPages(filteredData)) {
         currentPage += 1;
-        createTableResult(currentPage);
+        createTableResult(filteredData, currentPage); // Update the UI
+        updateTableButtons();
     }
 }
 
@@ -593,25 +616,25 @@ function showNextPage() {
 function showPreviousPage() {
     if (currentPage > 1) {
         currentPage -= 1;
-        createTableResult(currentPage);
+        createTableResult(filteredData, currentPage); // Update the UI
+        updateTableButtons();
     }
 }
 
 // // Function to update table page navigation buttons
+// Function to update table page navigation buttons
 function updateTableButtons() {
     const prevPageButton = document.getElementById('prev-page-button');
     const nextPageButton = document.getElementById('next-page-button');
     const totalPages = getTotalPages(filteredData);
 
-    if (prevPageButton) {
+    if (prevPageButton && nextPageButton) {
         if (currentPage === 1) {
             prevPageButton.classList.add('disabled');
         } else {
             prevPageButton.classList.remove('disabled');
         }
-    }
 
-    if (nextPageButton) {
         if (currentPage === totalPages) {
             nextPageButton.classList.add('disabled');
         } else {
@@ -622,10 +645,13 @@ function updateTableButtons() {
 
 // Asynchronous function to create table results HTML
 async function createTableResultsHTML(detailsData, currentPage, totalPages) {
-    let html = '<h3>Results:</h3>';
+    let 
+        html = '<div class="table-header>';
+        html = '<h3>Results:</h3>';
+        html += '</div>';
 
     if (detailsData.length > 0) {
-        html += '<table class="table">';
+        html += '<table class="table" id="results-table">';
         html += '<thead>';
         html += '<tr>';
         html += '<th scope="col"></th>';
@@ -648,7 +674,7 @@ async function createTableResultsHTML(detailsData, currentPage, totalPages) {
                 itemHtml += '<td>' + capitalFirstLetter(item.common_name) + '</td>';
                 itemHtml += '<td>' + formatResponse(item.sunlight) + '</td>';
                 itemHtml += '<td>' + capitalFirstLetter(item.watering) + '</td>';
-                itemHtml += '<td>' + '<button class="btn btn-primary btn-learn-more" type="button" data-toggle="collapse" data-target="#collapse' + item.id + '" aria-expanded="true" aria-controls="collapse' + item.id + '">Learn More</button>' + '</td>';
+                itemHtml += '<td>' + '<button class="btn btn-primary custom-button btn-learn-more" type="button" data-toggle="collapse" data-target="#collapse' + item.id + '" aria-expanded="true" aria-controls="collapse' + item.id + '">Learn More</button>' + '</td>';
                 itemHtml += '</tr>';
                 itemHtml += '<tr class="collapse-row">';
                 itemHtml += '<td colspan="5">';
