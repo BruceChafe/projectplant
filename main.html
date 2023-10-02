@@ -53,7 +53,9 @@
             <div class="sentences text-center text-md-left">
                 <h2>Ready to Find Your Leafy Soulmate?</h2>
                 <p>Take this light-hearted 3-question quiz to discover your perfect plant companion!</p>
-                <a href="#" class="btn btn-danger" id="start-button">Let's Get Plantin'!</a>
+                <div id="question-buttons">
+                <a href="#" class="btn btn-danger custom-button" id="start-button">Let's Get Plantin'!</a>
+                </div>
             </div>
         </div>
         <div class="col-md-7 col-sm-12 photo-section">
@@ -97,8 +99,9 @@
                         Water? What's that?
                     </label>
                 </div>
-                <a href="#" class="btn btn-danger" id="start-button-1">Let's Dive In!</a>
-                <button class="btn btn-danger forward" id="next-button-watering">Next</button>
+                <div id="question-buttons">
+                <a href="#" class="btn btn-danger custom-button" id="start-button-1">Let's Dive In!</a>
+                </div>
             </div>
         </div>
     </div>
@@ -134,9 +137,11 @@
                         I want my plant sun-kissed all day long!
                     </label>
                 </div>
-                <a href="#" class="btn btn-danger" id="start-button-2">Next Question!</a>
-                <button class="btn btn-danger forward" id="next-button-sunlight">Next</button>
-                <button class="btn btn-danger back" id="back-button-sunlight">Back</button>
+                <div id="question-buttons">
+                <a href="#" class="btn btn-danger custom-button" id="start-button-2">Next Question!</a>
+                <button class="btn btn-danger custom-button back" id="back-button-sunlight">Back</button>
+                </div>
+            
             </div>
         </div>
         <div class="col-md-7 col-sm-12 photo-section">
@@ -168,15 +173,17 @@
                         Nope, no pets to worry about!
                     </label>
                 </div>
-                <a href="#" class="btn btn-danger" id="suggest-button">Reveal My Leafy Destiny!</a>
-                <button class="btn btn-danger back" id="back-button-poisonous">Back</button>
+                <div id="question-buttons">
+                <a href="#" class="btn btn-danger custom-button" id="suggest-button">Reveal My Leafy Destiny!</a>
+                <button class="btn btn-danger custom-button back" id="back-button-poisonous">Back</button>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
   <!-- Modal -->
-  <div class="modal fade" id="suggestModal" tabindex="-1" role="dialog" aria-labelledby="suggestModalLabel" aria-hidden="true">
+  <div class="modal fade" id="suggestModal" tabindex="-1" role="dialog" aria-labelledby="suggestModalLabel" aria-hidden="true" data-backdrop="false">
     <div class="modal-dialog modal-xl" role="document">
       <div class="modal-content">
         <div class="modal-header">

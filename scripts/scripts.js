@@ -430,14 +430,14 @@ function generatePlantDetailsHTML(detailsData) {
     let html = '<div class="container plant-details-grid">';
   
     // Common Name
-    html += '<div class="grid-item common-name">';
+    html += '<div class="grid-item common-name"><b>';
     html += capitalFirstLetter(detailsData.common_name);
-    html += '</div>';
+    html += '</b></div>';
   
     // Plant Image
     html += '<div class="grid-item image">';
     if (detailsData.default_image?.original_url) {
-      html += '<img src="' + detailsData.default_image?.regular_url + '" alt="Plant Image" width="500">';
+      html += '<img src="' + detailsData.default_image?.regular_url + '" alt="Plant Image" max-width="50px">';
     } else {
       html += '<img src="images/imagenotfound.png" alt="Image Not Found">';
     }
@@ -447,63 +447,63 @@ function generatePlantDetailsHTML(detailsData) {
     html += '<div class="container details-container">';
   
     // Scientific Name
-    html += '<div class="grid-item scientific-name">';
-    html += 'Scientific Name (Fancy Name): ' + capitalFirstLetter(detailsData.scientific_name);
+    html += '<div class="grid-item scientific-name"><b>';
+    html += 'Scientific Name (Fancy Name):</b> ' + capitalFirstLetter(detailsData.scientific_name);
     html += '</div>';
   
     // Family
-    html += '<div class="grid-item family">';
-    html += 'Plant Family (Plant Clan): ' + capitalFirstLetter(detailsData.family);
+    html += '<div class="grid-item family"><b>';
+    html += 'Plant Family (Plant Clan):</b> ' + capitalFirstLetter(detailsData.family);
     html += '</div>';
   
     // Propagation
     html += '<div class="grid-item propagation">';
-    html += 'Best Way to Make More Plant Buddies: ' + formatResponse(detailsData.propagation);
+    html += '<b>Best Way to Make More Plant Buddies:</b> ' + formatResponse(detailsData.propagation);
     html += '</div>';
   
     // Watering
     html += '<div class="grid-item watering">';
-    html += 'Thirst Quotient (Watering Needs): ' + capitalFirstLetter(detailsData.watering);
+    html += '<b>Thirst Quotient (Watering Needs):</b> ' + capitalFirstLetter(detailsData.watering);
     html += '</div>';
   
     // Sunlight
     html += '<div class="grid-item sunlight">';
-    html += 'Sunshine Preferences: ' + formatResponse(detailsData.sunlight);
+    html += '<b>Sunshine Preferences:</b> ' + formatResponse(detailsData.sunlight);
     html += '</div>';
   
     // Maintenance
     html += '<div class="grid-item maintenance">';
-    html += 'Maintenance Level (Plant TLC): ' + capitalFirstLetter(detailsData.maintenance);
+    html += '<b>Maintenance Level (Plant TLC):</b> ' + capitalFirstLetter(detailsData.maintenance);
     html += '</div>';
   
     // Growth Rate
     html += '<div class="grid-item growth-rate">';
-    html += 'Growth Speed (Zoom-Zoom Factor): ' + capitalFirstLetter(detailsData.growth_rate);
+    html += '<b>Growth Speed (Zoom-Zoom Factor):</b> ' + capitalFirstLetter(detailsData.growth_rate);
     html += '</div>';
   
     // Drought Tolerance
     html += '<div class="grid-item drought-tolerant">';
-    html += 'Survival in Desert Mode (Drought Tolerance): ' + (detailsData.drought_tolerant ? 'Yes' : 'No');
+    html += '<b>Survival in Desert Mode (Drought Tolerance):</b> ' + (detailsData.drought_tolerant ? 'Yes' : 'No');
     html += '</div>';
   
     // Indoor
     html += '<div class="grid-item indoor">';
-    html += 'Suitable for Indoor Jungle (Indoor Friendly): ' + (detailsData.indoor ? 'Yes' : 'No');
+    html += '<b>Suitable for Indoor Jungle (Indoor Friendly):</b> ' + (detailsData.indoor ? 'Yes' : 'No');
     html += '</div>';
   
     // Poisonous to Humans
     html += '<div class="grid-item poisonous-human">';
-    html += 'Toxicity to Humans (Human Poisonousness): ' + (detailsData.poisonous_to_humans === 0 ? 'Yes' : 'No');
+    html += '<b>Toxicity to Humans (Human Poisonousness):</b> ' + (detailsData.poisonous_to_humans === 0 ? 'Yes' : 'No');
     html += '</div>';
   
     // Poisonous to Pets
     html += '<div class="grid-item poisonous-pets">';
-    html += 'Pet-Friendly Score (Pet Poison Factor): ' + (detailsData.poisonous_to_pets === 0 ? 'Yes' : 'No');
+    html += '<b>Pet-Friendly Score (Pet Poison Factor):</b> ' + (detailsData.poisonous_to_pets === 0 ? 'Yes' : 'No');
     html += '</div>';
   
     // Description
     html += '<div class="grid-item description">';
-    html += 'Plant Story (Plant Tale): ' + detailsData.description;
+    html += '<b>Plant Story (Plant Tale):</b> ' + detailsData.description;
     html += '</div>';
   
     // Close the details container
@@ -656,8 +656,8 @@ async function createTableResultsHTML(detailsData, currentPage, totalPages) {
         html += '<tr>';
         html += '<th scope="col"></th>';
         html += '<th scope="col">Common Name</th>';
-        html += '<th scope="col">Sunlight</th>';
-        html += '<th scope="col">Watering</th>';
+        html += '<th scope="col" class="hidden">Sunlight</th>';
+        html += '<th scope="col" class="hidden">Watering</th>';
         html += '<th scope="col"></th>';
         html += '</tr>';
         html += '</thead>';
@@ -672,8 +672,8 @@ async function createTableResultsHTML(detailsData, currentPage, totalPages) {
                     itemHtml += '<td>' + '<img src="images/imagenotfound.png" alt="Plant Image" class="table-image">' + '</th>';
                 }
                 itemHtml += '<td>' + capitalFirstLetter(item.common_name) + '</td>';
-                itemHtml += '<td>' + formatResponse(item.sunlight) + '</td>';
-                itemHtml += '<td>' + capitalFirstLetter(item.watering) + '</td>';
+                itemHtml += '<td class="hidden">' + formatResponse(item.sunlight) + '</td>';
+                itemHtml += '<td class="hidden">' + capitalFirstLetter(item.watering) + '</td>';
                 itemHtml += '<td>' + '<button class="btn btn-primary custom-button btn-learn-more" type="button" data-toggle="collapse" data-target="#collapse' + item.id + '" aria-expanded="true" aria-controls="collapse' + item.id + '">Learn More</button>' + '</td>';
                 itemHtml += '</tr>';
                 itemHtml += '<tr class="collapse-row">';

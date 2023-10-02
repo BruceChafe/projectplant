@@ -1,6 +1,5 @@
 // Custom Colors for Plant Finder Website
 $secondary: #A5CC82; // Secondary orange color for accents
-$danger: #A2B5CD; // Danger red for alerts and errors
 
 body {
     height: 100vh;
@@ -10,6 +9,10 @@ body {
     background-color: #F5F5F5; // Light gray background for a clean look
 }
 
+.navbar-brand {
+    color: #333; /* Change the font color to a darker color */
+    margin-left:  15px;
+}
 
 
 @media (max-width: 768px) {
@@ -19,7 +22,7 @@ body {
 
     .content-section {
         background-color: #E0E7F0; // Use primary color for the background
-        height: 36vh;
+        height: 62vh;
         display: flex;
         justify-content: left;
         align-items: center;
@@ -27,8 +30,9 @@ body {
     }
 
     .photo-section {
+        order: -1;
         background-color: #E0E7F0; // Use success color for the background
-        height: 56vh;
+        height: 30vh;
         justify-content: center;
         align-items: center;
         color: #333333; // Dark text for better readability
@@ -39,13 +43,87 @@ body {
         padding-left: 5%;
         margin-bottom: 20px;
     }
+
+    .container.plant-details-grid {
+        grid-template-columns: 1fr; /* Single column layout for small screens */
+        gap: 10px;
+    }
+
+    .grid-item {
+        padding: 10px;
+    }
+
+    .common-name {
+        font-size: 24px; /* Reduce font size for common name */
+        text-align: center; /* Center-align common name */
+    }
+
+    .image {
+        text-align: center; /* Center-align the image */
+    }
+
+    .image img {
+        max-width: 100%; /* Ensure the image scales properly */
+        height: auto;
+    }
+
+    .details-container {
+        grid-template-columns: 1fr; /* Single column layout for details */
+        gap: 10px;
+    }
+
+    .grid-item {
+        background-color: #E0E7F0;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+        margin-bottom: 10px; /* Add some spacing between details */
+    }
+
+    .description {
+        padding: 15px; /* Adjust padding for description */
+        font-size: 16px; /* Reduce font size for description */
+    }
+
+    #results-table {
+        background-color: #E0E7F0;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+        margin-top: 20px;
+        overflow: hidden;
+        width: 100%;
+        border-collapse: collapse; /* Collapse border-spacing */
+    }
+    
+    /* Table header cells */
+    #results-table th {
+        background-color: #CCE4CC;
+        color: #333333;
+        font-weight: bold;
+        padding: 15px 10px;
+        text-align: left;
+        border-bottom: 1px solid #333333;
+    }
+    
+    /* Table data cells */
+    #results-table td {
+        background-color: #F0F4FA;
+        color: #333333;
+        padding: 0px 0px; /* Adjust padding for better spacing */
+        text-align: left;
+        border-bottom: 1px solid #333333;
+    }
+    
+    .hidden {
+        display: none;
+    }
+
+    .table-image {
+        max-width: 50px;
+    }
 }
 
 @media (min-width: 768px) {
-    .navbar {
-        height: auto; // Allow the navbar to adjust its height based on content
-    }
-
     .back {
         position: absolute;
         bottom: 5vh;
@@ -64,15 +142,6 @@ body {
 
     .start-button-1 {
         border-top: 50px;
-    }
-
-    .intro-section {
-        background-color: #E0E7F0; // Use primary color for the background
-        height: 94vh;
-        display: flex;
-        justify-content: left;
-        align-items: center;
-        color: #333333; // White text for better contrast
     }
 
     .content-section {
@@ -120,10 +189,8 @@ body {
     .suggest-image {
         max-width: 500px;
     }
-}
 
-/* Container for the entire plant details section */
-.plant-details-grid {
+    .plant-details-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
@@ -250,6 +317,8 @@ body {
     border-bottom: none;
 }
 
+}
+
 /* Button style */
 .custom-button.btn-primary {
     background-color: #333333;
@@ -263,6 +332,24 @@ body {
 
 .custom-button.btn-primary:hover {
     background-color: #555555;
+}
+
+.custom-button.btn-danger {
+    background-color: #A2B5CD;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.custom-button.btn-danger:hover {
+    background-color: #555555;
+}
+
+#question-buttons {
+    margin: 25px;
 }
 
 // Import Bootstrap
