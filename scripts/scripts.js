@@ -55,10 +55,15 @@ document.addEventListener('click', async function (event) {
 
     if (event.target.id === 'suggest-button') {
         event.preventDefault();
-        console.log('Selected Watering Option:', selectedWateringOption);
-        console.log('Selected Sunlight Option:', selectedSunlightOption);
-        createSuggestResult();
-        $('#suggestModal').modal('show');
+        
+        if (selectedWateringOption && selectedSunlightOption) {
+            console.log('Selected Watering Option:', selectedWateringOption);
+            console.log('Selected Sunlight Option:', selectedSunlightOption);
+            createSuggestResult();
+            $('#suggestModal').modal('show');
+        } else {
+            alert('Please select watering and sunlight options before suggesting.');
+        }
     }
 
     if (event.target.id === 'next-button-watering') {
