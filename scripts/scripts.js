@@ -4,7 +4,7 @@ const apiKey5 = 'sk-BkuA64f6375362dbd2075';
 const apiKey4 = 'sk-FYwN64f615f0529382072';
 const apiKey3 = 'sk-ojin6499fba9bbfc11234';
 const apiKey = 'sk-8uOL64d9325a586701870';
-const apiUrl = 'https://perenual.com/api/species-list?page=1&key=' + apiKey2 + '&indoor=1';
+const apiUrl = 'https://perenual.com/api/species-list?page=1&key=' + apiKey3 + '&indoor=1';
 
 // Initialize variables for pagination and data storage
 let currentPage = 1;
@@ -15,6 +15,7 @@ let filteredData = [];
 let timer;
 let currentResult = 1;
 let totalPages;
+let loadingOverlayVisible = false;
 
 // Event Listeners
 document.addEventListener('click', async function (event) {
@@ -55,7 +56,7 @@ document.addEventListener('click', async function (event) {
 
     if (event.target.id === 'suggest-button') {
         event.preventDefault();
-        
+
         if (selectedWateringOption && selectedSunlightOption) {
             console.log('Selected Watering Option:', selectedWateringOption);
             console.log('Selected Sunlight Option:', selectedSunlightOption);
@@ -101,13 +102,26 @@ document.addEventListener('click', async function (event) {
     if (event.target.id === 'prev-page-button') {
         event.preventDefault();
         console.log('Back Clicked');
-        showPreviousPage(); 
+        showPreviousPage();
     }
 
     if (event.target.id === 'next-page-button') {
         event.preventDefault();
         console.log('Next Clicked');
         showNextPage();
+    }
+
+    if (event.target.id === 'table-results-button') {
+        event.preventDefault();
+        console.log('Next Clicked');
+        const page = 1;
+        createTableResult(filteredData, page);
+    }
+
+    if (event.target.id === 'next-suggest-button') {
+        event.preventDefault();
+        console.log('Next Clicked');
+        showNextSuggest();
     }
 })
 //Show More - Table Results
@@ -160,6 +174,29 @@ document.addEventListener('click', async function (event) {
         }
     }
 });
+
+// Function to toggle the loading overlay
+function toggleLoadingOverlay(showOverlay) {
+    const container = document.querySelector('.loading-overlay-container');
+
+    if (showOverlay) {
+        if (!loadingOverlayVisible) {
+            const overlay = document.createElement('div');
+            overlay.classList.add('loading-overlay');
+            overlay.textContent = 'Loading...';
+            container.appendChild(overlay);
+            loadingOverlayVisible = true;
+        }
+
+    } else {
+        const overlay = document.querySelector('.loading-overlay');
+        if (overlay) {
+            overlay.remove();
+            loadingOverlayVisible = false;
+        }
+
+    }
+}
 
 // Home Page Functions
 // Hide a section by setting its display property to "none"
@@ -304,7 +341,7 @@ function selectRandomItem(filteredData) {
 
 // Function to fetch plant details
 function fetchPlantDetails(itemId) {
-    const detailsURL = 'https://perenual.com/api/species/details/' + itemId + '?key=' + apiKey2;
+    const detailsURL = 'https://perenual.com/api/species/details/' + itemId + '?key=' + apiKey3;
 
     fetch(detailsURL)
         .then((response) => {
@@ -314,6 +351,7 @@ function fetchPlantDetails(itemId) {
             return response.json();
         })
         .then((detailsData) => {
+            toggleLoadingOverlay(false);
             console.log("Details Data:", detailsData);
 
             const resultsContainer = document.getElementById('plant-details');
@@ -334,6 +372,7 @@ function getTotalResults(filteredData) {
 // Suggest Functions
 // Function to fetch and display a suggested plant
 function createSuggestResult() {
+    toggleLoadingOverlay(true);
     if (!randomItem) {
         fetchAndFilterData(selectedWateringOption, selectedSunlightOption)
             .then((filteredData) => {
@@ -370,47 +409,44 @@ function showNextSuggest() {
     getSuggestPlant();
 }
 // Function to create suggestion buttons
-function createSuggestButtons() {
-    const suggestButtonsContainer = document.getElementById('modal-footer');
-    suggestButtonsContainer.style.position = 'relative';
 
-    const tableResultsButton = document.createElement('button');
-    tableResultsButton.classList.add('btn', 'btn-danger');
-    tableResultsButton.id = 'table-results-button';
-    tableResultsButton.textContent = 'View All Results';
-    tableResultsButton.style.position = 'absolute';
-    tableResultsButton.style.left = '50px';
 
-    tableResultsButton.addEventListener('click', () => {
-        const page = 1;
-        createTableResult(filteredData, page);
-    })
+    function createSuggestButtons() {
+        const suggestButtonsContainer = document.getElementById('modal-footer');
+        suggestButtonsContainer.innerHTML = "";
+        let html = `
+          <div id="table-button">
+            <a href="#" class="btn btn-main" id="table-results-button">All Results</a>
+          </div>
+          <div class="results-count">
+            <div><p>Results: ${currentResult} out of ${getTotalResults(filteredData)}</p></div>
+          </div>
+          <div id="next-button">
+            <a href="#" class="btn btn-main" id="next-suggest-button">Next Result</a>
+          </div>
+      `;
+    
+        suggestButtonsContainer.innerHTML = html;
+        updateSuggestButtons();
+      }
+    
 
-    const resultCount = document.createElement('p');
-    resultCount.classList.add('result-count');
-    resultCount.textContent = `Results: ${currentResult} out of ${getTotalResults(filteredData)}`;
-    resultCount.style.position = 'absolute';
-    resultCount.style.left = '50%';
-    resultCount.style.transform = 'translateX(-50%)';
+//     let html = `
+//     <div class="table-results-button">
+//         <a href="#" class="btn btn-main" id="table-results-button">All Results</a>
+//     </div>
+//     <div>
+//       <div class="result-count"><b>Results: ${currentResult} out of ${getTotalResults(filteredData)}</b></div>
+//     </div>
+//     <div "next-suggest-button">
+//       <a href="#" class="btn btn-main" id="next-suggest-button">Next Result</a>
+//     </div>
+//     `;
 
-    const nextSuggestButton = document.createElement('button');
-    nextSuggestButton.classList.add('btn', 'btn-danger');
-    nextSuggestButton.id = 'next-suggest-button';
-    nextSuggestButton.textContent = 'Try Again';
-    nextSuggestButton.style.position = 'absolute';
-    nextSuggestButton.style.right = '50px';
+//     suggestButtonsContainer.innerHTML = html;
+//     updateSuggestButtons();
+// }
 
-    nextSuggestButton.addEventListener('click', () => {
-        showNextSuggest(filteredData);
-    });
-
-    suggestButtonsContainer.innerHTML = '';
-    suggestButtonsContainer.appendChild(tableResultsButton);
-    suggestButtonsContainer.appendChild(resultCount);
-    suggestButtonsContainer.appendChild(nextSuggestButton);
-
-    updateSuggestButtons();
-}
 // Function to update suggestion buttons
 function updateSuggestButtons() {
     const nextSuggestButton = document.getElementById('next-suggest-button');
@@ -433,92 +469,92 @@ function updateSuggestButtons() {
 function generatePlantDetailsHTML(detailsData) {
     // Create a container div for the grid
     let html = '<div class="container plant-details-grid">';
-  
+
     // Common Name
     html += '<div class="grid-item common-name"><b>';
     html += capitalFirstLetter(detailsData.common_name);
     html += '</b></div>';
-  
+
     // Plant Image
     html += '<div class="grid-item image">';
     if (detailsData.default_image?.original_url) {
-      html += '<img src="' + detailsData.default_image?.regular_url + '" alt="Plant Image" max-width="50px">';
+        html += '<img src="' + detailsData.default_image?.regular_url + '" alt="Plant Image" max-width="50px">';
     } else {
-      html += '<img src="images/imagenotfound.png" alt="Image Not Found">';
+        html += '<img src="images/imagenotfound.png" alt="Image Not Found">';
     }
     html += '</div>';
-  
+
     // Details Container
     html += '<div class="container details-container">';
-  
+
     // Scientific Name
     html += '<div class="grid-item scientific-name"><b>';
     html += 'Scientific Name (Fancy Name):</b> ' + capitalFirstLetter(detailsData.scientific_name);
     html += '</div>';
-  
+
     // Family
     html += '<div class="grid-item family"><b>';
     html += 'Plant Family (Plant Clan):</b> ' + capitalFirstLetter(detailsData.family);
     html += '</div>';
-  
+
     // Propagation
     html += '<div class="grid-item propagation">';
     html += '<b>Best Way to Make More Plant Buddies:</b> ' + formatResponse(detailsData.propagation);
     html += '</div>';
-  
+
     // Watering
     html += '<div class="grid-item watering">';
     html += '<b>Thirst Quotient (Watering Needs):</b> ' + capitalFirstLetter(detailsData.watering);
     html += '</div>';
-  
+
     // Sunlight
     html += '<div class="grid-item sunlight">';
     html += '<b>Sunshine Preferences:</b> ' + formatResponse(detailsData.sunlight);
     html += '</div>';
-  
+
     // Maintenance
     html += '<div class="grid-item maintenance">';
     html += '<b>Maintenance Level (Plant TLC):</b> ' + capitalFirstLetter(detailsData.maintenance);
     html += '</div>';
-  
+
     // Growth Rate
     html += '<div class="grid-item growth-rate">';
     html += '<b>Growth Speed (Zoom-Zoom Factor):</b> ' + capitalFirstLetter(detailsData.growth_rate);
     html += '</div>';
-  
+
     // Drought Tolerance
     html += '<div class="grid-item drought-tolerant">';
     html += '<b>Survival in Desert Mode (Drought Tolerance):</b> ' + (detailsData.drought_tolerant ? 'Yes' : 'No');
     html += '</div>';
-  
+
     // Indoor
     html += '<div class="grid-item indoor">';
     html += '<b>Suitable for Indoor Jungle (Indoor Friendly):</b> ' + (detailsData.indoor ? 'Yes' : 'No');
     html += '</div>';
-  
+
     // Poisonous to Humans
     html += '<div class="grid-item poisonous-human">';
     html += '<b>Toxicity to Humans (Human Poisonousness):</b> ' + (detailsData.poisonous_to_humans === 0 ? 'Yes' : 'No');
     html += '</div>';
-  
+
     // Poisonous to Pets
     html += '<div class="grid-item poisonous-pets">';
     html += '<b>Pet-Friendly Score (Pet Poison Factor):</b> ' + (detailsData.poisonous_to_pets === 0 ? 'Yes' : 'No');
     html += '</div>';
-  
+
     // Description
     html += '<div class="grid-item description">';
     html += '<b>Plant Story (Plant Tale):</b> ' + detailsData.description;
     html += '</div>';
-  
+
     // Close the details container
-    html += '</div>'; // End of details-container
-  
+    html += '</div>';
+
     // Close the container div
-    html += '</div>'; // End of plant-details-grid
-  
+    html += '</div>';
+
     return html;
-  }
+}
 // // Function to calculate total pages based on filteredData
 function getTotalPages(filteredData) {
     const resultsPerPage = 5; // Adjust this based on your desired results per page
@@ -560,7 +596,7 @@ async function createTableResult(filteredData, page) {
 
     const resultsHTML = await createTableResultsHTML(currentPageData, page, totalPages);
     resultsContainer.innerHTML = resultsHTML;
- 
+
     createTableButtons(currentPage, totalPages);
     displayResultCount(currentPageData.length, getTotalResults(filteredData));
 
@@ -574,31 +610,24 @@ function createTableButtons(prevButtonId, nextButtonId, onClickPrev, onClickNext
         console.error('Page buttons container not found in the DOM.');
         return; // Exit the function if the container doesn't exist
     }
-
     pageButtonsContainer.innerHTML = '';
-
     const pageButtons = createPageButtons(prevButtonId, nextButtonId, onClickPrev, onClickNext);
-
     pageButtons.classList.add('modal-footer');
 }
-
-
 
 // // Function to create page navigation buttons
 function createPageButtons() {
     const pageButtonsContainer = document.getElementById('modal-footer');
-    pageButtonsContainer.classList.add('page-number-container');
-    pageButtonsContainer.id = 'page-buttons-container';
 
     const prevPageButton = document.createElement('a');
     prevPageButton.href = '#';
-    prevPageButton.classList.add('btn', 'btn-danger');
+    prevPageButton.classList.add('btn', 'btn-main');
     prevPageButton.id = 'prev-page-button';
     prevPageButton.textContent = 'Previous Page';
 
     const nextPageButton = document.createElement('a');
     nextPageButton.href = '#';
-    nextPageButton.classList.add('btn', 'btn-danger');
+    nextPageButton.classList.add('btn', 'btn-main');
     nextPageButton.id = 'next-page-button';
     nextPageButton.textContent = 'Next Page';
 
@@ -650,10 +679,10 @@ function updateTableButtons() {
 
 // Asynchronous function to create table results HTML
 async function createTableResultsHTML(detailsData, currentPage, totalPages) {
-    let 
+    let
         html = '<div class="table-header>';
-        html = '<h3>Results:</h3>';
-        html += '</div>';
+    html = '<h3>Results:</h3>';
+    html += '</div>';
 
     if (detailsData.length > 0) {
         html += '<table class="table" id="results-table">';
@@ -679,7 +708,7 @@ async function createTableResultsHTML(detailsData, currentPage, totalPages) {
                 itemHtml += '<td>' + capitalFirstLetter(item.common_name) + '</td>';
                 itemHtml += '<td class="hidden">' + formatResponse(item.sunlight) + '</td>';
                 itemHtml += '<td class="hidden">' + capitalFirstLetter(item.watering) + '</td>';
-                itemHtml += '<td>' + '<button class="btn btn-primary custom-button btn-learn-more" type="button" data-toggle="collapse" data-target="#collapse' + item.id + '" aria-expanded="true" aria-controls="collapse' + item.id + '">Learn More</button>' + '</td>';
+                itemHtml += '<td>' + '<button class="btn btn-main custom-button btn-learn-more" type="button" data-toggle="collapse" data-target="#collapse' + item.id + '" aria-expanded="true" aria-controls="collapse' + item.id + '">Learn More</button>' + '</td>';
                 itemHtml += '</tr>';
                 itemHtml += '<tr class="collapse-row">';
                 itemHtml += '<td colspan="5">';

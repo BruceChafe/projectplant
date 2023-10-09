@@ -8,70 +8,109 @@ const apiUrl = 'https://perenual.com/api/species-list?page=1&key=' + apiKey2 + '
 
 // Initialize variables for pagination and data storage
 let currentPage = 1;
-let currentPageIndex = 0;
-let currentResult = 1;
-let validData = [];
-let filteredData = [];
-let currentResultIndex = 0;
+let selectedWateringOption = null;
+let selectedSunlightOption = null;
 let randomItem;
-let loadingOverlayVisible = false;
+let filteredData = [];
 let timer;
-
-// Function to construct the API URL with watering and sunlight options
-function constructApiUrl(wateringOption, sunlightOption) {
-    const apiUrlWithWatering = apiUrl + '&watering=' + wateringOption;
-    return apiUrlWithWatering + '&sunlight=' + sunlightOption;
-}
-
-// Function to select a random item from filteredData
-function selectRandomItem(filteredData) {
-    return filteredData[Math.floor(Math.random() * filteredData.length)];
-}
-
-// Function to create page navigation buttons
-function createPageButtons(currentPage, totalPages, prevButtonId, nextButtonId, onClickPrev, onClickNext) {
-    const pageButtonsContainer = document.createElement('div');
-    pageButtonsContainer.classList.add('page-number-container');
-    pageButtonsContainer.id = 'page-buttons-container';
-
-    const prevPageButton = document.createElement('a');
-    prevPageButton.href = '#';
-    prevPageButton.classList.add('btn', 'btn-danger');
-    prevPageButton.id = prevButtonId;
-    prevPageButton.textContent = 'Previous Page';
-    prevPageButton.addEventListener('click', onClickPrev);
-
-    const nextPageButton = document.createElement('a');
-    nextPageButton.href = '#';
-    nextPageButton.classList.add('btn', 'btn-danger');
-    nextPageButton.id = nextButtonId;
-    nextPageButton.textContent = 'Next Page';
-    nextPageButton.addEventListener('click', onClickNext);
-
-    pageButtonsContainer.appendChild(prevPageButton);
-    pageButtonsContainer.appendChild(nextPageButton);
-
-    return pageButtonsContainer;
-}
-
-// Function to get data for a specific page
-function getPageData(data, page) {
-    const resultsPerPage = 5; // Adjust this based on your desired results per page
-    const startIndex = (page - 1) * resultsPerPage;
-    const endIndex = startIndex + resultsPerPage;
-    return data.slice(startIndex, endIndex);
-}
-
-// Function to display the count of results
-function displayResultCount(currentResult, totalResults) {
-    const resultCountElement = document.querySelector('.result-count');
-    if (resultCountElement) {
-        resultCountElement.textContent = `Results: ${currentResult} out of ${totalResults}`;
-    }
-}
+let currentResult = 1;
+let totalPages;
 
 // Event Listeners
-// Add a click event listener to the document
+document.addEventListener('click', async function (event) {
+    const wateringRadioButtons = document.querySelectorAll('[name="flexRadioStepWatering"]');
+    wateringRadioButtons.forEach((radioButton) => {
+        if (radioButton.checked) {
+            selectedWateringOption = radioButton.id;
+        }
+    });
+
+    const sunlightRadioButtons = document.querySelectorAll('[name="flexRadioStepSunlight"]');
+    sunlightRadioButtons.forEach((radioButton) => {
+        if (radioButton.checked) {
+            selectedSunlightOption = radioButton.id;
+        }
+    });
+
+    if (event.target.id === 'start-button') {
+        event.preventDefault();
+        hideSection('section-0');
+        showSection('section-1');
+        scrollToSection('section-1');
+    }
+
+    if (event.target.id === 'start-button-1') {
+        event.preventDefault();
+        hideSection('section-1');
+        showSection('section-2')
+        scrollToSection('section-2');
+    }
+
+    if (event.target.id === 'start-button-2') {
+        event.preventDefault();
+        hideSection('section-2')
+        showSection('section-3')
+        scrollToSection('section-3');
+    }
+
+    if (event.target.id === 'suggest-button') {
+        event.preventDefault();
+        
+        if (selectedWateringOption && selectedSunlightOption) {
+            console.log('Selected Watering Option:', selectedWateringOption);
+            console.log('Selected Sunlight Option:', selectedSunlightOption);
+            createSuggestResult();
+            $('#suggestModal').modal('show');
+        } else {
+            alert('Please select watering and sunlight options before suggesting.');
+        }
+    }
+
+    if (event.target.id === 'next-button-watering') {
+        event.preventDefault();
+        console.log('Next Clicked');
+        hideSection('section-1');
+        showSection('section-2')
+        scrollToSection('section-2');
+    }
+
+    if (event.target.id === 'back-button-sunlight') {
+        event.preventDefault();
+        console.log('Back Clicked');
+        hideSection('section-2');
+        showSection('section-1')
+        scrollToSection('section-1');
+    }
+
+    if (event.target.id === 'next-button-sunlight') {
+        event.preventDefault();
+        console.log('Next Clicked');
+        hideSection('section-2');
+        showSection('section-3')
+        scrollToSection('section-3');
+    }
+
+    if (event.target.id === 'back-button-poisonous') {
+        event.preventDefault();
+        console.log('Back Clicked');
+        hideSection('section-3');
+        showSection('section-2')
+        scrollToSection('section-2');
+    }
+
+    if (event.target.id === 'prev-page-button') {
+        event.preventDefault();
+        console.log('Back Clicked');
+        showPreviousPage(); 
+    }
+
+    if (event.target.id === 'next-page-button') {
+        event.preventDefault();
+        console.log('Next Clicked');
+        showNextPage();
+    }
+})
+//Show More - Table Results
 document.addEventListener('click', async function (event) {
     const target = event.target; // Get the clicked element
 
@@ -122,186 +161,78 @@ document.addEventListener('click', async function (event) {
     }
 });
 
-document.addEventListener('click', function (event) {
-    if (event.target.id === 'suggest-button') {
-        event.preventDefault();
-        console.log('Suggest a Plant button clicked');
-        createSuggestResult();
-    }
+// Function to toggle the loading overlay
+function toggleLoadingOverlay(showOverlay) {
+    const container = document.querySelector('.loading-overlay-container');
 
-    if (event.target.id === 'table-button') {
-        event.preventDefault();
-        console.log('Show Results button clicked');
-        filteredData = [];
-        createTableResult(currentPage);
-    }
-
-    if (event.target.id === 'next-suggest-button') {
-        event.preventDefault();
-        console.log('Try Again button clicked');
-        showNextSuggest();
-    }
-});
-
-// Function to calculate total pages based on filteredData
-function getTotalPages(filteredData) {
-    const resultsPerPage = 5; // Adjust this based on your desired results per page
-    const totalResults = filteredData.length;
-    return Math.ceil(totalResults / resultsPerPage);
-}
-
-// Function to calculate total results based on filteredData
-function getTotalResults(filteredData) {
-    return filteredData.length;
-}
-
-// Function to toggle the visibility of item details
-function showItemDetails(itemId) {
-    const collapsibleContainer = document.querySelector(`[data-item-id="${itemId}"] .collapsible-container`);
-    if (collapsibleContainer) {
-        const collapsible = collapsibleContainer.querySelector('.collapse');
-        if (collapsible) {
-            collapsible.classList.toggle('show');
+    if (showOverlay) {
+        if (!loadingOverlayVisible) {
+            const overlay = document.createElement('div');
+            overlay.classList.add('loading-overlay');
+            overlay.textContent = 'Loading...';
+            container.appendChild(overlay);
+            loadingOverlayVisible = true;
         }
+
+    } else {
+        const overlay = document.querySelector('.loading-overlay');
+        if (overlay) {
+            overlay.remove();
+            loadingOverlayVisible = false;
+        }
+
     }
 }
 
-// Function to fetch and filter data based on user-selected options
-function fetchAndFilterData(wateringOption, sunlightOption) {
-    if (filteredData.length > 0 ) {
-        return Promise.resolve(filteredData);
+// Home Page Functions
+// Hide a section by setting its display property to "none"
+function hideSection(sectionId) {
+    const section = document.getElementById(sectionId);
+    if (section) {
+        section.style.display = 'none';
     }
-    const apiUrlWithFilters = constructApiUrl(wateringOption, sunlightOption);
-    return simulateAPIcall(apiUrlWithFilters)
-        .then((data) => {
-            console.log("Data Received:", data);
-            // Update filteredData with the filtered results
-            filteredData = data.filter(item => item.id <= 3000);
-            return filteredData; // Return the filtered data
-        });
 }
+// Show a section by setting its display property to "block"
+function showSection(sectionId) {
+    const section = document.getElementById(sectionId);
+    if (section) {
+        section.style.display = 'block';
+    }
+}
+// Section Scroll
+function scrollToSection(sectionId) {
+    const section = document.getElementById(sectionId);
+    if (section) {
+        section.scrollIntoView({ behavior: 'smooth' });
+    }
+}
+// Navigate to the next section
+function navigateToNextSection() {
+    const currentSection = document.querySelector('.step-container.visible');
+    if (!currentSection) return; // No visible section found
 
-// Function to fetch a random plant
-function fetchRandomPlant() {
-    toggleLoadingOverlay(true);
+    const nextSection = currentSection.nextElementSibling;
+    if (nextSection) {
+        currentSection.classList.remove('visible');
+        nextSection.classList.add('visible');
+        scrollToSection(nextSection.id);
+    }
+}
+// Navigate to the previous section
+function navigateToPreviousSection() {
+    const currentSection = document.querySelector('.step-container.visible');
+    if (!currentSection) return; // No visible section found
 
-    const resultsContainer = document.getElementById('results-container');
-    resultsContainer.innerHTML = '';
-
-    if (filteredData.length === 0) {
-        // Fetch and filter the data first
-        fetchAndFilterData(wateringOption, sunlightOption)
-            .then((data) => {
-                // Update filteredData with the filtered results
-                filteredData = data;
-
-                // Now you can select a random item
-                const randomItem = selectRandomItem(filteredData);
-                console.log("Plant ID:", randomItem.id);
-
-                // Construct the details URL for the selected random item
-                const detailsURL = 'https://perenual.com/api/species/details/' + randomItem.id + '?key=' + apiKey2;
-                console.log("Details URL:", detailsURL);
-            });
-    } else {
-        // If filteredData is not empty, select a random item
-        const randomItem = selectRandomItem(filteredData);
-        console.log("Plant ID:", randomItem.id);
-
-        // Construct the details URL for the selected random item
-        const detailsURL = 'https://perenual.com/api/species/details/' + randomItem.id + '?key=' + apiKey2;
-        console.log("Details URL:", detailsURL);
-
-        // Call the getSuggestPlant function to fetch and display details
-        getSuggestPlant();
+    const previousSection = currentSection.previousElementSibling;
+    if (previousSection) {
+        currentSection.classList.remove('visible');
+        previousSection.classList.add('visible');
+        scrollToSection(previousSection.id);
     }
 }
 
-// Function to fetch and display a suggested plant
-function getSuggestPlant() {
-    if (!randomItem) {
-        console.error('No random item selected.');
-        return;
-    }
-    fetchPlantDetails(randomItem.id);}
-
-// Function to fetch plant details
-function fetchPlantDetails(itemId) {
-    const detailsURL = 'https://perenual.com/api/species/details/' + itemId + '?key=' + apiKey2;
-
-    fetch(detailsURL)
-        .then((response) => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then((detailsData) => {
-            console.log("Details Data:", detailsData);
-
-            const resultsContainer = document.getElementById('results-container');
-            const detailsHTML = generatePlantDetailsHTML(detailsData);
-            resultsContainer.innerHTML = detailsHTML;
-
-            toggleLoadingOverlay(false);
-            createSuggestButtons();
-        })
-        .catch((error) => {
-            console.error('Error fetching plant details:', error);
-        });
-}
-
-// Function to generate HTML for plant details
-function generatePlantDetailsHTML(detailsData) {
-    let html = '<br>';
-    html += '<h3>Results:</h3>';
-    html += '<div>';
-    html += capitalFirstLetter(detailsData.common_name);
-    html += '<br>';
-    if (detailsData.default_image?.original_url) {
-        html += '<img src="' + detailsData.default_image?.regular_url + '" alt="Plant Image" class="suggest-image">';
-    } else {
-        html += '<img src="images/imagenotfound.png">';
-    }
-    html += '<br>';
-    html += '<p>Scientific Name: ' + capitalFirstLetter(detailsData.scientific_name) + '</p>';
-    html += '<p>Family: ' + capitalFirstLetter(detailsData.family) + '</p>';
-    html += '<p>Propagation: ' + fortmatResponse(detailsData.propagation) + '</p>';
-    html += '<p>Watering: ' + capitalFirstLetter(detailsData.watering) + '</p>';
-    html += '<p>Sunlight: ' + fortmatResponse(detailsData.sunlight) + '</p>';
-    html += '<p>Maintenance: ' + capitalFirstLetter(detailsData.maintenance) + '</p>';
-    html += '<p>Growth Rate: ' + capitalFirstLetter(detailsData.growth_rate) + '</p>';
-
-    if (detailsData.drought_tolerant === true) {
-        html += '<p>Drought Tolerant: Yes</p>';
-    } else {
-        html += '<p>Drought Tolerant: No</p>';
-    }
-
-    if (detailsData.indoor === true) {
-        html += '<p>Indoor: Yes</p>';
-    } else {
-        html += '<p>Indoor: No</p>';
-    }
-
-    if (detailsData.poisonous_to_humans === 0) {
-        html += '<p>Poisonous To Humans: Yes</p>';
-    } else {
-        html += '<p>Poisonous To Humans: No</p>';
-    }
-
-    if (detailsData.poisonous_to_pets === 0) {
-        html += '<p>Poisonous To Pets: Yes</p>';
-    } else {
-        html += '<p>Poisonous To Pets: No</p>';
-    }
-
-    html += '<p>Description: ' + detailsData.description + '</p>';
-    html += '</div>';
-    return html;
-}
-
-// Function to capitalize the first letter of each word
+// Format Function
+// Capitalize the first letter of each word
 function capitalFirstLetter(string) {
     if (typeof string !== 'string') {
         return string;
@@ -312,9 +243,8 @@ function capitalFirstLetter(string) {
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ');
 }
-
-// Function to format sunlight data
-function fortmatResponse(sunlightArray) {
+// Format sunlight data
+function formatResponse(sunlightArray) {
     if (!sunlightArray || !Array.isArray(sunlightArray)) {
         return '';
     }
@@ -347,7 +277,13 @@ function fortmatResponse(sunlightArray) {
     return formattedSunlight.join(', ');
 }
 
-// Function to simulate an API call with a delay using Promises
+// API Functions
+// Construct the API URL with watering and sunlight options
+function constructApiUrl(selectedWateringOption, selectedSunlightOption) {
+    const apiUrlWithWatering = apiUrl + '&watering=' + selectedWateringOption;
+    return apiUrlWithWatering + '&sunlight=' + selectedSunlightOption;
+}
+// Simulate an API call with a delay using Promises
 function simulateAPIcall(apiUrl) {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
@@ -369,114 +305,88 @@ function simulateAPIcall(apiUrl) {
         });
     })
 }
-
-// Function to toggle the loading overlay
-function toggleLoadingOverlay(showOverlay) {
-    const container = document.querySelector('.loading-overlay-container');
-
-    if(timer) {
-        clearTimeout(timer);
-        timer = null;
+// Fetch & filter data
+function fetchAndFilterData(selectedWateringOption, selectedSunlightOption) {
+    if (filteredData.length > 0) {
+        return Promise.resolve(filteredData);
     }
+    const apiUrlWithFilters = constructApiUrl(selectedWateringOption, selectedSunlightOption);
+    return simulateAPIcall(apiUrlWithFilters)
+        .then((data) => {
+            console.log("Data Received:", data);
+            // Update filteredData with the filtered results
+            filteredData = data.filter(item => item.id <= 3000);
+            return filteredData; // Return the filtered data
+        });
+}
 
-    if (showOverlay) {
-        if (!loadingOverlayVisible) {
-            const overlay = document.createElement('div');
-            overlay.classList.add('loading-overlay');
-            overlay.textContent = 'Loading...';
-            container.appendChild(overlay);
-            loadingOverlayVisible = true;
+// Function to select a random item from filteredData
+function selectRandomItem(filteredData) {
+    return filteredData[Math.floor(Math.random() * filteredData.length)];
+}
 
-            timer = setTimeout(() => {
-                displayErrorMessage();
-            }, 15000)
-        }
+// Function to fetch plant details
+function fetchPlantDetails(itemId) {
+    const detailsURL = 'https://perenual.com/api/species/details/' + itemId + '?key=' + apiKey2;
 
+    fetch(detailsURL)
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then((detailsData) => {
+            toggleLoadingOverlay(false);
+            console.log("Details Data:", detailsData);
+
+            const resultsContainer = document.getElementById('plant-details');
+            const detailsHTML = generatePlantDetailsHTML(detailsData);
+            resultsContainer.innerHTML = detailsHTML;
+
+            createSuggestButtons();
+        })
+        .catch((error) => {
+            console.error('Error fetching plant details:', error);
+        });
+}
+
+function getTotalResults(filteredData) {
+    return filteredData.length;
+}
+
+// Suggest Functions
+// Function to fetch and display a suggested plant
+function createSuggestResult() {
+    toggleLoadingOverlay(true);
+    if (!randomItem) {
+        fetchAndFilterData(selectedWateringOption, selectedSunlightOption)
+            .then((filteredData) => {
+                console.log("Filtered Data:", filteredData);
+
+                randomItem = selectRandomItem(filteredData);
+                console.log("Plant ID:", randomItem.id);
+
+                const detailsURL = 'https://perenual.com/api/species/details/' + randomItem.id + '?key=' + apiKey2;
+                console.log("Details URL:", detailsURL);
+
+                getSuggestPlant();
+            })
     } else {
-        const overlay = document.querySelector('.loading-overlay');
-        if (overlay) {
-            overlay.remove();
-            loadingOverlayVisible = false;
-        }
-
+        const detailsURL = 'https://perenual.com/api/species/details/' + randomItem.id + '?key=' + apiKey2;
+        console.log("Details URL:", detailsURL);
+        getSuggestPlant();
     }
 }
-
-function displayErrorMessage() {
-    const overlay = document.querySelector('.loading-overlay');
-    if (overlay) {
-        overlay.remove();
-        loadingOverlayVisible = false;
+function getSuggestPlant() {
+    if (!randomItem) {
+        console.error('No random item selected.');
+        return;
     }
-
-    const errorMessage = document.createElement('div');
-    errorMessage.textContent = 'something went wrong.';
-    const tryAgainButton = document.createElement('button');
-    tryAgainButton.textContent = 'Try Again';
-
-    tryAgainButton.addEventListener('click', () => {
-
-    }
-)
+    fetchPlantDetails(randomItem.id);
 }
-
-// Function to show the next page of table results
-function showNextPage() {
-    if (currentPage < getTotalPages(filteredData)) {
-        currentPage += 1;
-        createTableResult(currentPage);
-    }
-}
-
-// Function to show the previous page of table results
-function showPreviousPage() {
-    if (currentPage > 1) {
-        currentPage -= 1;
-        createTableResult(currentPage);
-    }
-}
-
-// Function to create table page navigation buttons
-function createTableButtons(currentPage, totalPages, prevButtonId, nextButtonId, onClickPrev, onClickNext) {
-
-    const pageButtonsContainer = createPageButtons(currentPage, totalPages, 'prev-page-button', 'next-page-button', showPreviousPage, showNextPage);
-    pageButtonsContainer.classList.add('page-number-container');
-    pageButtonsContainer.id = 'page-buttons-container';
-
-    const resultsContainer = document.getElementById('results-container');
-    const existingButtonsContainer = document.getElementById('page-buttons-container');
-    if (existingButtonsContainer) {
-        resultsContainer.removeChild(existingButtonsContainer);
-    }
-    resultsContainer.appendChild(pageButtonsContainer);
-    updateTableButtons();
-}
-
-// Function to update table page navigation buttons
-function updateTableButtons() {
-    const prevPageButton = document.getElementById('prev-page-button');
-    const nextPageButton = document.getElementById('next-page-button');
-    const totalPages = getTotalPages(filteredData);
-
-    if (prevPageButton) {
-        if (currentPage === 1) {
-            prevPageButton.classList.add('disabled');
-        } else {
-            prevPageButton.classList.remove('disabled');
-        }
-    }
-
-    if (nextPageButton) {
-        if (currentPage === totalPages) {
-            nextPageButton.classList.add('disabled');
-        } else {
-            nextPageButton.classList.remove('disabled');
-        }
-    }
-}
-
 // Function to show the next suggestion
-function showNextSuggest(filterData) {
+function showNextSuggest() {
     currentResult += 1;
     if (currentResult > getTotalResults(filteredData)) {
         currentResult = 1;
@@ -484,53 +394,53 @@ function showNextSuggest(filterData) {
     randomItem = filteredData[Math.floor(Math.random() * filteredData.length)];
     getSuggestPlant();
 }
-
 // Function to create suggestion buttons
 function createSuggestButtons() {
-    const suggestButton = document.getElementById('suggest-button');
+    const suggestButtonsContainer = document.getElementById('modal-footer');
+    suggestButtonsContainer.style.position = 'relative';
 
-    const pageButtonsContainer = document.createElement('div');
-    pageButtonsContainer.classList.add('page-number-container');
-    pageButtonsContainer.id = 'page-buttons-container';
+    const tableResultsButton = document.createElement('button');
+    tableResultsButton.classList.add('btn', 'btn-danger');
+    tableResultsButton.id = 'table-results-button';
+    tableResultsButton.textContent = 'View All Results';
+    tableResultsButton.style.position = 'absolute';
+    tableResultsButton.style.left = '50px';
 
-    if (suggestButton) {
-        const resultCount = document.createElement('p');
-        resultCount.classList.add('result-count');
-        resultCount.textContent = `Results: ${currentResult} out of ${getTotalResults(filteredData)}`;
+    tableResultsButton.addEventListener('click', () => {
+        const page = 1;
+        createTableResult(filteredData, page);
+    })
 
-        const nextSuggestButton = document.createElement('a');
-        nextSuggestButton.href = '#';
-        nextSuggestButton.classList.add('btn', 'btn-danger');
-        nextSuggestButton.id = 'next-suggest-button';
-        nextSuggestButton.textContent = 'Try Again';
+    const resultCount = document.createElement('p');
+    resultCount.classList.add('result-count');
+    resultCount.textContent = `Results: ${currentResult} out of ${getTotalResults(filteredData)}`;
+    resultCount.style.position = 'absolute';
+    resultCount.style.left = '50%';
+    resultCount.style.transform = 'translateX(-50%)';
 
-        pageButtonsContainer.appendChild(resultCount);
-        pageButtonsContainer.appendChild(nextSuggestButton);
-    }
+    const nextSuggestButton = document.createElement('button');
+    nextSuggestButton.classList.add('btn', 'btn-danger');
+    nextSuggestButton.id = 'next-suggest-button';
+    nextSuggestButton.textContent = 'Try Again';
+    nextSuggestButton.style.position = 'absolute';
+    nextSuggestButton.style.right = '50px';
 
-    const resultsContainer = document.getElementById('results-container');
-    const existingButtonsContainer = document.getElementById('page-buttons-container');
-    if (existingButtonsContainer) {
-        resultsContainer.removeChild(existingButtonsContainer);
-    }
-    resultsContainer.appendChild(pageButtonsContainer);
+    nextSuggestButton.addEventListener('click', () => {
+        showNextSuggest(filteredData);
+    });
+
+    suggestButtonsContainer.innerHTML = '';
+    suggestButtonsContainer.appendChild(tableResultsButton);
+    suggestButtonsContainer.appendChild(resultCount);
+    suggestButtonsContainer.appendChild(nextSuggestButton);
+
     updateSuggestButtons();
 }
-
 // Function to update suggestion buttons
 function updateSuggestButtons() {
-    const prevSuggestButton = document.getElementById('prev-suggest-button');
     const nextSuggestButton = document.getElementById('next-suggest-button');
     const totalResults = getTotalResults(filteredData);
     const resultCountElement = document.querySelector('.result-count');
-
-    if (prevSuggestButton) {
-        if (currentResult === 1) {
-            prevSuggestButton.classList.add('disabled');
-        } else {
-            prevSuggestButton.classList.remove('disabled');
-        }
-    }
 
     if (nextSuggestButton) {
         if (currentResult === totalResults) {
@@ -545,54 +455,243 @@ function updateSuggestButtons() {
     }
 }
 
-// Function to create table results
-async function createTableResult(page) {
-    toggleLoadingOverlay(true);
+function generatePlantDetailsHTML(detailsData) {
+    // Create a container div for the grid
+    let html = '<div class="container plant-details-grid">';
+  
+    // Common Name
+    html += '<div class="grid-item common-name"><b>';
+    html += capitalFirstLetter(detailsData.common_name);
+    html += '</b></div>';
+  
+    // Plant Image
+    html += '<div class="grid-item image">';
+    if (detailsData.default_image?.original_url) {
+      html += '<img src="' + detailsData.default_image?.regular_url + '" alt="Plant Image" max-width="50px">';
+    } else {
+      html += '<img src="images/imagenotfound.png" alt="Image Not Found">';
+    }
+    html += '</div>';
+  
+    // Details Container
+    html += '<div class="container details-container">';
+  
+    // Scientific Name
+    html += '<div class="grid-item scientific-name"><b>';
+    html += 'Scientific Name (Fancy Name):</b> ' + capitalFirstLetter(detailsData.scientific_name);
+    html += '</div>';
+  
+    // Family
+    html += '<div class="grid-item family"><b>';
+    html += 'Plant Family (Plant Clan):</b> ' + capitalFirstLetter(detailsData.family);
+    html += '</div>';
+  
+    // Propagation
+    html += '<div class="grid-item propagation">';
+    html += '<b>Best Way to Make More Plant Buddies:</b> ' + formatResponse(detailsData.propagation);
+    html += '</div>';
+  
+    // Watering
+    html += '<div class="grid-item watering">';
+    html += '<b>Thirst Quotient (Watering Needs):</b> ' + capitalFirstLetter(detailsData.watering);
+    html += '</div>';
+  
+    // Sunlight
+    html += '<div class="grid-item sunlight">';
+    html += '<b>Sunshine Preferences:</b> ' + formatResponse(detailsData.sunlight);
+    html += '</div>';
+  
+    // Maintenance
+    html += '<div class="grid-item maintenance">';
+    html += '<b>Maintenance Level (Plant TLC):</b> ' + capitalFirstLetter(detailsData.maintenance);
+    html += '</div>';
+  
+    // Growth Rate
+    html += '<div class="grid-item growth-rate">';
+    html += '<b>Growth Speed (Zoom-Zoom Factor):</b> ' + capitalFirstLetter(detailsData.growth_rate);
+    html += '</div>';
+  
+    // Drought Tolerance
+    html += '<div class="grid-item drought-tolerant">';
+    html += '<b>Survival in Desert Mode (Drought Tolerance):</b> ' + (detailsData.drought_tolerant ? 'Yes' : 'No');
+    html += '</div>';
+  
+    // Indoor
+    html += '<div class="grid-item indoor">';
+    html += '<b>Suitable for Indoor Jungle (Indoor Friendly):</b> ' + (detailsData.indoor ? 'Yes' : 'No');
+    html += '</div>';
+  
+    // Poisonous to Humans
+    html += '<div class="grid-item poisonous-human">';
+    html += '<b>Toxicity to Humans (Human Poisonousness):</b> ' + (detailsData.poisonous_to_humans === 0 ? 'Yes' : 'No');
+    html += '</div>';
+  
+    // Poisonous to Pets
+    html += '<div class="grid-item poisonous-pets">';
+    html += '<b>Pet-Friendly Score (Pet Poison Factor):</b> ' + (detailsData.poisonous_to_pets === 0 ? 'Yes' : 'No');
+    html += '</div>';
+  
+    // Description
+    html += '<div class="grid-item description">';
+    html += '<b>Plant Story (Plant Tale):</b> ' + detailsData.description;
+    html += '</div>';
+  
+    // Close the details container
+    html += '</div>'; // End of details-container
+  
+    // Close the container div
+    html += '</div>'; // End of plant-details-grid
+  
+    return html;
+  }
+// // Function to calculate total pages based on filteredData
+function getTotalPages(filteredData) {
+    const resultsPerPage = 5; // Adjust this based on your desired results per page
+    const totalResults = filteredData.length;
+    return Math.ceil(totalResults / resultsPerPage);
+}
 
-    const resultsContainer = document.getElementById('results-container');
+// Function to get data for a specific page
+function getPageData(data, page) {
+    const resultsPerPage = 5;
+    if (!Array.isArray(data)) {
+        // Handle the case where data is not an array, e.g., show an error message or return an empty array.
+        return [];
+    }
+    const startIndex = (page - 1) * resultsPerPage;
+    const endIndex = startIndex + resultsPerPage;
+    return data.slice(startIndex, endIndex);
+}
+
+
+// // Function to display the count of results
+function displayResultCount(currentResult, totalResults) {
+    const resultCountElement = document.querySelector('.result-count');
+    if (resultCountElement) {
+        resultCountElement.textContent = `Results: ${currentResult} out of ${totalResults}`;
+    }
+}
+
+async function createTableResult(filteredData, page) {
+    const resultsContainer = document.getElementById('plant-details');
     resultsContainer.innerHTML = '';
+    console.log("Filtered Data:", filteredData);
 
-    const wateringOption = document.getElementById('watering-dropdown').value;
-    const sunlightOption = document.getElementById('sunlight-dropdown').value;
+    const totalPages = getTotalPages(filteredData);
+    console.log("totalPages:", totalPages);
 
-    try {
-        const filteredData = await fetchAndFilterData(wateringOption, sunlightOption);
-        console.log("Filtered Data:", filteredData);
+    const currentPageData = getPageData(filteredData, page);
+    console.log("currentPageData:", currentPageData);
 
-        const totalPages = getTotalPages(filteredData);
-        console.log("totalPages:", totalPages);
+    const resultsHTML = await createTableResultsHTML(currentPageData, page, totalPages);
+    resultsContainer.innerHTML = resultsHTML;
+ 
+    createTableButtons(currentPage, totalPages);
+    displayResultCount(currentPageData.length, getTotalResults(filteredData));
 
-        const currentPageData = getPageData(filteredData, page);
-        console.log("currentPageData:", currentPageData);
+    updateTableButtons();
+}
 
-        const resultsHTML = await createTableResultsHTML(currentPageData, page, totalPages);
-        resultsContainer.innerHTML = resultsHTML;
+// Function to create table page navigation buttons
+function createTableButtons(prevButtonId, nextButtonId, onClickPrev, onClickNext) {
+    const pageButtonsContainer = document.getElementById('modal-footer');
+    if (!pageButtonsContainer) {
+        console.error('Page buttons container not found in the DOM.');
+        return; // Exit the function if the container doesn't exist
+    }
 
-        createTableButtons(page, totalPages, 'prev-page-button', 'next-page-button', showPreviousPage, showNextPage);
-        displayResultCount(currentPageData.length, getTotalResults(filteredData));
-    } catch (error) {
-        console.error('Error fetching and displaying data:', error);
-    } finally {
-         toggleLoadingOverlay(false);
+    pageButtonsContainer.innerHTML = '';
+
+    const pageButtons = createPageButtons(prevButtonId, nextButtonId, onClickPrev, onClickNext);
+
+    pageButtons.classList.add('modal-footer');
+}
+
+
+
+// // Function to create page navigation buttons
+function createPageButtons() {
+    const pageButtonsContainer = document.getElementById('modal-footer');
+    pageButtonsContainer.classList.add('page-number-container');
+    pageButtonsContainer.id = 'page-buttons-container';
+
+    const prevPageButton = document.createElement('a');
+    prevPageButton.href = '#';
+    prevPageButton.classList.add('btn', 'btn-danger');
+    prevPageButton.id = 'prev-page-button';
+    prevPageButton.textContent = 'Previous Page';
+
+    const nextPageButton = document.createElement('a');
+    nextPageButton.href = '#';
+    nextPageButton.classList.add('btn', 'btn-danger');
+    nextPageButton.id = 'next-page-button';
+    nextPageButton.textContent = 'Next Page';
+
+    pageButtonsContainer.appendChild(prevPageButton);
+    pageButtonsContainer.appendChild(nextPageButton);
+
+    return pageButtonsContainer;
+}
+
+// Function to show the next page of table results
+function showNextPage() {
+    if (currentPage < getTotalPages(filteredData)) {
+        currentPage += 1;
+        createTableResult(filteredData, currentPage); // Update the UI
+        updateTableButtons();
+    }
+}
+
+// // Function to show the previous page of table results
+function showPreviousPage() {
+    if (currentPage > 1) {
+        currentPage -= 1;
+        createTableResult(filteredData, currentPage); // Update the UI
+        updateTableButtons();
+    }
+}
+
+// // Function to update table page navigation buttons
+// Function to update table page navigation buttons
+function updateTableButtons() {
+    const prevPageButton = document.getElementById('prev-page-button');
+    const nextPageButton = document.getElementById('next-page-button');
+    const totalPages = getTotalPages(filteredData);
+
+    if (prevPageButton && nextPageButton) {
+        if (currentPage === 1) {
+            prevPageButton.classList.add('disabled');
+        } else {
+            prevPageButton.classList.remove('disabled');
+        }
+
+        if (currentPage === totalPages) {
+            nextPageButton.classList.add('disabled');
+        } else {
+            nextPageButton.classList.remove('disabled');
+        }
     }
 }
 
 // Asynchronous function to create table results HTML
 async function createTableResultsHTML(detailsData, currentPage, totalPages) {
-    let html = '<h3>Results:</h3>';
+    let 
+        html = '<div class="table-header>';
+        html = '<h3>Results:</h3>';
+        html += '</div>';
 
     if (detailsData.length > 0) {
-        html += '<table class="table">';
+        html += '<table class="table" id="results-table">';
         html += '<thead>';
         html += '<tr>';
         html += '<th scope="col"></th>';
         html += '<th scope="col">Common Name</th>';
-        html += '<th scope="col">Sunlight</th>';
-        html += '<th scope="col">Watering</th>';
+        html += '<th scope="col" class="hidden">Sunlight</th>';
+        html += '<th scope="col" class="hidden">Watering</th>';
         html += '<th scope="col"></th>';
         html += '</tr>';
         html += '</thead>';
-        html += '<tbody>'; 
+        html += '<tbody>';
 
         for (const item of detailsData) {
             try {
@@ -601,11 +700,11 @@ async function createTableResultsHTML(detailsData, currentPage, totalPages) {
                     itemHtml += '<td>' + '<img src="' + item.default_image?.thumbnail + '" alt="Plant Image" class="table-image">' + '</th>';
                 } else {
                     itemHtml += '<td>' + '<img src="images/imagenotfound.png" alt="Plant Image" class="table-image">' + '</th>';
-                }        
+                }
                 itemHtml += '<td>' + capitalFirstLetter(item.common_name) + '</td>';
-                itemHtml += '<td>' + fortmatResponse(item.sunlight) + '</td>';
-                itemHtml += '<td>' + capitalFirstLetter(item.watering) + '</td>';
-                itemHtml += '<td>' + '<button class="btn btn-primary btn-learn-more" type="button" data-toggle="collapse" data-target="#collapse' + item.id + '" aria-expanded="true" aria-controls="collapse' + item.id + '">Learn More</button>' + '</td>';
+                itemHtml += '<td class="hidden">' + formatResponse(item.sunlight) + '</td>';
+                itemHtml += '<td class="hidden">' + capitalFirstLetter(item.watering) + '</td>';
+                itemHtml += '<td>' + '<button class="btn btn-primary custom-button btn-learn-more" type="button" data-toggle="collapse" data-target="#collapse' + item.id + '" aria-expanded="true" aria-controls="collapse' + item.id + '">Learn More</button>' + '</td>';
                 itemHtml += '</tr>';
                 itemHtml += '<tr class="collapse-row">';
                 itemHtml += '<td colspan="5">';
@@ -627,34 +726,4 @@ async function createTableResultsHTML(detailsData, currentPage, totalPages) {
     }
 
     return html;
-}
-
-// Function to create a suggestion result
-function createSuggestResult() {
-    toggleLoadingOverlay(true);
-
-    const resultsContainer = document.getElementById('results-container');
-    resultsContainer.innerHTML = '';
-
-    const wateringOption = document.getElementById('watering-dropdown').value;
-    const sunlightOption = document.getElementById('sunlight-dropdown').value;
-
-    if (!randomItem) {
-        fetchAndFilterData(wateringOption, sunlightOption)
-            .then((filteredData) => {
-                console.log("Filtered Data:", filteredData);
-
-                randomItem = selectRandomItem(filteredData);
-                console.log("Plant ID:", randomItem.id);
-
-                const detailsURL = 'https://perenual.com/api/species/details/' + randomItem.id + '?key=' + apiKey2;
-                console.log("Details URL:", detailsURL);
-
-                getSuggestPlant();
-            })
-    } else {
-        const detailsURL = 'https://perenual.com/api/species/details/' + randomItem.id + '?key=' + apiKey2;
-        console.log("Details URL:", detailsURL);
-        getSuggestPlant();
-    }
 }
