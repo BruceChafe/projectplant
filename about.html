@@ -2,63 +2,70 @@
 <html lang="en">
 
 <head>
-    <!-- Include Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <head>
+        <!-- Include Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+      
+        <!-- Include Bootstrap JS (Popper.js and Bootstrap JS) and jQuery -->
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+      
+        <!-- Include your custom CSS and JavaScript files -->
+        <link href="css/main.min.css" rel="stylesheet">
+        <script src="scripts/scripts.js"></script>
+      
+        <title>Project Plant</title>
+      </head>
 
-    <!-- Include Bootstrap JS (Popper.js and Bootstrap JS) and jQuery -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
-    <!-- Include your custom CSS and JavaScript files -->
-    <link href="css/main.min.css" rel="stylesheet">
-    <script src="scripts/scripts.js"></script>
-
-    <title>About Us - Project Plant</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Project Plant</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
 <body>
     <nav class="navbar navbar-expand-lg bg-secondary">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">Project Plant</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/main.html">Home</a>
-                    </li>
-                    <li class="nav-item active">
-                        <a class="nav-link" href="/about.html">About</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/contact.html">Contact</a>
-                    </li>
-                </ul>
+          <a class="navbar-brand" href="/main.html">Project Plant</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="/main.html">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/about.html">About</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+<!-- Landing Page -->
+<div class="container-fluid">
+    <div class="row no-gutters">
+        <div class="col-md-5 col-sm-12 about-section">
+            <div class="text-center about-content">
+                <h1>About Project Plant</h1>
+                <p>Welcome to Project Plant, your friendly companion in finding the perfect leafy friend!</p>
+                <p>Project Plant was born out of our love for greenery and the desire to match people with their ideal plants. We believe that everyone deserves a plant buddy to brighten up their living space and bring a touch of nature indoors.</p>
+                <p>Our journey with Project Plant started at Get Coding, where we learned the art of web development. With a strong foundation in HTML, CSS, and JavaScript, we embarked on the mission to create a web app that would help you discover your leafy soulmate.</p>
+                <p>Our team is passionate about plants and technology, and we've combined the two to create a fun and interactive quiz that will lead you to the plant that suits your lifestyle and preferences. Whether you're a seasoned plant parent or a newbie, Project Plant is here to guide you on your plant journey.</p>
+                <p>So, are you ready to find your perfect plant companion? Take our light-hearted 3-question quiz and let the plant adventure begin!</p>
             </div>
         </div>
-    </nav>
-
-    <!-- About Us Section -->
-    <div class="container-fluid" id="about-section">
-        <div class="row no-gutters">
-            <div class="col-md-6 col-sm-12 content-section">
-                <div class="sentences text-left">
-                    <h2>About Project Plant</h2>
-                </div>
-            </div>
-            <div class="col-md-6 col-sm-12 photo-section">
-                <img src="images/about-image.jpg" alt="About Us" class="img-fluid w-100 h-100"
-                    style="object-fit: cover;">
-            </div>
+        <div class="col-md-7 col-sm-12 photo-section">
+            <img src="images/_cec1677d-09a4-4b67-bfad-d929f2bc68dd.jpeg" alt="Top Image" class="img-fluid w-100 h-100"
+                style="object-fit: cover;">
         </div>
     </div>
-    <footer>
-        <!-- ... (your footer code) ... -->
-    </footer>
+</div>
+
+  <footer>
+    <!-- ... (your footer code) ... -->
+  </footer>
 </body>
 
 </html>

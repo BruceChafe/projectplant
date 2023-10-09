@@ -1,10 +1,19 @@
 // Define API keys and the base URL
-const apiKey2 = 'sk-e7y064f655871f6692077';
-const apiKey5 = 'sk-BkuA64f6375362dbd2075';
-const apiKey4 = 'sk-FYwN64f615f0529382072';
-const apiKey3 = 'sk-ojin6499fba9bbfc11234';
-const apiKey = 'sk-8uOL64d9325a586701870';
-const apiUrl = 'https://perenual.com/api/species-list?page=1&key=' + apiKey3 + '&indoor=1';
+function getRandomApiKey() {
+    const apiKeys = [
+        'sk-e7y064f655871f6692077',
+        'sk-BkuA64f6375362dbd2075',
+        'sk-FYwN64f615f0529382072',
+        // 'sk-ojin6499fba9bbfc11234',
+        'sk-8uOL64d9325a586701870'
+    ];
+
+    const randomIndex = Math.floor(Math.random() * apiKeys.length);
+    return apiKeys[randomIndex];
+}
+
+const apiKey = getRandomApiKey();
+const apiUrl = 'https://perenual.com/api/species-list?page=1&key=' + apiKey + '&indoor=1';
 
 // Initialize variables for pagination and data storage
 let currentPage = 1;
@@ -144,7 +153,7 @@ document.addEventListener('click', async function (event) {
                 // Check if the collapsible section is already populated with data
                 if (!collapsible.innerHTML.trim()) {
                     // Construct the URL for fetching plant details using the item ID and API key
-                    const detailsURL = 'https://perenual.com/api/species/details/' + itemId + '?key=' + apiKey2;
+                    const detailsURL = 'https://perenual.com/api/species/details/' + itemId + '?key=' + apiKey;
 
                     try {
                         // Fetch plant details data from the API
@@ -341,7 +350,7 @@ function selectRandomItem(filteredData) {
 
 // Function to fetch plant details
 function fetchPlantDetails(itemId) {
-    const detailsURL = 'https://perenual.com/api/species/details/' + itemId + '?key=' + apiKey3;
+    const detailsURL = 'https://perenual.com/api/species/details/' + itemId + '?key=' + apiKey;
 
     fetch(detailsURL)
         .then((response) => {
@@ -381,13 +390,13 @@ function createSuggestResult() {
                 randomItem = selectRandomItem(filteredData);
                 console.log("Plant ID:", randomItem.id);
 
-                const detailsURL = 'https://perenual.com/api/species/details/' + randomItem.id + '?key=' + apiKey2;
+                const detailsURL = 'https://perenual.com/api/species/details/' + randomItem.id + '?key=' + apiKey;
                 console.log("Details URL:", detailsURL);
 
                 getSuggestPlant();
             })
     } else {
-        const detailsURL = 'https://perenual.com/api/species/details/' + randomItem.id + '?key=' + apiKey2;
+        const detailsURL = 'https://perenual.com/api/species/details/' + randomItem.id + '?key=' + apiKey;
         console.log("Details URL:", detailsURL);
         getSuggestPlant();
     }
@@ -409,44 +418,25 @@ function showNextSuggest() {
     getSuggestPlant();
 }
 // Function to create suggestion buttons
-
-
-    function createSuggestButtons() {
-        const suggestButtonsContainer = document.getElementById('modal-footer');
-        suggestButtonsContainer.innerHTML = "";
-        let html = `
-          <div id="table-button">
-            <a href="#" class="btn btn-main" id="table-results-button">All Results</a>
+function createSuggestButtons() {
+    const suggestButtonsContainer = document.getElementById('modal-footer');
+    suggestButtonsContainer.innerHTML = "";
+    let html = `
+        <div id="table-button">
+        <a href="#" class="btn btn-main" id="table-results-button">All Results</a>
           </div>
           <div class="results-count">
-            <div><p>Results: ${currentResult} out of ${getTotalResults(filteredData)}</p></div>
+            <div>Results:</br> ${currentResult} out of ${getTotalResults(filteredData)}</div>
           </div>
           <div id="next-button">
             <a href="#" class="btn btn-main" id="next-suggest-button">Next Result</a>
           </div>
       `;
     
-        suggestButtonsContainer.innerHTML = html;
-        updateSuggestButtons();
-      }
+    suggestButtonsContainer.innerHTML = html;
+    updateSuggestButtons();
+}
     
-
-//     let html = `
-//     <div class="table-results-button">
-//         <a href="#" class="btn btn-main" id="table-results-button">All Results</a>
-//     </div>
-//     <div>
-//       <div class="result-count"><b>Results: ${currentResult} out of ${getTotalResults(filteredData)}</b></div>
-//     </div>
-//     <div "next-suggest-button">
-//       <a href="#" class="btn btn-main" id="next-suggest-button">Next Result</a>
-//     </div>
-//     `;
-
-//     suggestButtonsContainer.innerHTML = html;
-//     updateSuggestButtons();
-// }
-
 // Function to update suggestion buttons
 function updateSuggestButtons() {
     const nextSuggestButton = document.getElementById('next-suggest-button');
@@ -604,44 +594,29 @@ async function createTableResult(filteredData, page) {
 }
 
 // Function to create table page navigation buttons
-function createTableButtons(prevButtonId, nextButtonId, onClickPrev, onClickNext) {
+function createTableButtons(currentPage, totalPages) {
     const pageButtonsContainer = document.getElementById('modal-footer');
-    if (!pageButtonsContainer) {
-        console.error('Page buttons container not found in the DOM.');
-        return; // Exit the function if the container doesn't exist
-    }
-    pageButtonsContainer.innerHTML = '';
-    const pageButtons = createPageButtons(prevButtonId, nextButtonId, onClickPrev, onClickNext);
-    pageButtons.classList.add('modal-footer');
-}
+    pageButtonsContainer.innerHTML = "";
+    let html = `        
+    <div id="previous-page">
+        <a href="#" class="btn btn-page" id="prev-page-button">Previous Page</a>
+    </div>
+    <div class="results-count">
+        <div>Page:</br> ${currentPage} of ${totalPages}</div>
+    </div>
+    <div id="next-page">
+        <a href="#" class="btn btn-page" id="next-page-button">Next Page</a>
+    </div>
+    `;
 
-// // Function to create page navigation buttons
-function createPageButtons() {
-    const pageButtonsContainer = document.getElementById('modal-footer');
-
-    const prevPageButton = document.createElement('a');
-    prevPageButton.href = '#';
-    prevPageButton.classList.add('btn', 'btn-main');
-    prevPageButton.id = 'prev-page-button';
-    prevPageButton.textContent = 'Previous Page';
-
-    const nextPageButton = document.createElement('a');
-    nextPageButton.href = '#';
-    nextPageButton.classList.add('btn', 'btn-main');
-    nextPageButton.id = 'next-page-button';
-    nextPageButton.textContent = 'Next Page';
-
-    pageButtonsContainer.appendChild(prevPageButton);
-    pageButtonsContainer.appendChild(nextPageButton);
-
-    return pageButtonsContainer;
+    pageButtonsContainer.innerHTML = html;
 }
 
 // Function to show the next page of table results
 function showNextPage() {
     if (currentPage < getTotalPages(filteredData)) {
         currentPage += 1;
-        createTableResult(filteredData, currentPage); // Update the UI
+        createTableResult(filteredData, currentPage);
         updateTableButtons();
     }
 }
@@ -650,7 +625,7 @@ function showNextPage() {
 function showPreviousPage() {
     if (currentPage > 1) {
         currentPage -= 1;
-        createTableResult(filteredData, currentPage); // Update the UI
+        createTableResult(filteredData, currentPage);
         updateTableButtons();
     }
 }
@@ -680,8 +655,8 @@ function updateTableButtons() {
 // Asynchronous function to create table results HTML
 async function createTableResultsHTML(detailsData, currentPage, totalPages) {
     let
-        html = '<div class="table-header>';
-    html = '<h3>Results:</h3>';
+    html = '<div class="table-header>';
+    html = '';
     html += '</div>';
 
     if (detailsData.length > 0) {
@@ -690,8 +665,6 @@ async function createTableResultsHTML(detailsData, currentPage, totalPages) {
         html += '<tr>';
         html += '<th scope="col"></th>';
         html += '<th scope="col">Common Name</th>';
-        html += '<th scope="col" class="hidden">Sunlight</th>';
-        html += '<th scope="col" class="hidden">Watering</th>';
         html += '<th scope="col"></th>';
         html += '</tr>';
         html += '</thead>';
@@ -706,8 +679,6 @@ async function createTableResultsHTML(detailsData, currentPage, totalPages) {
                     itemHtml += '<td>' + '<img src="images/imagenotfound.png" alt="Plant Image" class="table-image">' + '</th>';
                 }
                 itemHtml += '<td>' + capitalFirstLetter(item.common_name) + '</td>';
-                itemHtml += '<td class="hidden">' + formatResponse(item.sunlight) + '</td>';
-                itemHtml += '<td class="hidden">' + capitalFirstLetter(item.watering) + '</td>';
                 itemHtml += '<td>' + '<button class="btn btn-main custom-button btn-learn-more" type="button" data-toggle="collapse" data-target="#collapse' + item.id + '" aria-expanded="true" aria-controls="collapse' + item.id + '">Learn More</button>' + '</td>';
                 itemHtml += '</tr>';
                 itemHtml += '<tr class="collapse-row">';
@@ -724,7 +695,6 @@ async function createTableResultsHTML(detailsData, currentPage, totalPages) {
             }
         }
         html += '</tbody>';
-        html += '<p>Page ' + currentPage + ' of ' + totalPages + '</p>';
     } else {
         html += '<p>No results found for this page.</p>';
     }
