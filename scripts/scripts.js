@@ -4,7 +4,7 @@ function getRandomApiKey() {
         'sk-e7y064f655871f6692077',
         'sk-BkuA64f6375362dbd2075',
         'sk-FYwN64f615f0529382072',
-        // 'sk-ojin6499fba9bbfc11234',
+        'sk-ojin6499fba9bbfc11234',
         'sk-8uOL64d9325a586701870'
     ];
 
@@ -41,6 +41,11 @@ document.addEventListener('click', async function (event) {
             selectedSunlightOption = radioButton.id;
         }
     });
+
+    if (event.target.id === 'close-button') {
+        event.preventDefault();
+        location.reload();
+    }
 
     if (event.target.id === 'start-button') {
         event.preventDefault();
@@ -136,42 +141,31 @@ document.addEventListener('click', async function (event) {
 //Show More - Table Results
 document.addEventListener('click', async function (event) {
     const target = event.target; // Get the clicked element
-
-    // Check if the clicked element has the class 'btn-learn-more'
     if (target.classList.contains('btn-learn-more')) {
-        const dataTarget = target.getAttribute('data-target'); // Get the value of the 'data-target' attribute
-        const itemIdMatch = dataTarget.match(/#collapse(\d+)/); // Use a regular expression to extract an item ID from the 'data-target'
+        const dataTarget = target.getAttribute('data-target'); 
+        const itemIdMatch = dataTarget.match(/#collapse(\d+)/); 
 
-        // Check if an item ID was found in the 'data-target'
         if (itemIdMatch) {
-            const itemId = itemIdMatch[1]; // Extract the item ID
+            const itemId = itemIdMatch[1]; 
             console.log('Learn More button clicked for item ID:', itemId);
 
-            // Check if the collapsible section is currently closed (not open)
             const collapsible = document.querySelector(dataTarget + ' .card-body');
             if (collapsible && !collapsible.classList.contains('show')) {
-                // Check if the collapsible section is already populated with data
                 if (!collapsible.innerHTML.trim()) {
-                    // Construct the URL for fetching plant details using the item ID and API key
                     const detailsURL = 'https://perenual.com/api/species/details/' + itemId + '?key=' + apiKey;
 
                     try {
-                        // Fetch plant details data from the API
                         const response = await fetch(detailsURL);
 
-                        // Check if the network response is okay; if not, throw an error
                         if (!response.ok) {
                             throw new Error('Network response was not ok');
                         }
 
-                        // Parse the response as JSON to get the plant details data
                         const detailsData = await response.json();
                         console.log("Details Data:", detailsData);
 
-                        // Generate plant details HTML with the fetched data
                         const plantDetailsHTML = generatePlantDetailsHTML(detailsData);
 
-                        // Insert the generated plant details HTML into the collapsible section
                         if (collapsible) {
                             collapsible.innerHTML = plantDetailsHTML;
                         }
@@ -232,7 +226,7 @@ function scrollToSection(sectionId) {
 // Navigate to the next section
 function navigateToNextSection() {
     const currentSection = document.querySelector('.step-container.visible');
-    if (!currentSection) return; // No visible section found
+    if (!currentSection) return;
 
     const nextSection = currentSection.nextElementSibling;
     if (nextSection) {
@@ -244,7 +238,7 @@ function navigateToNextSection() {
 // Navigate to the previous section
 function navigateToPreviousSection() {
     const currentSection = document.querySelector('.step-container.visible');
-    if (!currentSection) return; // No visible section found
+    if (!currentSection) return;
 
     const previousSection = currentSection.previousElementSibling;
     if (previousSection) {
@@ -272,28 +266,22 @@ function formatResponse(sunlightArray) {
         return '';
     }
 
-    // Capitalize the first letter of each word in each sunlight value
     const formattedSunlight = sunlightArray.map(sunlight => {
-        // Split the sunlight value by commas and trim spaces
         const values = sunlight.split(',').map(value => value.trim());
 
-        // Capitalize the first letter of each word in each value, except for specific words like "and"
         const formattedValues = values.map(value => {
-            // Replace '/' with ' and/or '
             const replacedValue = value.replace('/', ' and/or ');
 
             const words = replacedValue.split(' ');
             const capitalizedWords = words.map(word => {
-                // Check if the word is "and" and always keep it lowercase
                 if (word.toLowerCase() === 'and/or') {
-                    return word; // Keep "and" in lowercase
+                    return word; 
                 }
                 return word.charAt(0).toUpperCase() + word.slice(1);
             });
             return capitalizedWords.join(' ');
         });
 
-        // Join the formatted values with commas
         return formattedValues.join(', ');
     });
 
@@ -324,7 +312,7 @@ function simulateAPIcall(apiUrl) {
                 .catch((error) => {
                     console.error('Error fetching data:', error);
                     reject(error);
-                }); // Simulate a 1-second delay
+                }); 
         });
     })
 }
@@ -337,9 +325,8 @@ function fetchAndFilterData(selectedWateringOption, selectedSunlightOption) {
     return simulateAPIcall(apiUrlWithFilters)
         .then((data) => {
             console.log("Data Received:", data);
-            // Update filteredData with the filtered results
             filteredData = data.filter(item => item.id <= 3000);
-            return filteredData; // Return the filtered data
+            return filteredData;
         });
 }
 
@@ -457,7 +444,6 @@ function updateSuggestButtons() {
 }
 
 function generatePlantDetailsHTML(detailsData) {
-    // Create a container div for the grid
     let html = '<div class="container plant-details-grid">';
 
     // Common Name
@@ -537,10 +523,7 @@ function generatePlantDetailsHTML(detailsData) {
     html += '<b>Plant Story (Plant Tale):</b> ' + detailsData.description;
     html += '</div>';
 
-    // Close the details container
     html += '</div>';
-
-    // Close the container div
     html += '</div>';
 
     return html;
@@ -556,7 +539,6 @@ function getTotalPages(filteredData) {
 function getPageData(data, page) {
     const resultsPerPage = 5;
     if (!Array.isArray(data)) {
-        // Handle the case where data is not an array, e.g., show an error message or return an empty array.
         return [];
     }
     const startIndex = (page - 1) * resultsPerPage;
@@ -630,7 +612,6 @@ function showPreviousPage() {
     }
 }
 
-// // Function to update table page navigation buttons
 // Function to update table page navigation buttons
 function updateTableButtons() {
     const prevPageButton = document.getElementById('prev-page-button');
