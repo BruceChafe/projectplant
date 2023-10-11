@@ -319,7 +319,7 @@ body {
 .btn-main.btn:hover {
     background-color: #FFDCE0;
     color: #ffffff;
-    border: solid;
+    outline: solid;
 }
 
 .btn-page.btn {
@@ -335,6 +335,7 @@ body {
 .btn-page.btn:hover {
     background-color: #A4CFA4;
     color: #ffffff;
+    outline: solid;
 }
 
 #question-buttons {

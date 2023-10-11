@@ -16,7 +16,7 @@
 <body>
     <nav class="navbar navbar-expand-lg bg-secondary">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">Project Plant</a>
+            <a class="navbar-brand" href="/">Project Plant</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -24,7 +24,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="/main.html">Home</a>
+                        <a class="nav-link active" aria-current="page" href="/">Home</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/about.html">About</a>
@@ -39,6 +39,7 @@
         <div class="row no-gutters">
             <div class="col-md-5 col-sm-12 intro-section">
                 <div class="text-center">
+                    <h2>Looking for Your Perfect Plant Pal?</h2>
                     <h2>Ready to Find Your Leafy Soulmate?</h2>
                     <p>Take this light-hearted 3-question quiz to discover your perfect plant companion!</p>
                     <div id="question-buttons">
@@ -66,25 +67,25 @@
                     <div class="form-check">
                         <input class="form-check-input" type="radio" name="flexRadioStepWatering" id="frequent">
                         <label class="form-check-label" for="frequent">
-                            I'll keep my plant sippin' like it's on vacation!
+                            I'll keep my plant sippin' like it's on vacation! (Frequent Watering)
                         </label>
                     </div>
                     <div class="form-check">
                         <input class="form-check-input" type="radio" name="flexRadioStepWatering" id="average">
                         <label class="form-check-label" for "average">
-                            I can commit to once every week or so... I think.
+                            I can commit to once every week or so... I think. (Average Watering)
                         </label>
                     </div>
                     <div class="form-check">
                         <input class="form-check-input" type="radio" name="flexRadioStepWatering" id="minimum">
                         <label class="form-check-label" for="minimum">
-                            Oops, I'll probably forget to water it!
+                            Oops, I'll probably forget to water it! (Minimum Watering)
                         </label>
                     </div>
                     <div class="form-check">
                         <input class="form-check-input" type="radio" name="flexRadioStepWatering" id="none">
                         <label class="form-check-label" for="none">
-                            Water? What's that?
+                            Water? What's that? (No Watering)
                         </label>
                     </div>
                     <div id="question-buttons">
@@ -101,34 +102,36 @@
             <div class="col-md-5 col-sm-12 question-section">
                 <div class="questions">
                     <h2>Let the Sunshine In!</h2>
+                    
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="flexRadioStepSunlight" id="part_shade">
-                        <label class="form-check-label" for="part_shade">
-                            I prefer my plant to enjoy some stylish shade.
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="flexRadioStepSunlight" id="full_shade">
-                        <label class="form-check-label" for="full_shade">
-                            Full-on shade, please!
+                        <input class="form-check-input" type="radio" name="flexRadioStepSunlight" id="full_sun">
+                        <label class="form-check-label" for="full_sun">
+                            I want my plant sun-kissed all day long! (Full Sun)
                         </label>
                     </div>
                     <div class="form-check">
                         <input class="form-check-input" type="radio" name="flexRadioStepSunlight" id="sun-part_shade">
                         <label class="form-check-label" for="sun-part_shade">
-                            Some sun, some shade, a little bit of both, you know?
+                            Some sun, some shade, a little bit of both, you know? (Some Sun)
                         </label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="flexRadioStepSunlight" id="full_sun">
-                        <label class="form-check-label" for="full_sun">
-                            I want my plant sun-kissed all day long!
+                        <input class="form-check-input" type="radio" name="flexRadioStepSunlight" id="part_shade">
+                        <label class="form-check-label" for="part_shade">
+                            I prefer my plant to enjoy some stylish shade. (Part Shade)
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="flexRadioStepSunlight" id="full_shade">
+                        <label class="form-check-label" for="full_shade">
+                            Full-on shade, please! (Full Shade)
                         </label>
                     </div>
                     <div id="question-buttons">
                         <a href="#" class="btn btn-main" id="start-button-2">Next Question!</a>
                         <button class="btn btn-page back" id="back-button-sunlight">Back</button>
                     </div>
+                    
                 </div>
             </div>
             <div class="col-md-7 col-sm-12 photo-section">
@@ -151,13 +154,13 @@
                     <div class="form-check">
                         <input class="form-check-input" type="radio" name="flexRadioStepOne" id="yes">
                         <label class="form-check-label" for="yes">
-                            Uh-oh, I've got furry friends to protect!
+                            I've got furry friends to protect!
                         </label>
                     </div>
                     <div class="form-check">
                         <input class="form-check-input" type="radio" name="flexRadioStepOne" id="no">
                         <label class="form-check-label" for="no">
-                            Nope, no pets to worry about!
+                            No pets to worry about!
                         </label>
                     </div>
                     <div id="question-buttons">
@@ -175,7 +178,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="suggestModalLabel">Your Perfect Plant Match:</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="close-button">
+                    <button type="close-button" class="close" data-dismiss="modal" aria-label="Close" id="close-button">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>

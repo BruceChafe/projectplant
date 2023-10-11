@@ -42,11 +42,6 @@ document.addEventListener('click', async function (event) {
         }
     });
 
-    if (event.target.id === 'close-button') {
-        event.preventDefault();
-        location.reload();
-    }
-
     if (event.target.id === 'start-button') {
         event.preventDefault();
         hideSection('section-0');
@@ -176,6 +171,13 @@ document.addEventListener('click', async function (event) {
             }
         }
     }
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    const closeButton = document.getElementById("close-button");
+    closeButton.addEventListener("click", function () {
+        location.reload();
+    });
 });
 
 // Function to toggle the loading overlay
@@ -413,7 +415,7 @@ function createSuggestButtons() {
         <a href="#" class="btn btn-main" id="table-results-button">All Results</a>
           </div>
           <div class="results-count">
-            <div>Results:</br> ${currentResult} out of ${getTotalResults(filteredData)}</div>
+            <div><b>Results:</br> ${currentResult} out of ${getTotalResults(filteredData)}</b></div>
           </div>
           <div id="next-button">
             <a href="#" class="btn btn-main" id="next-suggest-button">Next Result</a>
@@ -439,7 +441,7 @@ function updateSuggestButtons() {
     }
 
     if (resultCountElement) {
-        resultCountElement.textContent = `Results: ${currentResult} out of ${totalResults}`;
+        resultCountElement.textContent = `<b>Results: ${currentResult} out of ${totalResults}</b>`;
     }
 }
 
@@ -551,7 +553,7 @@ function getPageData(data, page) {
 function displayResultCount(currentResult, totalResults) {
     const resultCountElement = document.querySelector('.result-count');
     if (resultCountElement) {
-        resultCountElement.textContent = `Results: ${currentResult} out of ${totalResults}`;
+        resultCountElement.textContent = `<b>Results: ${currentResult} out of ${totalResults}</b>`;
     }
 }
 
@@ -584,7 +586,7 @@ function createTableButtons(currentPage, totalPages) {
         <a href="#" class="btn btn-page" id="prev-page-button">Previous Page</a>
     </div>
     <div class="results-count">
-        <div>Page:</br> ${currentPage} of ${totalPages}</div>
+        <div><b>Page:</br> ${currentPage} of ${totalPages}</b></div>
     </div>
     <div id="next-page">
         <a href="#" class="btn btn-page" id="next-page-button">Next Page</a>
