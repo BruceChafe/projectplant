@@ -11,6 +11,11 @@ body {
     
 }
 
+footer {
+    background-color: #C5C8E7;
+    color: #ffffff;
+}
+
 .modal-header {
     background-color: #8FBC8F;
     color: #333333;
@@ -117,12 +122,16 @@ body {
 }
 
 @media (max-width: 768px) {
-    .text-center {
-        padding: 15px;
-    }
-
     .navbar {
         height: 8vh;
+    }
+
+    .navbar-expand-lg .navbar-collapse {
+        background-color: #A4CFA4; /* Replace with your desired background color */
+    }
+
+    .text-center {
+        padding: 15px;
     }
 
     .btn-learn-more {
@@ -150,7 +159,7 @@ body {
 
     .intro-section,
     .question-section {
-        height: 62vh;
+        height: 70vh;
         padding: 100px;
     }
 
@@ -222,12 +231,13 @@ body {
     }
 
     .intro-section,
-    .question-section {
-        height: 94vh;
+    .question-section,
+    .about-section {
+        height: 100vh;
     }
 
     .photo-section {
-        height: 94vh;
+        height: 100vh;
     }
 
     .table-image {

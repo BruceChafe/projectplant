@@ -191,17 +191,35 @@ function toggleLoadingOverlay(showOverlay) {
             overlay.textContent = 'Loading...';
             container.appendChild(overlay);
             loadingOverlayVisible = true;
+
+            timer = setTimeout(() => {
+                hideLoadingOverlay();
+                displayTimeoutMessage();
+            }, 5000);
         }
 
     } else {
-        const overlay = document.querySelector('.loading-overlay');
-        if (overlay) {
-            overlay.remove();
-            loadingOverlayVisible = false;
-        }
-
+        clearTimeout(timer);
+        hideLoadingOverlay();
     }
 }
+
+function hideLoadingOverlay() {
+    let
+        html = '<div class="table-header>';
+        html = '<p>hehe</p>';
+        html += '</div>';
+
+
+    const overlay = document.querySelector('.loading-overlay');
+    if (overlay) {
+        overlay.remove();
+        loadingOverlayVisible = html;
+    }
+}
+
+// Function to display a timeout message
+
 
 // Home Page Functions
 // Hide a section by setting its display property to "none"
@@ -547,7 +565,6 @@ function getPageData(data, page) {
     const endIndex = startIndex + resultsPerPage;
     return data.slice(startIndex, endIndex);
 }
-
 
 // // Function to display the count of results
 function displayResultCount(currentResult, totalResults) {
