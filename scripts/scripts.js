@@ -141,7 +141,8 @@ document.addEventListener('click', async function (event) {
         console.log('Next Clicked');
         showNextSuggest();
     }
-})
+});
+
 //Show More - Table Results
 document.addEventListener('click', async function (event) {
     const target = event.target; // Get the clicked element
@@ -212,6 +213,7 @@ function toggleLoadingOverlay(showOverlay) {
     }
 }
 
+// 404 Message
 function hideLoadingOverlay() {
     const resultsContainer = document.getElementById('plant-details');
     resultsContainer.innerHTML = '';
@@ -341,6 +343,7 @@ function simulateAPIcall(apiUrl) {
         });
     })
 }
+
 // Fetch & filter data
 function fetchAndFilterData(selectedWateringOption, selectedSunlightOption, selectedPoisonOption) {
     if (filteredData.length > 0) {
@@ -415,6 +418,7 @@ function createSuggestResult() {
         getSuggestPlant();
     }
 }
+
 function getSuggestPlant() {
     if (!randomItem) {
         console.error('No random item selected.');
@@ -422,6 +426,7 @@ function getSuggestPlant() {
     }
     fetchPlantDetails(randomItem.id);
 }
+
 // Function to show the next suggestion
 function showNextSuggest() {
     currentResult += 1;
@@ -431,6 +436,7 @@ function showNextSuggest() {
     randomItem = filteredData[Math.floor(Math.random() * filteredData.length)];
     getSuggestPlant();
 }
+
 // Function to create suggestion buttons
 function createSuggestButtons() {
     const suggestButtonsContainer = document.getElementById('modal-footer');
@@ -559,7 +565,8 @@ function generatePlantDetailsHTML(detailsData) {
 
     return html;
 }
-// // Function to calculate total pages based on filteredData
+
+// Function to calculate total pages based on filteredData
 function getTotalPages(filteredData) {
     const resultsPerPage = 5; // Adjust this based on your desired results per page
     const totalResults = filteredData.length;
@@ -577,7 +584,7 @@ function getPageData(data, page) {
     return data.slice(startIndex, endIndex);
 }
 
-// // Function to display the count of results
+// Function to display the count of results
 function displayResultCount(currentResult, totalResults) {
     const resultCountElement = document.querySelector('.result-count');
     if (resultCountElement) {
