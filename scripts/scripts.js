@@ -219,7 +219,7 @@ function hideLoadingOverlay() {
     resultsContainer.innerHTML = '';
     
     let html = '<div class="grid-item image">';
-    html += '<img src="images/_f5c63020-dd9d-4616-9c7f-1ff1cf3f1f64.jpeg" alt="Image Not Found">';
+    html += '<img src="images/f5c63020-dd9d-4616-9c7f-1ff1cf3f1f64.jpeg" alt="Image Not Found">';
     html += '</div>';
     html += '<div class="container details-container">';
     html += '<p>Whoops!</p><br>'
