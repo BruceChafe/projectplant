@@ -19,6 +19,7 @@ const apiUrl = 'https://perenual.com/api/species-list?page=1&key=' + apiKey + '&
 let currentPage = 1;
 let selectedWateringOption = null;
 let selectedSunlightOption = null;
+let selectedPoisonOption =null;
 let randomItem;
 let filteredData = [];
 let timer;
@@ -41,6 +42,13 @@ document.addEventListener('click', async function (event) {
             selectedSunlightOption = radioButton.id;
         }
     });
+
+    // const poisonRadioButtons = document.querySelectorAll('[name="flexRadioStepPoison"]');
+    // poisonRadioButtons.forEach((radioButton) => {
+    //     if (radioButton.checked) {
+    //         selectedPoisonOption = radioButton.id;
+    //     }
+    // });
 
     if (event.target.id === 'start-button') {
         event.preventDefault();
@@ -69,6 +77,7 @@ document.addEventListener('click', async function (event) {
         if (selectedWateringOption && selectedSunlightOption) {
             console.log('Selected Watering Option:', selectedWateringOption);
             console.log('Selected Sunlight Option:', selectedSunlightOption);
+            // console.log('Selected Poison Option:', selectedPoisonOption);
             createSuggestResult();
             $('#suggestModal').modal('show');
         } else {
@@ -100,13 +109,13 @@ document.addEventListener('click', async function (event) {
         scrollToSection('section-3');
     }
 
-    if (event.target.id === 'back-button-poisonous') {
-        event.preventDefault();
-        console.log('Back Clicked');
-        hideSection('section-3');
-        showSection('section-2')
-        scrollToSection('section-2');
-    }
+    // if (event.target.id === 'back-button-poisonous') {
+    //     event.preventDefault();
+    //     console.log('Back Clicked');
+    //     hideSection('section-3');
+    //     showSection('section-2')
+    //     scrollToSection('section-2');
+    // }
 
     if (event.target.id === 'prev-page-button') {
         event.preventDefault();
@@ -194,7 +203,6 @@ function toggleLoadingOverlay(showOverlay) {
 
             timer = setTimeout(() => {
                 hideLoadingOverlay();
-                displayTimeoutMessage();
             }, 5000);
         }
 
@@ -205,21 +213,23 @@ function toggleLoadingOverlay(showOverlay) {
 }
 
 function hideLoadingOverlay() {
-    let
-        html = '<div class="table-header>';
-        html = '<p>hehe</p>';
-        html += '</div>';
-
+    const resultsContainer = document.getElementById('plant-details');
+    resultsContainer.innerHTML = '';
+    
+    let html = '<div class="grid-item image">';
+    html += '<img src="images/_f5c63020-dd9d-4616-9c7f-1ff1cf3f1f64.jpeg" alt="Image Not Found">';
+    html += '</div>';
+    html += '<div class="container details-container">';
+    html += '<p>Whoops!</p><br>'
+    html += '<p>Looks like something went wrong!</p>';
+    html += '</div>';
 
     const overlay = document.querySelector('.loading-overlay');
     if (overlay) {
         overlay.remove();
-        loadingOverlayVisible = html;
+        resultsContainer.innerHTML = html;
     }
 }
-
-// Function to display a timeout message
-
 
 // Home Page Functions
 // Hide a section by setting its display property to "none"
@@ -309,11 +319,6 @@ function formatResponse(sunlightArray) {
 }
 
 // API Functions
-// Construct the API URL with watering and sunlight options
-function constructApiUrl(selectedWateringOption, selectedSunlightOption) {
-    const apiUrlWithWatering = apiUrl + '&watering=' + selectedWateringOption;
-    return apiUrlWithWatering + '&sunlight=' + selectedSunlightOption;
-}
 // Simulate an API call with a delay using Promises
 function simulateAPIcall(apiUrl) {
     return new Promise((resolve, reject) => {
@@ -337,14 +342,16 @@ function simulateAPIcall(apiUrl) {
     })
 }
 // Fetch & filter data
-function fetchAndFilterData(selectedWateringOption, selectedSunlightOption) {
+function fetchAndFilterData(selectedWateringOption, selectedSunlightOption, selectedPoisonOption) {
     if (filteredData.length > 0) {
         return Promise.resolve(filteredData);
     }
-    const apiUrlWithFilters = constructApiUrl(selectedWateringOption, selectedSunlightOption);
+    const apiUrlWithFilters = apiUrl + '&watering=' + selectedWateringOption+ '&sunlight=' + selectedSunlightOption;
     return simulateAPIcall(apiUrlWithFilters)
         .then((data) => {
             console.log("Data Received:", data);
+            console.log("apiUrl:", apiUrlWithFilters);
+
             filteredData = data.filter(item => item.id <= 3000);
             return filteredData;
         });
@@ -390,7 +397,7 @@ function getTotalResults(filteredData) {
 function createSuggestResult() {
     toggleLoadingOverlay(true);
     if (!randomItem) {
-        fetchAndFilterData(selectedWateringOption, selectedSunlightOption)
+        fetchAndFilterData(selectedWateringOption, selectedSunlightOption,selectedPoisonOption)
             .then((filteredData) => {
                 console.log("Filtered Data:", filteredData);
 
@@ -472,6 +479,8 @@ function generatePlantDetailsHTML(detailsData) {
     html += '</b></div>';
 
     // Plant Image
+    html += '<div class="container details-container">';
+
     html += '<div class="grid-item image">';
     if (detailsData.default_image?.original_url) {
         html += '<img src="' + detailsData.default_image?.regular_url + '" alt="Plant Image" max-width="50px">';
@@ -479,6 +488,13 @@ function generatePlantDetailsHTML(detailsData) {
         html += '<img src="images/imagenotfound.png" alt="Image Not Found">';
     }
     html += '</div>';
+
+    // Description
+    html += '<div class="grid-item description">';
+    html += '<b>Plant Story (Plant Tale):</br></br></b> ' + detailsData.description;
+    html += '</div>';
+    html += '</div>';
+
 
     // Details Container
     html += '<div class="container details-container">';
@@ -536,11 +552,6 @@ function generatePlantDetailsHTML(detailsData) {
     // Poisonous to Pets
     html += '<div class="grid-item poisonous-pets">';
     html += '<b>Pet-Friendly Score (Pet Poison Factor):</b> ' + (detailsData.poisonous_to_pets === 0 ? 'Yes' : 'No');
-    html += '</div>';
-
-    // Description
-    html += '<div class="grid-item description">';
-    html += '<b>Plant Story (Plant Tale):</b> ' + detailsData.description;
     html += '</div>';
 
     html += '</div>';

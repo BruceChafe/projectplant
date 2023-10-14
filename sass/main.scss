@@ -159,13 +159,13 @@ footer {
 
     .intro-section,
     .question-section {
-        height: 70vh;
+        height: 60vh;
         padding: 100px;
     }
 
     .photo-section {
         order: -1;
-        height: 30vh;
+        height: 40vh;
     }
 
     .container.plant-details-grid {
@@ -303,16 +303,15 @@ footer {
     .grid-item {
         background-color: #E6E6FA;
         padding: 15px;
+        font-size: 22px;
+
         border-radius: 10px;
         color: #333333;
         box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
     }
 
     .description {
-        grid-column: span 2;
-        padding: 20px;
-        border-radius: 10px;
-        font-size: 18px;
+        font-size: 22px;
     }
 }
 
