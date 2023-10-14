@@ -1,69 +1,197 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <head>
-        <!-- Include Bootstrap CSS -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-      
-        <!-- Include Bootstrap JS (Popper.js and Bootstrap JS) and jQuery -->
-        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-      
-        <!-- Include your custom CSS and JavaScript files -->
-        <link href="css/main.min.css" rel="stylesheet">
-        <script src="scripts/scripts.js"></script>
-      
-        <title>Project Plant</title>
-      </head>
-
-  <title>Project Plant</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Project Plant</title>
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Include Bootstrap JS (Popper.js and Bootstrap JS) and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Include custom CSS and JavaScript files -->
+    <link href="css/main.min.css" rel="stylesheet">
+    <script src="scripts/scripts.js"></script>
 </head>
-
 <body>
-  <nav class="navbar navbar-expand-lg bg-secondary fixed-top"> <!-- Add the "fixed-top" class to make it stay on top -->
-    <div class="container-fluid">
-        <a class="navbar-brand" href="/">Project Plant</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav ml-auto"> <!-- Use "ml-auto" to push the items to the right -->
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="/">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/about.html">About</a>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
-
-<!-- Landing Page -->
-<div class="container-fluid">
-    <div class="row no-gutters">
-        <div class="col-md-5 col-sm-12 about-section">
-            <div class="text-center about-content">
-                <h1>About Project Plant</h1>
-                <p>Welcome to Project Plant, your friendly companion in finding the perfect leafy friend!</p>
-                <p>Project Plant was born out of our love for greenery and the desire to match people with their ideal plants. We believe that everyone deserves a plant buddy to brighten up their living space and bring a touch of nature indoors.</p>
-                <p>Our journey with Project Plant started at Get Coding, where we learned the art of web development. With a strong foundation in HTML, CSS, and JavaScript, we embarked on the mission to create a web app that would help you discover your leafy soulmate.</p>
-                <p>We are passionate about plants and technology, and we've combined the two to create a fun and interactive quiz that will lead you to the plant that suits your lifestyle and preferences. Whether you're a seasoned plant parent or a newbie, Project Plant is here to guide you on your plant journey.</p>
-                <p>So, are you ready to find your perfect plant companion? Take our light-hearted quiz and let the plant adventure begin!</p>
+    <nav class="navbar navbar-expand-lg bg-secondary fixed-top"> 
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/index.html">Project Plant</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ml-auto"> 
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about.html">About</a>
+                    </li>
+                </ul>
             </div>
         </div>
-        <div class="col-md-7 col-sm-12 photo-section">
-            <img src="images/_85f136af-c464-4005-b9ab-ebf18498d747.jpeg" alt="Top Image" class="img-fluid w-100 h-100"
-                style="object-fit: cover;">
+    </nav>
+
+    <!-- Landing Page -->
+    <div class="container-fluid" id="section-0">
+        <div class="row no-gutters">
+            <div class="col-md-5 col-sm-12 intro-section">
+                <div class="text-center">
+                    <h2>Looking for Your Perfect Plant Pal?</h2>
+                    <h2>Ready to Find Your Leafy Soulmate?</h2>
+                    <p>Take this light-hearted quiz to discover your perfect plant companion!</p>
+                    <div id="question-buttons">
+                        <a href="#" class="btn btn-main" id="start-button">Let's Get Plantin'!</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-7 col-sm-12 photo-section">
+                <img src="/images/_cec1677d-09a4-4b67-bfad-d929f2bc68dd.jpeg" alt="Top Image" class="img-fluid w-100 h-100"
+                    style="object-fit: cover;">
+            </div>
         </div>
     </div>
-  </div>
 
-  <footer>
-  </footer>
+    <!-- Step 1 - Watering -->
+    <div class="container-fluid" id="section-1" style='display: none;'>
+        <div class="row no-gutters">
+            <div class="col-md-7 col-sm-12 photo-section">
+                <img src="/images/_06d466c8-7c18-4f9d-908d-cfc39fe84e5f.jpeg" alt="Top Image" class="img-fluid w-100 h-100"
+                    style="object-fit: cover;">
+            </div>
+            <div class="col-md-5 col-sm-12 question-section">
+                <div class="questions">
+                    <h2>How often do you want to be watering your plant?</h2>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="flexRadioStepWatering" id="frequent">
+                        <label class="form-check-label" for="frequent">
+                            I'll keep my plant sippin' like it's on vacation! (Frequent Watering)
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="flexRadioStepWatering" id="average">
+                        <label class="form-check-label" for="average">
+                            I can commit to once every week or so... I think. (Average Watering)
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="flexRadioStepWatering" id="minimum">
+                        <label class="form-check-label" for="minimum">
+                            Oops, I'll probably forget to water it! (Minimum Watering)
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="flexRadioStepWatering" id="none">
+                        <label class="form-check-label" for="none">
+                            Water? What's that? (No Watering)
+                        </label>
+                    </div>
+                    <div id="question-buttons">
+                        <a href="#" class="btn btn-main" id="start-button-1">Let's Dive In!</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 2 - Sunlight -->
+    <div class="container-fluid" id="section-2" style='display: none;'>
+        <div class="row no-gutters">
+            <div class="col-md-5 col-sm-12 question-section">
+                <div class="questions">
+                    <h2>Let the Sunshine In!</h2>
+                    
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="flexRadioStepSunlight" id="full_sun">
+                        <label class="form-check-label" for="full_sun">
+                            I want my plant sun-kissed all day long! (Full Sun)
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="flexRadioStepSunlight" id="sun-part_shade">
+                        <label class="form-check-label" for="sun-part_shade">
+                            Some sun, some shade, a little bit of both, you know? (Some Sun)
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="flexRadioStepSunlight" id="part_shade">
+                        <label class="form-check-label" for="part_shade">
+                            I prefer my plant to enjoy some stylish shade. (Part Shade)
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="flexRadioStepSunlight" id="full_shade">
+                        <label class="form-check-label" for="full_shade">
+                            Full-on shade, please! (Full Shade)
+                        </label>
+                    </div>
+                    <div id="question-buttons">
+                        <a href="#" class="btn btn-main" id="suggest-button">Reveal My Leafy Destiny!</a>
+                        <button class="btn btn-page back" id="back-button-sunlight">Back</button>
+                    </div>
+                    
+                </div>
+            </div>
+            <div class="col-md-7 col-sm-12 photo-section">
+                <img src="/images/_69705619-87ac-48f0-8559-6a2f4e637532.jpeg" alt="Top Image" class="img-fluid w-100 h-100"
+                    style="object-fit: cover;">
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 3 - Poison -->
+    <div class="container-fluid" id="section-3" style='display: none;'>
+        <div class="row no-gutters">
+            <div class="col-md-7 col-sm-12 photo-section">
+                <img src="/images/_85f136af-c464-4005-b9ab-ebf18498d747.jpeg" alt="Top Image" class="img-fluid w-100 h-100"
+                    style="object-fit: cover;">
+            </div>
+            <div class="col-md-5 col-sm-12 question-section">
+                <div class="questions">
+                    <h2>Pet-Friendly or Foe? Let's Find Out!</h2>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="flexRadioStepPoison" id="0">
+                        <label class="form-check-label" for="0">
+                            I've got furry friends to protect!
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="flexRadioStepPoison" id="1">
+                        <label class="form-check-label" for="1">
+                            No pets to worry about!
+                        </label>
+                    </div>
+                    <div id="question-buttons">
+                        <a href="#" class="btn btn-main" id="suggest-button">Reveal My Leafy Destiny!</a>
+                        <button class="btn btn-page back" id="back-button-poisonous">Back</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="suggestModal" tabindex="-1" role="dialog" aria-labelledby="suggestModalLabel" aria-hidden="true" data-backdrop="false">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="suggestModalLabel">Your Perfect Plant Match:</h5>
+                    <button type="close-button" class="close" data-dismiss="modal" aria-label="Close" id="close-button">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="loading-overlay-container"></div>
+                    <div id="plant-details"></div>
+                </div>
+                <div class="modal-footer" id="modal-footer"></div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        2023 Project Plant
+    </footer>
 </body>
-
 </html>
