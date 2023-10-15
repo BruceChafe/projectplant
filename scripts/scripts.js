@@ -73,17 +73,26 @@ document.addEventListener('click', async function (event) {
 
     if (event.target.id === 'suggest-button') {
         event.preventDefault();
-
+    
         if (selectedWateringOption && selectedSunlightOption) {
             console.log('Selected Watering Option:', selectedWateringOption);
             console.log('Selected Sunlight Option:', selectedSunlightOption);
-            // console.log('Selected Poison Option:', selectedPoisonOption);
-            createSuggestResult();
-            $('#suggestModal').modal('show');
+    
+            if (selectedWateringOption === 'none') {
+                createRockResult();
+                $('#suggestModal').modal('show');
+            } 
+
+            else {
+                // console.log('Selected Poison Option:', selectedPoisonOption);
+                createSuggestResult();
+                $('#suggestModal').modal('show');
+            } 
         } else {
             alert('Please select watering and sunlight options before suggesting.');
         }
     }
+    
 
     if (event.target.id === 'next-button-watering') {
         event.preventDefault();
@@ -218,12 +227,12 @@ function hideLoadingOverlay() {
     const resultsContainer = document.getElementById('plant-details');
     resultsContainer.innerHTML = '';
     
-    let html = '<div class="grid-item image">';
+    let html = '<div class="grid-item">';
     html += '<img src="/images/f5c63020-dd9d-4616-9c7f-1ff1cf3f1f64.jpeg" alt="Image Not Found">';
     html += '</div>';
-    html += '<div class="container details-container">';
-    html += '<p>Whoops!</p><br>'
-    html += '<p>Looks like something went wrong!</p>';
+    html += '<div>';
+    html += '</br><p>Sorry, we couldnt find a plant matching those descriptions!</p>';
+    html += '<p>Please try again with different options to find your leafy soulmate!</p>';
     html += '</div>';
 
     const overlay = document.querySelector('.loading-overlay');
@@ -345,7 +354,7 @@ function simulateAPIcall(apiUrl) {
 }
 
 // Fetch & filter data
-function fetchAndFilterData(selectedWateringOption, selectedSunlightOption, selectedPoisonOption) {
+function fetchAndFilterData(selectedWateringOption, selectedSunlightOption) {
     if (filteredData.length > 0) {
         return Promise.resolve(filteredData);
     }
@@ -682,7 +691,8 @@ async function createTableResultsHTML(detailsData, currentPage, totalPages) {
         html += '<thead>';
         html += '<tr>';
         html += '<th scope="col"></th>';
-        html += '<th scope="col">Common Name</th>';
+        html += '<th scope="col">Common Name (Scientific Name)</th>';
+        // html += '<th scope="col">Scientific Name</th>';
         html += '<th scope="col"></th>';
         html += '</tr>';
         html += '</thead>';
@@ -696,7 +706,8 @@ async function createTableResultsHTML(detailsData, currentPage, totalPages) {
                 } else {
                     itemHtml += '<td>' + '<img src="/images/imagenotfound.png" alt="Plant Image" class="table-image">' + '</th>';
                 }
-                itemHtml += '<td>' + capitalFirstLetter(item.common_name) + '</td>';
+                itemHtml += '<td>' + capitalFirstLetter(item.common_name) + '<br>(' + capitalFirstLetter(item.scientific_name) + ')</td>';
+                // itemHtml += '<td>' + capitalFirstLetter(item.common_name) + '</td>';
                 itemHtml += '<td>' + '<button class="btn btn-main custom-button btn-learn-more" type="button" data-toggle="collapse" data-target="#collapse' + item.id + '" aria-expanded="true" aria-controls="collapse' + item.id + '">Learn More</button>' + '</td>';
                 itemHtml += '</tr>';
                 itemHtml += '<tr class="collapse-row">';
@@ -719,3 +730,95 @@ async function createTableResultsHTML(detailsData, currentPage, totalPages) {
 
     return html;
 }
+
+function createRockResult() {
+    const resultsContainer = document.getElementById('plant-details');
+    const detailsHTML = generateRockDetailsHTML();
+    resultsContainer.innerHTML = detailsHTML;
+    }
+
+function generateRockDetailsHTML() {
+    let html = '<div class="container plant-details-grid">';
+
+    // Common Name
+    html += '<div class="grid-item common-name"><b>';
+    html += 'Rocky Resilience';
+    html += '</b></div>';
+
+    // Plant Image
+    html += '<div class="container details-container">';
+
+    html += '<div class="grid-item image">';
+    html += '<img src="/images/853f0e93-6da3-459f-82a4-8d2deac41921.jpeg" alt="Image Not Found">';
+    html += '</div>';
+
+    // Description
+    html += '<div class="grid-item description">';
+    html += '<b>Rock Story (Rock Tale):</br></br></b>';
+    html += '<p>The "Rocky Resilience" is a remarkable geological formation that can add character to any landscape. It\'s as enduring as time itself, featuring an array of earthy colors and unique textures. These rocks are steadfast in all seasons, maintaining their rugged beauty. They require minimal attention, making them a perfect choice for those seeking a low-maintenance addition to their environment. "Rocky Resilience" thrives in shaded areas, and it can effortlessly blend in with any landscape, offering a touch of nature\'s elegance. Additionally, these rocks make excellent indoor decor, adding a touch of the outdoors to your home.</p>';
+    html += '</div>';
+    html += '</div>';
+
+    // Details Container
+    html += '<div class="container details-container">';
+
+    // Scientific Name
+    html += '<div class="grid-item scientific-name"><b>';
+    html += 'Scientific Name (Fancy Name):</b> ' + 'Petrodurabilis robustus';
+    html += '</div>';
+
+    // Family
+    html += '<div class="grid-item family"><b>';
+    html += 'Geological Family (Geological Clan):</b> ' + 'Stonehengeidae';
+    html += '</div>';
+
+    // Propagation
+    html += '<div class="grid-item propagation">';
+    html += '<b>Propagation Method (Rock Budding)</b> ' + 'None Needed';
+    html += '</div>';
+
+    // Watering
+    html += '<div class="grid-item watering">';
+    html += '<b>Thirst Quotient (Watering Needs):</b> ' + 'Zero';
+    html += '</div>';
+
+    // Sunlight
+    html += '<div class="grid-item sunlight">';
+    html += '<b>Sunshine Preferences:</b> ' + 'All Good';
+    html += '</div>';
+
+    // Maintenance
+    html += '<div class="grid-item maintenance">';
+    html += '<b>Maintenance Level (Geological TLC):</b> ' + 'Minimal';
+    html += '</div>';
+
+    // Growth Rate
+    html += '<div class="grid-item growth-rate">';
+    html += '<b>Growth Speed (Erosion Rate):</b> ' + 'Extremely Slow';
+    html += '</div>';
+
+    // Drought Tolerance
+    html += '<div class="grid-item drought-tolerant">';
+    html += '<b>Survival in Desert Mode (Drought Tolerance):</b> ' + 'Absolutely';
+    html += '</div>';
+
+    // Indoor
+    html += '<div class="grid-item indoor">';
+    html += '<b>Suitable for Indoor Jungle (Indoor Friendly):</b> ' + 'Yes';
+    html += '</div>';
+
+    // Poisonous to Humans
+    html += '<div class="grid-item poisonous-human">';
+    html += '<b>Toxicity to Humans (Human Poisonousness):</b> ' + 'No';
+    html += '</div>';
+
+    // Poisonous to Pets
+    html += '<div class="grid-item poisonous-pets">';
+    html += '<b>Pet-Friendly Score (Pet Poison Factor):</b> ' + 'No';
+    html += '</div>';
+
+    html += '</div>';
+    html += '</div>';
+
+    return html;
+    }
