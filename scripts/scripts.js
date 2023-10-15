@@ -228,7 +228,7 @@ function hideLoadingOverlay() {
     resultsContainer.innerHTML = '';
     
     let html = '<div class="grid-item">';
-    html += '<img src="/images/f5c63020-dd9d-4616-9c7f-1ff1cf3f1f64.jpeg" alt="Image Not Found">';
+    html += '<img src="images/f5c63020-dd9d-4616-9c7f-1ff1cf3f1f64.jpeg" alt="Image Not Found">';
     html += '</div>';
     html += '<div>';
     html += '</br><p>Sorry, we couldnt find a plant matching those descriptions!</p>';
@@ -500,7 +500,7 @@ function generatePlantDetailsHTML(detailsData) {
     if (detailsData.default_image?.original_url) {
         html += '<img src="' + detailsData.default_image?.regular_url + '" alt="Plant Image" max-width="50px">';
     } else {
-        html += '<img src="/images/imagenotfound.png" alt="Image Not Found">';
+        html += '<img src="images/imagenotfound.png" alt="Image Not Found">';
     }
     html += '</div>';
 
@@ -704,10 +704,9 @@ async function createTableResultsHTML(detailsData, currentPage, totalPages) {
                 if (item.default_image?.thumbnail) {
                     itemHtml += '<td>' + '<img src="' + item.default_image?.thumbnail + '" alt="Plant Image" class="table-image">' + '</th>';
                 } else {
-                    itemHtml += '<td>' + '<img src="/images/imagenotfound.png" alt="Plant Image" class="table-image">' + '</th>';
+                    itemHtml += '<td>' + '<img src="images/imagenotfound.png" alt="Plant Image" class="table-image">' + '</th>';
                 }
                 itemHtml += '<td>' + capitalFirstLetter(item.common_name) + '<br>(' + capitalFirstLetter(item.scientific_name) + ')</td>';
-                // itemHtml += '<td>' + capitalFirstLetter(item.common_name) + '</td>';
                 itemHtml += '<td>' + '<button class="btn btn-main custom-button btn-learn-more" type="button" data-toggle="collapse" data-target="#collapse' + item.id + '" aria-expanded="true" aria-controls="collapse' + item.id + '">Learn More</button>' + '</td>';
                 itemHtml += '</tr>';
                 itemHtml += '<tr class="collapse-row">';
@@ -749,7 +748,7 @@ function generateRockDetailsHTML() {
     html += '<div class="container details-container">';
 
     html += '<div class="grid-item image">';
-    html += '<img src="/images/853f0e93-6da3-459f-82a4-8d2deac41921.jpeg" alt="Image Not Found">';
+    html += '<img src="images/853f0e93-6da3-459f-82a4-8d2deac41921.jpeg" alt="Image Not Found">';
     html += '</div>';
 
     // Description
