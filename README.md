@@ -1,5 +1,9 @@
 # Project Plant
 
+## DEMO LINK
+
+https://brucechafe.github.io/projectplant/
+
 ## Description
 
 **Project Plant** is a website developed for GetCoding's Introduction module. It is designed to provide information about various plants and their details. The project uses basic HTML, CSS, and JavaScript to create a user-friendly experience. Plant data is retrieved from the Perenual API.
